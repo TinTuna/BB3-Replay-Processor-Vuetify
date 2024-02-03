@@ -9,7 +9,7 @@
       <!-- <h1 class="text-h2 font-weight-bold ma-2">Git</h1> -->
       <v-spacer></v-spacer>
       <div class="ma-2">
-        <v-btn color="#03045E" elevated href="https://github.com/TinTuna"  target="_blank">Git Repository</v-btn>
+        <v-btn color="#03045E" elevated href="https://github.com/TinTuna/BB3-Replay-Processor-Vuetify/"  target="_blank">Git Repository</v-btn>
       </div>
       
     </v-responsive>

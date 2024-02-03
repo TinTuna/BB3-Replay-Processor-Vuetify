@@ -15,12 +15,7 @@ const routes = [
         path: '/git',
         name: 'git',
         component: () => import(/* webpackChunkName: "git" */ '@/views/Git.vue'),
-      },
-      {
-        path: '/contact',
-        name: 'contact',
-        component: () => import(/* webpackChunkName: "contact" */ '@/views/Contact.vue'),
-      },
+      }
     ],
   },
 ]

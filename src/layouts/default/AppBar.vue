@@ -24,8 +24,7 @@ const tab = ref(0);
 
 const items = [
   { title: "Replay Processor", link: "/" },
-  { title: "Git Repository", link: "/git" },
-  // { title: "Contact", link: "/contact" },
+  { title: "Git Repository", link: "/git" }
 ];
 </script>
 

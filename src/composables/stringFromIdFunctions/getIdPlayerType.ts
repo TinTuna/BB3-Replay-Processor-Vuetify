@@ -7,12 +7,14 @@ export const getIdPlayerType = (IdPlayerType: PlayerIdType): string => {
 }
 
 const IdPlayerTypes = {
-    "1070": "Lineman",
-    "1064": "Old World Alliance / Unknown",
-    "1071": "Old World Alliance / Unknown",
-    "1072": "Old World Alliance / Unknown",
-    "1073": "Undead / Unknown",
+    // OWA
+    "1070": "Human Lineman",
+    "1064": "Dwarf Blocker",
+    "1071": "1071",
+    "1072": "Ogre",
+    // Undead
+    "1073": "Goul Runner",
     "1074": "Mummy",
-    "1076": "Undead / Unknown",
-    "1077": "Undead / Unknown",
+    "1076": "Wight Blitzer",
+    "1077": "Zombie Lineman", 
 }

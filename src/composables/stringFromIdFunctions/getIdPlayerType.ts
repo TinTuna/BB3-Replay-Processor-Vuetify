@@ -3,7 +3,7 @@ import { PlayerIdType } from '@/types/IdTypes/PlayerIdTypes';
 export const getIdPlayerType = (IdPlayerType: PlayerIdType): string => {
     if (IdPlayerTypes[IdPlayerType]) return IdPlayerTypes[IdPlayerType];
     console.warn(`Unknown IdPlayerType: ${IdPlayerType}`);
-    return "Unknown";
+    return `Unknown: ${IdPlayerType}`;
 }
 
 const IdPlayerTypes = {

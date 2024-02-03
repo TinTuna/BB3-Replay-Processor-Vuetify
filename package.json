@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
+    "@types/pako": "^2.0.3",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^3.0.3",
     "@vue/eslint-config-typescript": "^11.0.0",

@@ -13,7 +13,16 @@
       {{ notificationGameJoined.GameInfos.GamersInfos.GamerInfos[team].Name }}
     </h4>
     <v-divider class="my-3" thickness="2" />
-    <v-data-table :items="teamRoster" :headers="headers" items-per-page="16">
+    <v-data-table
+      :items="teamRoster"
+      :headers="[
+        { title: 'Number', key: 'number', align: 'center' },
+        { title: 'Name', key: 'name', align: 'center' },
+        { title: 'Position', key: 'position', align: 'center' },
+        { title: 'MVP', key: 'mvp', align: 'center' },
+      ]"
+      items-per-page="16"
+    >
       <template #bottom></template>
     </v-data-table>
   </v-container>
@@ -51,12 +60,12 @@ const mvp = computed(() => {
   )[0];
 });
 
-const headers = [
-  { title: "Number", key: "number", align: "center" },
-  { title: "Name", key: "name", align: "center" },
-  { title: "Position", key: "position", align: "center" },
-  { title: "MVP", key: "mvp", align: "center" },
-];
+// const headers = [
+//   { title: "Number", key: "number", align: "center" },
+//   { title: "Name", key: "name", align: "center" },
+//   { title: "Position", key: "position", align: "center" },
+//   { title: "MVP", key: "mvp", align: "center" },
+// ];
 
 const teamRace = computed(() => {
   return getIdTeamRace(roster.value.Team.IdRace);

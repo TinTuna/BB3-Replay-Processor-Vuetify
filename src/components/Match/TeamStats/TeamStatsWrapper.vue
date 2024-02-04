@@ -69,8 +69,8 @@ const teamStats = computed(() => {
   // Blocks attempted / succeeded
   const blocks = {
     stat: 'Blocks attempted / succeeded',
-    home: endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.BlocksAttempted || 0,
-    away: endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.BlocksAttempted || 0
+    home: 0, //endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.BlocksAttempted || 0,
+    away: 0 //endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.BlocksAttempted || 0
   }
   stats.push(blocks)
   // Armor Breaks

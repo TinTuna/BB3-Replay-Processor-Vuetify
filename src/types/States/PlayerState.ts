@@ -1,10 +1,12 @@
+import { XPos } from "../Pitch/xPos";
+import { YPos } from "../Pitch/yPos";
 import { Player } from "../Teams/Player";
 
 export type PlayerState = {
   CanAct: string;
   Cell: {
-    Y: string;
-    X: string;
+    Y: XPos;
+    X: YPos;
   };
   Data: Player;
   Effects: {};

@@ -1,28 +1,30 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="d-flex text-center fill-height">
-      <v-container class="pa-2" style="margin-top: 10vh">
-        <div v-if="!loading && !loaded">
-          <v-file-input
-            class="mb-4"
-            v-model="bbrFile"
-            show-size
-            label="Replay BBR file"
-            accept=".bbr"
-            hide-details
-          ></v-file-input>
-          <v-btn class="ma-1" color="#03045E" @click="processReplayFile"
-            >Process Replay File</v-btn
-          >
-          <v-spacer></v-spacer>
-          <v-label
-            id="errorText"
-            v-if="!bbrFile?.length"
-            class="font-weight-bold ma-1"
-            style="color: rgb(156, 0, 0); display: none"
-            >Select a file to load</v-label
-          >
-        </div>
+      <v-container class="pa-2" style="margin-top: 7vh">
+        <v-card v-if="!loading && !loaded">
+          <v-card-text>
+            <v-file-input
+              class="mb-4"
+              v-model="bbrFile"
+              show-size
+              label="Replay BBR file"
+              accept=".bbr"
+              hide-details
+            ></v-file-input>
+            <v-btn class="ma-1" color="#03045E" @click="processReplayFile"
+              >Process Replay File</v-btn
+            >
+            <v-spacer></v-spacer>
+            <v-label
+              id="errorText"
+              v-if="!bbrFile?.length"
+              class="font-weight-bold ma-1"
+              style="color: rgb(156, 0, 0); display: none"
+              >Select a file to load</v-label
+            >
+          </v-card-text>
+        </v-card>
         <div v-if="loading && !loaded">
           <v-label class="font-weight-bold ma-3">Processing file...</v-label>
         </div>
@@ -31,14 +33,18 @@
             <v-icon class="mr-1">mdi-reload</v-icon>
             Load new file
           </v-btn>
-          <v-btn color="#03045E" class="mx-2" @click="downloadProcessedReplayFile">
+          <v-btn
+            color="#03045E"
+            class="mx-2"
+            @click="downloadProcessedReplayFile"
+          >
             <v-icon class="mr-1">mdi-download</v-icon>
             Download Full Replay XML
           </v-btn>
         </div>
       </v-container>
       <v-container v-if="loaded">
-        <Overview :processedReplay="processedReplay" />
+        <Wrapper :processedReplay="processedReplay" />
       </v-container>
     </v-responsive>
   </v-container>
@@ -49,7 +55,7 @@ import { ref } from "vue";
 import { decodeBase64File } from "@/composables/helperFns/decodeBase64File";
 import { unzipFile } from "@/composables/helperFns/unzipFile";
 import { processXML } from "@/composables/helperFns/processXML";
-import Overview from "@/components/Match/Overview.vue";
+import Wrapper from "@/components/Match/Wrapper.vue";
 import { decodeHtml } from "@/composables/helperFns/decodeHtml";
 
 const bbrFile = ref<File[]>();

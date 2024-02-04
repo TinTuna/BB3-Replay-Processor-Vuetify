@@ -16,7 +16,11 @@
       </v-window>
     </v-card-text>
 
-    <v-data-table :items="teamStats" :headers="headers" items-per-page="16">
+    <v-data-table :items="teamStats" :headers="[
+  { title: 'Stat', key: 'stat', align: 'center', width: '50%' },
+  { title: notificationGameJoined.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
+  { title: notificationGameJoined.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
+]" items-per-page="16">
       <template #bottom></template>
 
     </v-data-table>
@@ -47,11 +51,11 @@ const notificationGameJoined = ref<NotificationGameJoined>(
 const rosters = ref<Rosters>(props.rosters as Rosters);
 const endGame = ref<EndGame>(props.endGame as EndGame);
 
-const headers = [
-  { title: "Stat", key: "stat", align: "center", width: '50%' },
-  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: "home", align: "center", width: '25%'},
-  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: "away", align: "center", width: '25%' },
-];
+// const headers = [
+//   { title: "Stat", key: "stat", align: "center", width: '50%' },
+//   { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: "home", align: "center", width: '25%'},
+//   { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: "away", align: "center", width: '25%' },
+// ];
 
 const teamStats = computed(() => {
   const stats = []

@@ -1,3 +1,4 @@
 export type DieType = 
-    | "1" // a type
-    | "2"; // a different type
+    | "0" // a standard d6 ?
+    | "1" //
+    | "2" // a block die

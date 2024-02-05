@@ -1,19 +1,6 @@
 <template>
   <v-container>
-    <v-data-table :items="teamRoster" :headers="[
-      { title: 'Number', key: 'number', align: 'center' },
-      { title: 'Name', key: 'name', align: 'center' },
-      { title: 'Position', key: 'position', align: 'center' },
-      { title: 'MA', key: 'ma', align: 'center' },
-      { title: 'ST', key: 'st', align: 'center' },
-      { title: 'AG', key: 'ag', align: 'center' },
-      { title: 'PA', key: 'pa', align: 'center' },
-      { title: 'AV', key: 'av', align: 'center' },
-      { title: 'Level', key: 'level', align: 'center' },
-      { title: 'SPP', key: 'spp', align: 'center' },
-      { title: 'Value', key: 'value', align: 'center' },
-      { title: 'MVP', key: 'mvp', align: 'center' },
-    ]" items-per-page="16" @click:row="handleClick">
+    <v-data-table :items="teamRoster" :headers="headers" items-per-page="16" @click:row="handleClick">
       <template #bottom></template>
     </v-data-table>
   </v-container>
@@ -49,20 +36,20 @@ const mvp = computed(() => {
   )[0];
 });
 
-// const headers = [
-//       { title: 'Number', key: 'number', align: 'center' },
-//       { title: 'Name', key: 'name', align: 'center' },
-//       { title: 'Position', key: 'position', align: 'center' },
-//       { title: 'MA', key: 'ma', align: 'center' },
-//       { title: 'ST', key: 'st', align: 'center' },
-//       { title: 'AG', key: 'ag', align: 'center' },
-//       { title: 'PA', key: 'pa', align: 'center' },
-//       { title: 'AV', key: 'av', align: 'center' },
-//       { title: 'Level', key: 'level', align: 'center' },
-//       { title: 'SPP', key: 'spp', align: 'center' },
-//       { title: 'Value', key: 'value', align: 'center' },
-//       { title: 'MVP', key: 'mvp', align: 'center' },
-//     ]
+const headers = [
+      { title: 'Number', key: 'number', align: 'center' },
+      { title: 'Name', key: 'name', align: 'center' },
+      { title: 'Position', key: 'position', align: 'center' },
+      { title: 'MA', key: 'ma', align: 'center' },
+      { title: 'ST', key: 'st', align: 'center' },
+      { title: 'AG', key: 'ag', align: 'center' },
+      { title: 'PA', key: 'pa', align: 'center' },
+      { title: 'AV', key: 'av', align: 'center' },
+      { title: 'Level', key: 'level', align: 'center' },
+      { title: 'SPP', key: 'spp', align: 'center' },
+      { title: 'Value', key: 'value', align: 'center' },
+      { title: 'MVP', key: 'mvp', align: 'center' },
+    ] as unknown as any[]
 
 const teamRoster = computed(() => {
   return roster.value.Players.PlayerData.map((player) => {

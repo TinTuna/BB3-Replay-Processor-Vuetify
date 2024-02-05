@@ -12,26 +12,22 @@
             <v-card-title>{{ playerName }}</v-card-title>
             <v-card-text>
               <v-row>
-                <v-col cols="12">
-                  <v-row>
-                    <v-col cols="6">
-                      <v-card>
-                        <v-card-text>
-                          Running Yards: {{ playerData?.yardsMoved || '0' }}
-                        </v-card-text>
-                      </v-card>
-                    </v-col>
-                    <v-col cols="6">
-
-                      <v-card>
-                        <v-card-text>
-                          Running Yards (With the Ball): {{ playerData?.yardsMovedWithBall || '0' }}
-                        </v-card-text>
-                      </v-card>
-                    </v-col>
-                  </v-row>
+                <v-col cols="6">
+                  <v-card>stat</v-card>
+                </v-col>
+                <v-col cols="6">
+                  <v-card>stat</v-card>
                 </v-col>
               </v-row>
+              <v-row>
+                <v-col cols="6">
+                  <v-card>stat</v-card>
+                </v-col>
+                <v-col cols="6">
+                  <v-card>stat</v-card>
+                </v-col>
+              </v-row>
+
             </v-card-text>
           </v-card>
         </v-col>
@@ -57,6 +53,11 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-data-table :items="playerStats" :headers="headers" items-per-page="15"></v-data-table>
+        </v-col>
+      </v-row>
     </div>
 
   </v-container>
@@ -64,13 +65,14 @@
       
       
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
 import { Roster } from "@/types/BaseTags/Roster";
 import { EndGame } from "@/types/BaseTags/EndGame";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
 import { useDataStore } from "@/store/dataStore";
+import { VDataTable } from "vuetify/lib/components/index.mjs";
 
 const dataStore = useDataStore();
 
@@ -79,6 +81,15 @@ const props = defineProps({
   notificationGameJoined: { type: Object, required: true },
   rosters: { type: Object, required: true },
   endGame: { type: Object, required: true },
+});
+
+const listPlayers = computed(() => {
+  return roster.value.Players.PlayerData.map((player) => {
+    return {
+      id: player.Id,
+      name: `${player.Name} - ${getIdPlayerType(player.IdPlayerTypes)}`
+    };
+  });
 });
 
 const team = ref<number>(parseInt(props.team));
@@ -101,17 +112,40 @@ const playerName = computed(() => {
   return selectedPlayer.value.name;
 });
 
-const listPlayers = computed(() => {
-  return roster.value.Players.PlayerData.map((player) => {
-    console.log(player.Id);
-    return {
-      id: player.Id,
-      name: `${player.Name} - ${getIdPlayerType(player.IdPlayerTypes)}`
-    };
-  });
+const playerStats = computed(() => {
+  const stats = [];
+  if (playerData.value) {
+    for (const [key, value] of Object.entries(playerData.value)) {
+      // check if value is an object with sub-values
+      if (typeof value === "object") {
+        for (const [subKey, subValue] of Object.entries(value)) {
+          stats.push({
+            stat: `${key} ${subKey}`,
+            value: subValue,
+          });
+        }
+      } else {
+        stats.push({
+          stat: key,
+          value: value,
+        });
+      }
+      
+    }
+  }
+  return stats;
 });
 
+const headers = [
+  { title: "Stat", value: "stat", align: "center", width: "50%"},
+  { title: "Value", value: "value", align: "center", width: "50%"},
+] as unknown as any[];
 
+
+
+onMounted(() => {
+  selectedPlayer.value = listPlayers.value[0];
+});
 
 </script>
         

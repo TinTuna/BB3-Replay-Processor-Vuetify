@@ -16,13 +16,8 @@
       </v-window>
     </v-card-text>
 
-    <v-data-table :items="teamStats" :headers="[
-  { title: 'Stat', key: 'stat', align: 'center', width: '50%' },
-  { title: notificationGameJoined.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
-  { title: notificationGameJoined.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
-]" items-per-page="16">
+    <v-data-table :items="teamStats" :headers="headers" items-per-page="16">
       <template #bottom></template>
-
     </v-data-table>
   </v-card>
 </template>
@@ -51,11 +46,11 @@ const notificationGameJoined = ref<NotificationGameJoined>(
 const rosters = ref<Rosters>(props.rosters as Rosters);
 const endGame = ref<EndGame>(props.endGame as EndGame);
 
-// const headers = [
-//   { title: "Stat", key: "stat", align: "center", width: '50%' },
-//   { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: "home", align: "center", width: '25%'},
-//   { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: "away", align: "center", width: '25%' },
-// ];
+const headers = [
+  { title: 'Stat', key: 'stat', align: 'center', width: '50%' },
+  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
+  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
+] as unknown as any[];
 
 const teamStats = computed(() => {
   const stats = []
@@ -69,8 +64,8 @@ const teamStats = computed(() => {
   // Blocks attempted / succeeded
   const blocks = {
     stat: 'Blocks attempted / succeeded',
-    home: 0, //endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.BlocksAttempted || 0,
-    away: 0 //endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.BlocksAttempted || 0
+    home: 0,
+    away: 0
   }
   stats.push(blocks)
   // Armor Breaks

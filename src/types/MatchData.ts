@@ -1,4 +1,8 @@
+import { PlayerId } from "./IdTypes/PlayerId";
+import { Turn } from "./Match/Turn";
+
 export type MatchData = {
+    matchLog: Turn[],
     fanFactor?: {
         home: string;
         away: string;
@@ -13,7 +17,7 @@ export type MatchData = {
     };
     playerData: {
         [key: string]: {
-            playerId: string;
+            playerId: PlayerId;
             teamId: string;
             yardsMoved: number;
             yardsMovedWithBall: number;
@@ -56,6 +60,7 @@ export type MatchData = {
             pushFollowUps: number;
             // receiving blocks
             timesPushed: number;
+            timesRemovedFromPlay: number;
         };
     }
 }

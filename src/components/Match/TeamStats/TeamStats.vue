@@ -9,30 +9,24 @@
       
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
 import { Roster } from "@/types/BaseTags/Roster";
-import { EndGame } from "@/types/BaseTags/EndGame";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
-import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
+import { useDataStore } from "@/store/dataStore";
+import { PlayerResult } from "@/types/Results/PlayerResult";
+
+const dataStore = useDataStore();
 
 const props = defineProps({
-  team: { type: String, required: true },
-  notificationGameJoined: { type: Object, required: true },
-  rosters: { type: Object, required: true },
-  endGame: { type: Object, required: true },
+  team: { type: String, required: true }
 });
 
 const team = ref<number>(parseInt(props.team));
+const roster = ref<Roster>(dataStore.rosters?.TeamRoster[team.value] as Roster);
 
-const notificationGameJoined = ref<NotificationGameJoined>(
-  props.notificationGameJoined as NotificationGameJoined
-);
-const roster = ref<Roster>(props.rosters.TeamRoster[team.value] as Roster);
-const endGame = ref<EndGame>(props.endGame as EndGame);
 
 const mvp = computed(() => {
-  return endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
-    (player) => player.Mvp
+  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
+    (player: PlayerResult) => player.Mvp
   )[0];
 });
 

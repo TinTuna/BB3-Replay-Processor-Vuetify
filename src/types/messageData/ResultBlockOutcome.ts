@@ -1,3 +1,4 @@
+import { PlayerId } from "../IdTypes/PlayerId";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 
@@ -16,7 +17,7 @@ export type ResultBlockOutcome = {
         X: XPos;
       };
       Resolution: string;
-      PushedPlayerId: string;
+      PushedPlayerId: PlayerId;
     }[];
   };
   Follow: "0" | "1";

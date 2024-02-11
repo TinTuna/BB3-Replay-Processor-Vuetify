@@ -5,7 +5,7 @@
     </v-select>
 
     <!-- Statline -->
-    <div v-if="selectedPlayer.id != '0'">
+    <div>
       <v-row>
         <v-col cols="12" md="6">
           <v-card>
@@ -65,23 +65,21 @@
       
       
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
-import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
+import { computed, ref } from "vue";
 import { Roster } from "@/types/BaseTags/Roster";
-import { EndGame } from "@/types/BaseTags/EndGame";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
-import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
 import { useDataStore } from "@/store/dataStore";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 
 const dataStore = useDataStore();
 
 const props = defineProps({
-  team: { type: String, required: true },
-  notificationGameJoined: { type: Object, required: true },
-  rosters: { type: Object, required: true },
-  endGame: { type: Object, required: true },
+  team: { type: String, required: true }
 });
+
+const team = ref<number>(parseInt(props.team));
+
+const roster = ref<Roster>(dataStore.rosters?.TeamRoster[team.value] as Roster);
 
 const listPlayers = computed(() => {
   return roster.value.Players.PlayerData.map((player) => {
@@ -92,30 +90,19 @@ const listPlayers = computed(() => {
   });
 });
 
-const team = ref<number>(parseInt(props.team));
-const selectedPlayer = ref({
-  id: "0",
-  name: "",
-} as { id: string; name: string });
+const selectedPlayer = ref(listPlayers.value[0]);
 
-
-const notificationGameJoined = ref<NotificationGameJoined>(
-  props.notificationGameJoined as NotificationGameJoined
-);
-const roster = ref<Roster>(props.rosters.TeamRoster[team.value] as Roster);
-const endGame = ref<EndGame>(props.endGame as EndGame);
-
-const playerData = computed(() => {
+const playerMatchData = computed(() => {
   return dataStore.matchData?.playerData?.[selectedPlayer.value.id];
 });
 const playerName = computed(() => {
-  return selectedPlayer.value.name;
+  return dataStore.getPlayerName(selectedPlayer.value.id);
 });
 
 const playerStats = computed(() => {
   const stats = [];
-  if (playerData.value) {
-    for (const [key, value] of Object.entries(playerData.value)) {
+  if (playerMatchData.value) {
+    for (const [key, value] of Object.entries(playerMatchData.value)) {
       // check if value is an object with sub-values
       if (typeof value === "object") {
         for (const [subKey, subValue] of Object.entries(value)) {
@@ -140,12 +127,6 @@ const headers = [
   { title: "Stat", value: "stat", align: "center", width: "50%"},
   { title: "Value", value: "value", align: "center", width: "50%"},
 ] as unknown as any[];
-
-
-
-onMounted(() => {
-  selectedPlayer.value = listPlayers.value[0];
-});
 
 </script>
         

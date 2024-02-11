@@ -1,17 +1,17 @@
 <template>
   <v-card>
     <v-tabs v-model="tab" color="primary" align-tabs="center">
-      <v-tab value="home">{{ notificationGameJoined.GameInfos.GamersInfos.GamerInfos[0].Roster.Name }}</v-tab>
-      <v-tab value="away">{{ notificationGameJoined.GameInfos.GamersInfos.GamerInfos[1].Roster.Name }}</v-tab>
+      <v-tab value="home">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name }}</v-tab>
+      <v-tab value="away">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[1].Roster.Name }}</v-tab>
     </v-tabs>
 
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="home">
-          <TeamStats team="0" :notification-game-joined="notificationGameJoined" :rosters="rosters" :end-game="endGame" />
+          <TeamStats team="0" />
         </v-window-item>
         <v-window-item value="away">
-          <TeamStats team="1" :notification-game-joined="notificationGameJoined" :rosters="rosters" :end-game="endGame" />
+          <TeamStats team="1" />
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -31,25 +31,16 @@ import { EndGame } from "@/types/BaseTags/EndGame";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
 import TeamStats from "@/components/Match/TeamStats/TeamStats.vue";
+import { useDataStore } from "@/store/dataStore";
+
+const dataStore = useDataStore();
 
 const tab = ref<string>("home");
 
-const props = defineProps({
-  notificationGameJoined: { type: Object, required: true },
-  rosters: { type: Object, required: true },
-  endGame: { type: Object, required: true },
-});
-
-const notificationGameJoined = ref<NotificationGameJoined>(
-  props.notificationGameJoined as NotificationGameJoined
-);
-const rosters = ref<Rosters>(props.rosters as Rosters);
-const endGame = ref<EndGame>(props.endGame as EndGame);
-
 const headers = [
   { title: 'Stat', key: 'stat', align: 'center', width: '50%' },
-  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
-  { title: notificationGameJoined.value.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
+  { title: dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
+  { title: dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
 ] as unknown as any[];
 
 const teamStats = computed(() => {
@@ -57,8 +48,8 @@ const teamStats = computed(() => {
   // Touchdowns
   const touchdowns = {
     stat: 'Touchdowns',
-    home: endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.TouchdownsBeforeConcede || 0,
-    away: endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.TouchdownsBeforeConcede || 0
+    home: dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.TouchdownsBeforeConcede || 0,
+    away: dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.TouchdownsBeforeConcede || 0
   }
   stats.push(touchdowns)
   // Blocks attempted / succeeded

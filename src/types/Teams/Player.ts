@@ -1,4 +1,6 @@
+import { PlayerId } from "../IdTypes/PlayerId";
 import { PlayerIdType } from "../IdTypes/PlayerIdTypes";
+import { SkillId } from "../IdTypes/SkillId";
 import { Characteristic } from "./Characteristic";
 
 export type Player = {
@@ -14,10 +16,10 @@ export type Player = {
   };
   Dead: string;
   Experience: string;
-  Id: string;
+  Id: PlayerId;
   IdPlayerTypes: PlayerIdType;
   InnateSkills: {
-    InnateSkillsItem: string;
+    InnateSkillsItem: SkillId;
   };
   Level: string;
   ListCasualties: {};

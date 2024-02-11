@@ -2,7 +2,7 @@
   <v-container>
     <h2>
       {{
-        notificationGameJoined.GameInfos.GamersInfos.GamerInfos[team].Roster
+        dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Roster
           .Name
       }}
     </h2>
@@ -10,7 +10,7 @@
       {{ teamRace }}
     </h4>
     <h4 class="ma-1">
-      {{ notificationGameJoined.GameInfos.GamersInfos.GamerInfos[team].Name }}
+      {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
     </h4>
     <v-divider class="my-3" thickness="2" />
     <v-data-table
@@ -36,36 +36,24 @@ import { Roster } from "@/types/BaseTags/Roster";
 import { EndGame } from "@/types/BaseTags/EndGame";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
+import { useDataStore } from "@/store/dataStore";
+import { Player } from "@/types/Teams/Player";
+import { PlayerResult } from "@/types/Results/PlayerResult";
 
 const props = defineProps({
-  team: { type: String, required: true },
-  notificationGameJoined: { type: Object, required: true },
-  rosters: { type: Object, required: true },
-  endGame: { type: Object, required: true },
+  team: { type: String, required: true }
 });
+
+const dataStore = useDataStore();
 
 const team = ref(parseInt(props.team));
-
-const notificationGameJoined = ref<NotificationGameJoined>(
-  props.notificationGameJoined as NotificationGameJoined
-);
-
-const roster = ref<Roster>(props.rosters.TeamRoster[team.value] as Roster);
-
-const endGame = ref<EndGame>(props.endGame as EndGame);
+const roster = ref<Roster>(dataStore.rosters?.TeamRoster[team.value] as Roster);
 
 const mvp = computed(() => {
-  return endGame.value.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
-    (player) => player.Mvp
+  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
+    (player: PlayerResult) => player.Mvp
   )[0];
 });
-
-// const headers = [
-//   { title: "Number", key: "number", align: "center" },
-//   { title: "Name", key: "name", align: "center" },
-//   { title: "Position", key: "position", align: "center" },
-//   { title: "MVP", key: "mvp", align: "center" },
-// ];
 
 const teamRace = computed(() => {
   return getIdTeamRace(roster.value.Team.IdRace);

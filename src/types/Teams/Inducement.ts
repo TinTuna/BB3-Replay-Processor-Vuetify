@@ -1,4 +1,4 @@
-import { SkillsItemType } from "../IdTypes/SkillsItemTypes";
+import { SkillId } from "../IdTypes/SkillId";
 import { PlayerIdType } from "../IdTypes/PlayerIdTypes";
 import { Characteristic } from "./Characteristic";
 
@@ -14,7 +14,7 @@ export type Inducement = {
       Customization: {};
       IdPlayerTypes: PlayerIdType;
       InnateSkills: {
-        InnateSkillsItem: SkillsItemType[];
+        InnateSkillsItem: SkillId[];
       };
       Level: string;
       Name: string;

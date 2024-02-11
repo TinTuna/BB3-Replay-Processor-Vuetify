@@ -13,23 +13,21 @@
         <v-card-text class="pa-0 ma-0">
           <v-window v-model="tab">
             <v-window-item value="overview">
-              <Overview :notification-game-joined="notificationGameJoined" :rosters="rosters" :end-game="endGame" />
+              <Overview />
             </v-window-item>
             <!-- Match -->
             <v-window-item value="match">
               <v-container>
-                Currently Unavailable
+                <MatchLog />
               </v-container>
             </v-window-item>
             <!-- Team Stats -->
             <v-window-item value="teamstats">
-              <TeamStatsWrapper :notification-game-joined="notificationGameJoined" :rosters="rosters"
-                :end-game="endGame" />
+              <TeamStatsWrapper />
             </v-window-item>
             <!-- Player Stats -->
             <v-window-item value="playerstats">
-              <PlayerStatsWrapper :notification-game-joined="notificationGameJoined" :rosters="rosters"
-                :end-game="endGame" />
+              <PlayerStatsWrapper />
             </v-window-item>
             <!-- Dice Stats -->
             <v-window-item value="dicestats">
@@ -55,6 +53,7 @@ import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined"
 import Overview from "@/components/Match/Overview.vue";
 import TeamStatsWrapper from "@/components/Match/TeamStats/TeamStatsWrapper.vue";
 import PlayerStatsWrapper from "@/components/Match/PlayerStats/PlayerStatsWrapper.vue";
+import MatchLog from "@/components/Match/MatchLog/MatchLog.vue";
 import { processReplaySteps } from "@/composables/matchProcessingFunctions/processReplaySteps";
 import { useDataStore } from "@/store/dataStore";
 
@@ -70,15 +69,15 @@ const processedReplay = ref<Document>(props.processedReplay);
 
 const NotificationGameJoinedElement =
   processedReplay.value.getElementsByTagName("NotificationGameJoined");
-const notificationGameJoined = elementToJson(
+dataStore.notificationGameJoined = elementToJson(
   NotificationGameJoinedElement[0]
 ) as NotificationGameJoined;
 
 const rostersElement = processedReplay.value.getElementsByTagName("Rosters");
-const rosters = elementToJson(rostersElement[0]) as Rosters;
+dataStore.rosters = elementToJson(rostersElement[0]) as Rosters;
 
 const endGameElement = processedReplay.value.getElementsByTagName("EndGame");
-const endGame = elementToJson(endGameElement[0]) as EndGame;
+dataStore.endGame = elementToJson(endGameElement[0]) as EndGame;
 
 const replayStepsElements =
   processedReplay.value.getElementsByTagName("ReplayStep");
@@ -92,6 +91,9 @@ for (let i = 0; i < replayStepsElements.length; i++) {
 
 dataStore.matchData = processReplaySteps(replaySteps.value as ReplayStep[])
 
+// process team data into dataStore
+dataStore.setTeamData();
+
 </script>
   
-<style scoped></style>@/composables/initialisationHelperFns/elementToJson
+<style scoped></style>

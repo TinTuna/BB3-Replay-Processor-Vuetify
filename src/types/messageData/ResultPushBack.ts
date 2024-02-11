@@ -1,3 +1,4 @@
+import { PlayerId } from "../IdTypes/PlayerId";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 
@@ -11,5 +12,5 @@ export type ResultPushBack = {
     X: XPos;
   };
   Resolution: string;
-  PushedPlayerId: string;
+  PushedPlayerId: PlayerId;
 };

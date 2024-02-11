@@ -1,3 +1,5 @@
+import { PlayerId } from "../IdTypes/PlayerId";
+import { SkillId } from "../IdTypes/SkillId";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 
@@ -10,9 +12,9 @@ export type PlayerStep = {
     X: XPos;
     Y: YPos;
   };
-  PlayerId: string;
+  PlayerId: PlayerId;
   Probability: string;
-  Skill: string;
+  Skill: SkillId;
   State: string;
   StepType: string;
   TargetId: string;

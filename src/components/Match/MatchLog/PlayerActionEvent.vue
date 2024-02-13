@@ -4,9 +4,6 @@
             playerAction.playerId }}</v-card-title>
         <v-card-text>
             <v-card class="ma-2 pa-0">
-                <v-card-text>
-                    Moved Spaces: {{ playerAction.spacesMoved || "0" }}
-                </v-card-text>
             </v-card>
         </v-card-text>
     </v-card>

@@ -11,6 +11,7 @@ import { PlayerId } from "../IdTypes/PlayerId";
 import { SkillId } from "../IdTypes/SkillId";
 import { KickoffIds } from "../IdTypes/KickoffIds";
 import { PrayerIds } from "../IdTypes/PrayerIds";
+import { EndTurnReasons } from "../IdTypes/EndTurnReasons";
 
 export type ReplayStep = {
   BoardState: BoardState;
@@ -23,8 +24,8 @@ export type ReplayStep = {
     ActiveGamer: "0" | "1";
   };
   EventKickingChoice: {
-    Receive: "0" | "1";
-    Kick: "0" | "1";
+    Receive: undefined | "1";
+    GamerId: undefined | "1";
   };
   EventSetupMovePitchPlayer: {
     NewPosition: {
@@ -58,7 +59,7 @@ export type ReplayStep = {
     }
   }
   EventEndTurn: {
-    Reason: string;
+    Reason: EndTurnReasons;
     FinishingTurnType: EndTurnTypes;
     NextPlayingGamer: "0" | "1";
   };

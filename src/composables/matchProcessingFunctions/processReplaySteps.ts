@@ -62,7 +62,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   });
 
   const matchData: MatchData = {
-    matchLog: [] as Turn[], 
+    matchLog: [] as Turn[],
     playerData: {},
   };
 
@@ -127,12 +127,17 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
   let gamePhase: GamePhase = "0";
 
+  let turnNumber = 1;
+
   let currentTurn: Turn = {
     team: "0",
     turn: 1,
     turnActions: [],
   };
-  let currentTurnAction: TurnAction;
+  let currentTurnAction: TurnAction = {
+    turnActionEvents: [],
+    actionsTaken: {},
+  };
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
     // Process step by game phase
@@ -185,11 +190,13 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
       // If the step has EventKickingChoice, a player has chosen to kick or receive
       if (step.EventKickingChoice) {
-        // kick or receive: true = kick, false = receive
-        const kick = step.EventKickingChoice.Kick === "1";
+        // GamerId tells us who picks, Receive tells us if they're receiving
+        const receive = step.EventKickingChoice.Receive === "1";
         // home or away choice: true = home, false = away
-        const selection = step.EventActiveGamerChanged.NewActiveGamer != "1";
-        const firstHalfKick = kick ? (selection ? 0 : 1) : selection ? 1 : 0;
+        const selection = step.EventKickingChoice.GamerId === "1";
+        // if receive is true, the team that selected is the receiving team
+        const firstHalfKick = receive ? selection ? 1 : 0 : (selection ? 0 : 1);
+
         matchData.kickoff = {
           firstHalfKick: firstHalfKick,
           secondHalfKick: firstHalfKick === 0 ? 1 : 0,
@@ -331,6 +338,22 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "5") {
       // Game phase 5 general match play, it is the most common and complex phase
 
+      // Work out who, if anyone, has the ball
+      let hasBall: string | null = null;
+      if (step.BoardState.Ball.IsHeld === "1") {
+        step.BoardState.ListTeams.TeamState.forEach((team) => {
+          team.ListPitchPlayers.PlayerState.forEach((player) => {
+            if (
+              (player.Cell?.X || "0") ===
+                (step.BoardState.Ball.Cell?.X || "0") &&
+              (player.Cell?.Y || "0") === (step.BoardState.Ball.Cell?.Y || "0")
+            ) {
+              hasBall = player.Id;
+            }
+          });
+        });
+      }
+
       // If EventExecuteSequence then it's a player or board action
       if (step.EventExecuteSequence) {
         // We need to loop over the sequence and process each StepResult
@@ -352,12 +375,65 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
               return;
             }
 
+            if (!matchData.playerData[stepMessageData.PlayerId]) {
+              matchData.playerData[stepMessageData.PlayerId] = {
+                playerId: stepMessageData.PlayerId as PlayerId,
+                teamId: currentTurn.team,
+                // movement stats
+                yardsMoved: 0,
+                yardsMovedWithBall: 0,
+                // passing stats
+                passesAttempted: {
+                  handoff: 0,
+                  short: 0,
+                  long: 0,
+                  longBomb: 0,
+                },
+                passesCompleted: {
+                  handoff: 0,
+                  short: 0,
+                  long: 0,
+                  longBomb: 0,
+                },
+                passesCaught: 0,
+                passesDropped: 0,
+                passesIntercepted: 0,
+                // blocking stats
+                blocksAttempted: 0,
+                blockDiceRolled: {
+                  attackerDown: 0,
+                  bothDown: 0,
+                  push: 0,
+                  defenderStumbles: 0,
+                  defenderDown: 0,
+                },
+                blockDiceTaken: {
+                  attackerDown: 0,
+                  bothDown: 0,
+                  push: 0,
+                  defenderStumbles: 0,
+                  defenderDown: 0,
+                },
+                blockingRerollsUsed: {
+                  team: 0,
+                  pro: 0,
+                  brawler: 0,
+                },
+                assistsReceived: 0,
+                pushFollowUps: 0,
+                // receiving blocks
+                timesPushed: 0,
+                timesRemovedFromPlay: 0,
+              };
+            }
+
             // Check if the current turnAction is still for the same player
             if (!currentTurnAction) {
               // This is the first turnAction so create a new one
               currentTurnAction = {
                 playerId: stepMessageData.PlayerId,
                 turnActionEvents: [],
+                actionsTaken: {},
               };
             } else {
               // Check if the current turnAction is still for the same player
@@ -367,6 +443,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 currentTurnAction = {
                   playerId: stepMessageData.PlayerId,
                   turnActionEvents: [],
+                  actionsTaken: {},
                 };
               }
             }
@@ -392,26 +469,35 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 case "ResultMoveOutcome": {
                   // The player has moved from one cell to another
 
+                  // add move data to the matchData
                   matchData.playerData[
                     stepMessageData.PlayerId
                   ].yardsMoved += 1;
-                  // question whether the player has the ball
-                  step.BoardState.ListTeams.TeamState.forEach((team) => {
-                    team.ListPitchPlayers.PlayerState.forEach((player) => {
-                      if (player.Id === stepMessageData.PlayerId) {
-                        if (
-                          (player.Cell?.X || "0") ===
-                            (step.BoardState.Ball.Cell?.X || "0") &&
-                          (player.Cell?.Y || "0") ===
-                            (step.BoardState.Ball.Cell?.Y || "0")
-                        ) {
-                          matchData.playerData[
-                            player.Id
-                          ].yardsMovedWithBall += 1;
-                        }
-                      }
-                    });
-                  });
+
+                  // Add move data to the currentTurnAction
+                  currentTurnAction.actionsTaken.yardsMoved
+                    ? (currentTurnAction.actionsTaken.yardsMoved += 1)
+                    : (currentTurnAction.actionsTaken.yardsMoved = 1);
+
+                  // If the player has the ball, we need to track the yards moved with the ball
+                  if (stepMessageData.PlayerId === hasBall) {
+                    matchData.playerData[
+                      stepMessageData.PlayerId
+                    ].yardsMovedWithBall += 1;
+                  }
+
+                  // We can work out from the StepMessageData where the player moved from and to, and if it was into an endzone
+                  // the tochdown endzones are X: 0 and X: 25, we can work out which end they need to be in from the currentTurn.team
+                  const touchdownEnd = currentTurn.team === "0" ? "25" : "0";
+                  currentTurn.touchdown =
+                    stepMessageData.CellTo.X === '0'  || stepMessageData.CellTo.X === '25';
+
+                  // Add touchdown data to the currentTurnAction
+                  if (currentTurn.touchdown) {
+                    currentTurnAction.actionsTaken.touchdownsScored
+                      ? (currentTurnAction.actionsTaken.touchdownsScored += 1)
+                      : (currentTurnAction.actionsTaken.touchdownsScored = 1);
+                  }
                   break;
                 }
                 case "QuestionBlockDice": {
@@ -581,7 +667,14 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // so lets grab the player data from the Id instead
                   const pushedPlayerData =
                     matchData.playerData[resultMessageData.PushedPlayerId];
-                  pushedPlayerData.timesPushed += 1;
+                  if (!pushedPlayerData) {
+                    console.log(
+                      "Player not found in matchData",
+                      resultMessageData.PushedPlayerId
+                    );
+                  } else {
+                    pushedPlayerData.timesPushed += 1;
+                  }
                   break;
                 }
                 case "ResultBlockOutcome": {
@@ -681,16 +774,34 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         });
       }
 
-      // If the step has EventEndTurn, it's the end of a turn
       if (step.EventEndTurn) {
+        // If the step has EventEndTurn, it's the end of a turn
         // This is the end of a turn
+
+        // add the current turn action to the current turn
+        if (currentTurnAction?.playerId) {
+          currentTurn.turnActions.push(currentTurnAction);
+          currentTurnAction = {
+            turnActionEvents: [],
+            actionsTaken: {},
+          };
+        }
+
         // add the Turn to the list of match turns and start a new turn
         matchData.matchLog.push(currentTurn);
 
+        turnNumber += 1;
+
+        // check if the half is over, if so swap the kickoff team
+        if (turnNumber === 18) {
+          // swap the kickoff team
+          currentTurn.team = currentTurn.team === "0" ? "1" : "0";
+        }
+
         // Setup a new turn for the next team
         currentTurn = {
-          team: step.EventEndTurn.NextPlayingGamer,
-          turn: currentTurn.turn + 1,
+          team: currentTurn.team === "0" ? "1" : "0",
+          turn: Math.ceil(turnNumber / 2),
           turnActions: [],
         };
       }

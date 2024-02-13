@@ -5,8 +5,8 @@ import { Player } from "../Teams/Player";
 export type PlayerState = {
   CanAct: string;
   Cell: {
-    Y: XPos;
-    X: YPos;
+    Y: YPos;
+    X: XPos;
   };
   Data: Player;
   Effects: {};

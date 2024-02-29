@@ -1,9 +1,11 @@
 <template>
-    <v-card>
+    <v-row>
         <template v-for="playerAction in logEntry.turnActions" :key="`${playerAction.playerId}-${logEntry.turn}`">
-            <PlayerAction :player-action-prop="playerAction" :log-entry-prop="logEntry" />
+            <v-col v-if="playerAction.playerId" cols="12" md="3">
+                <PlayerAction :player-action-prop="playerAction" :log-entry-prop="logEntry" />
+            </v-col>
         </template>
-    </v-card>
+    </v-row>
 </template>
       
       
@@ -14,7 +16,6 @@ import { ref } from "vue";
 import PlayerAction from "./PlayerAction.vue";
 
 const dataStore = useDataStore();
-
 
 const props = defineProps({
     logEntryProp: { type: Object, required: true }

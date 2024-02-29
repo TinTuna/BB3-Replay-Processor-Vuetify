@@ -1,11 +1,15 @@
 <template>
-    <v-card>
-        <v-card-title>{{ playerAction.playerId ? dataStore.getPlayerName(playerAction.playerId) :
-            playerAction.playerId }}</v-card-title>
+    <v-card :title="playerName" :subtitle="playerType" class="my-3">
         <v-card-text>
             <v-row>
                 <v-col v-for="(value, key) in playerActions" :key="key">
-                    {{ value[0] }}: {{ value[1] }}
+                    <v-tooltip :text="value[2].toString()" location="bottom">
+                        <template v-slot:activator="{ props }">
+                            <v-chip v-bind="props" :prepend-icon="value[0].toString()">
+                                {{ value[1] }}
+                            </v-chip>
+                        </template>
+                    </v-tooltip>
                 </v-col>
             </v-row>
         </v-card-text>
@@ -31,27 +35,34 @@ const props = defineProps({
 const logEntry = ref<Turn>(props.logEntryProp as Turn);
 const playerAction = ref<TurnAction>(props.playerActionProp as TurnAction);
 
+const playerName = computed(() => {
+    return dataStore.getPlayerName(playerAction.value.playerId || "");
+});
+
+const playerData = computed(() => {
+    return dataStore.getPlayerData(playerAction.value.playerId || "");
+});
+
+const playerType = computed(() => {
+    return dataStore.getPlayerType(playerData.value.IdPlayerTypes || "");
+});
+
 const playerActions = computed(() => {
     return Object.entries(playerAction.value.actionsTaken || {}).map((value) => {
         if (value[0] === "yardsMoved") {
-            return ["Yards moved", value[1] ];
+            return ["mdi-run", value[1], `${value[1]} Yard${value[1] > 1 ? 's' : ''} moved`];
         }
         if (value[0] === "blocksAttempted") {
-            return ["Blocks attempted", value[1] ];
-        }
-        if (value[0] === "blocksSucceeded") {
-            return ["Blocks succeeded", value[1] ];
+            return ["mdi-shield", value[1], `${value[1]} Block${value[1] > 1 ? 's' : ''} attempted`];
         }
         if (value[0] === "injuriesInflicted") {
-            return ["Injuries inflicted", value[1] ];
+            return ["mdi-hospital-box", value[1], `${value[1]} Injurie${value[1] > 1 ? 's' : ''} inflicted`];
         }
         if (value[0] === "touchdownsScored") {
-            return ["Touchdowns scored", value[1] ];
+            return ["mdi-football", value[1], `Touchdown scored`];
         }
-        return value;
+        return ["mdi-alert", value[1], `Unknown action: ${value[0]}`];
     });
-
-
 });
 
 

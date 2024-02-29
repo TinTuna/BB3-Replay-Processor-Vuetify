@@ -34,7 +34,7 @@
                         </v-tooltip>
                     </div>
                 </v-expansion-panel-title>
-                <v-expansion-panel-text>
+                <v-expansion-panel-text :class="logEntry.team === '0' ? 'bg-red-lighten-4' : 'bg-blue-lighten-4'">
                     <Turn :log-entry-prop="logEntry" />
                 </v-expansion-panel-text>
             </v-expansion-panel>

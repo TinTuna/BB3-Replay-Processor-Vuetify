@@ -1,7 +1,9 @@
 // Utilities
+import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { EndGame } from "@/types/BaseTags/EndGame";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
 import { Roster, Rosters } from "@/types/BaseTags/Roster";
+import { PlayerIdType } from "@/types/IdTypes/PlayerIdTypes";
 import { MatchData } from "@/types/MatchData";
 import { Player } from "@/types/Teams/Player";
 import { defineStore } from "pinia";
@@ -49,6 +51,9 @@ export const useDataStore = defineStore("data", () => {
   const getTeamData = (teamId: string) => {
     return teamData.value[teamId] || {};
   };
+  const getPlayerType = (playerTypeId: PlayerIdType) => {
+    return getIdPlayerType(playerTypeId);
+  }
 
   return {
     notificationGameJoined,
@@ -60,5 +65,6 @@ export const useDataStore = defineStore("data", () => {
     getPlayerData,
     getTeamName,
     getTeamData,
+    getPlayerType
   };
 });

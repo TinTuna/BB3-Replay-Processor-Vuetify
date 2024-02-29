@@ -195,7 +195,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         // home or away choice: true = home, false = away
         const selection = step.EventKickingChoice.GamerId === "1";
         // if receive is true, the team that selected is the receiving team
-        const firstHalfKick = receive ? selection ? 1 : 0 : (selection ? 0 : 1);
+        const firstHalfKick = receive ? (selection ? 1 : 0) : selection ? 0 : 1;
 
         matchData.kickoff = {
           firstHalfKick: firstHalfKick,
@@ -376,6 +376,8 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
             }
 
             if (!matchData.playerData[stepMessageData.PlayerId]) {
+              // A star player?
+
               matchData.playerData[stepMessageData.PlayerId] = {
                 playerId: stepMessageData.PlayerId as PlayerId,
                 teamId: currentTurn.team,
@@ -490,7 +492,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // the tochdown endzones are X: 0 and X: 25, we can work out which end they need to be in from the currentTurn.team
                   const touchdownEnd = currentTurn.team === "0" ? "25" : "0";
                   currentTurn.touchdown =
-                    stepMessageData.CellTo.X === '0'  || stepMessageData.CellTo.X === '25';
+                    stepMessageData.CellTo.X === touchdownEnd; //|| stepMessageData.CellTo.X === '25';
 
                   // Add touchdown data to the currentTurnAction
                   if (currentTurn.touchdown) {
@@ -572,6 +574,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   matchData.playerData[
                     stepMessageData.PlayerId
                   ].assistsReceived += assists;
+
+                  // Add block data to the currentTurnAction
+                  currentTurnAction.actionsTaken.blocksAttempted
+                    ? (currentTurnAction.actionsTaken.blocksAttempted += 1)
+                    : (currentTurnAction.actionsTaken.blocksAttempted = 1);
                   break;
                 }
                 case "QuestionPushBack": {
@@ -654,6 +661,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                       break;
                     }
                   }
+
                   break;
                 }
                 case "ResultPushBack": {
@@ -716,6 +724,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // const resultMessageData = xmlToJson(message.MessageData)
                   //   .ResultInjuryRoll as ResultInjuryRoll;
 
+                  // Add ResultInjuryRoll data to the currentTurnAction
+                  currentTurnAction.actionsTaken.blocksSucceeded
+                    ? (currentTurnAction.actionsTaken.blocksSucceeded += 1)
+                    : (currentTurnAction.actionsTaken.blocksSucceeded = 1);
+
                   break;
                 }
                 case "ResultCasualtyRoll": {
@@ -725,6 +738,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // // Not yet used so commenting to save computation
                   // const resultMessageData = xmlToJson(message.MessageData)
                   //   .ResultCasualtyRoll as ResultCasualtyRoll;
+
+                  // Add ResultCasualtyRoll data to the currentTurnAction
+                  currentTurnAction.actionsTaken.injuriesInflicted
+                    ? (currentTurnAction.actionsTaken.injuriesInflicted += 1)
+                    : (currentTurnAction.actionsTaken.injuriesInflicted = 1);
 
                   break;
                 }

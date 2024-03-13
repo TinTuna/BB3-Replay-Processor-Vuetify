@@ -492,13 +492,12 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // the tochdown endzones are X: 0 and X: 25, we can work out which end they need to be in from the currentTurn.team
                   const touchdownEnd = currentTurn.team === "0" ? "25" : "0";
                   currentTurn.touchdown =
-                    stepMessageData.CellTo.X === touchdownEnd; //|| stepMessageData.CellTo.X === '25';
+                    stepMessageData.CellTo.X === touchdownEnd;
 
                   // Add touchdown data to the currentTurnAction
                   if (currentTurn.touchdown) {
-                    currentTurnAction.actionsTaken.touchdownsScored
-                      ? (currentTurnAction.actionsTaken.touchdownsScored += 1)
-                      : (currentTurnAction.actionsTaken.touchdownsScored = 1);
+                    currentTurn.touchdownScorer = stepMessageData.PlayerId;
+                    currentTurnAction.actionsTaken.touchdownScored = true;
                   }
                   break;
                 }
@@ -881,6 +880,5 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     }
   }
 
-  console.log(replaySteps);
   return matchData;
 };

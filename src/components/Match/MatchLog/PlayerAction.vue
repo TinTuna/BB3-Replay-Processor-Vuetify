@@ -1,11 +1,20 @@
 <template>
-    <v-card :title="playerName" :subtitle="playerType" class="my-3">
+    <v-card :subtitle="playerType" class="my-3" @click.stop="drilldown">
+        <template v-slot:title>
+            <v-icon color="primary" size="large" style="margin-right: -7px">
+                {{ `mdi-numeric-${playerData.Number[0]}-box` }}
+            </v-icon>
+            <v-icon v-if="playerData.Number[1]" color="primary" size="large" style="margin-left: -7px">
+                {{ `mdi-numeric-${playerData.Number[1]}-box` }}
+            </v-icon>
+            <div class="d-inline pl-2">{{ playerName }}</div>
+        </template>
         <v-card-text>
             <v-row>
                 <v-col v-for="(value, key) in playerActions" :key="key">
                     <v-tooltip :text="value.tooltip" location="bottom">
                         <template v-slot:activator="{ props }">
-                            <v-chip v-bind="props">
+                            <v-chip size="large" v-bind="props">
                                 {{ value.value }}
 
                                 <template v-slot:prepend>
@@ -122,7 +131,7 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                 primaryIconColour: "error"
             };
         }
-        if (value[0] === "touchdownsScored") {
+        if (value[0] === "touchdownScored") {
             return {
                 icon: "mdi-football",
                 value: '',
@@ -135,9 +144,14 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
             value: value[1].toString(),
             tooltip: `Unknown action: ${value[0]}`
         };
+
+
     });
 });
 
+const drilldown = () => {
+    /// drilldown to player page
+}
 
 </script>
 

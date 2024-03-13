@@ -1,11 +1,10 @@
 <template>
     <v-container>
-        <MatchTimeline />
-        <v-expansion-panels variant="accordion">
-            <v-expansion-panel v-for="logEntry in dataStore.matchData?.matchLog" :key="logEntry.turn">
+        <MatchTimeline :drilldown="handleDrilldown" />
+        <v-expansion-panels variant="accordion" v-model="matchPanels">
+            <v-expansion-panel v-for="logEntry in dataStore.matchData?.matchLog" :key="logEntry.turn" :id="`turn-${logEntry.turn}-${logEntry.team}`">
                 <v-expansion-panel-title :color="logEntry.team === '0' ? 'red-lighten-2' : 'blue-lighten-2'">
-                    Turn {{ logEntry.turn }} - {{ logEntry.team === "0" ? dataStore.getTeamName("0") :
-                        dataStore.getTeamName("1") }}
+                    Turn {{ logEntry.turn }} - {{ dataStore.getTeamName(logEntry.team) }}
                     <v-spacer />
                     <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover"
                         class="px-2 py-1 mr-5" style="background-color: white; border-radius: 3px;">
@@ -46,9 +45,26 @@
 <script lang="ts" setup>
 import { useDataStore } from "@/store/dataStore";
 import Turn from "./Turn.vue";
-import MatchTimeline from "./MatchTimeline.vue";
+import MatchTimeline, { Event } from "./MatchTimeline.vue";
+import { ref } from "vue";
 
 const dataStore = useDataStore();
+
+const matchPanels = ref<number>();
+
+const handleDrilldown = (event: Event) => {
+    // open the coresponding expansion panel
+    if (event.drilldown?.turn) {
+        // check if the turn was played by this team, if not its the next match log entry
+        const thisLogEntry = dataStore.matchData?.matchLog[(event.drilldown?.turn - 1) * 2].team === event.drilldown?.team
+        matchPanels.value = ((event.drilldown?.turn - 1) * 2) + (thisLogEntry ? 0 : 1);
+    }
+    // scroll to the open panel
+    const el = document.getElementById(`turn-${event.drilldown?.turn}-${event.drilldown?.team}`);
+    if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    }
+};
 
 </script>
         

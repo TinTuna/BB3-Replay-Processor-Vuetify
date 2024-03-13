@@ -1,11 +1,13 @@
+import { PlayerId } from "../IdTypes/PlayerId";
 import { TurnAction } from "./TurnAction";
 
 export type Turn = {
-    team: "0" | "1";
-    turn: number;
-    turnActions: TurnAction[];
-    touchdown?: boolean;
-    injury?: boolean;
-    death?: boolean;
-    turnover?: boolean;
-}
+  team: "0" | "1";
+  turn: number;
+  turnActions: TurnAction[];
+  touchdown?: boolean;
+  touchdownScorer?: PlayerId;
+  injury?: boolean;
+  death?: boolean;
+  turnover?: boolean;
+};

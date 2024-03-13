@@ -1,12 +1,14 @@
 <template>
   <v-container>
-    <v-data-table :items="teamRoster" :headers="headers" items-per-page="16" @click:row="handleClick">
-      <template #bottom></template>
-    </v-data-table>
+    <v-sheet border rounded elevation="1">
+      <v-data-table density="comfortable" :items="teamRoster" :headers="headers" items-per-page="16" @click:row="handleClick">
+        <template #bottom></template>
+      </v-data-table>
+    </v-sheet>
   </v-container>
 </template>
-      
-      
+
+
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { Roster } from "@/types/BaseTags/Roster";
@@ -31,19 +33,19 @@ const mvp = computed(() => {
 });
 
 const headers = [
-      { title: 'Number', key: 'number', align: 'center' },
-      { title: 'Name', key: 'name', align: 'center' },
-      { title: 'Position', key: 'position', align: 'center' },
-      { title: 'MA', key: 'ma', align: 'center' },
-      { title: 'ST', key: 'st', align: 'center' },
-      { title: 'AG', key: 'ag', align: 'center' },
-      { title: 'PA', key: 'pa', align: 'center' },
-      { title: 'AV', key: 'av', align: 'center' },
-      { title: 'Level', key: 'level', align: 'center' },
-      { title: 'SPP', key: 'spp', align: 'center' },
-      { title: 'Value', key: 'value', align: 'center' },
-      { title: 'MVP', key: 'mvp', align: 'center' },
-    ] as unknown as any[]
+  { title: 'Number', key: 'number', align: 'center' },
+  { title: 'Name', key: 'name', align: 'center' },
+  { title: 'Position', key: 'position', align: 'center' },
+  { title: 'MA', key: 'ma', align: 'center' },
+  { title: 'ST', key: 'st', align: 'center' },
+  { title: 'AG', key: 'ag', align: 'center' },
+  { title: 'PA', key: 'pa', align: 'center' },
+  { title: 'AV', key: 'av', align: 'center' },
+  { title: 'Level', key: 'level', align: 'center' },
+  { title: 'SPP', key: 'spp', align: 'center' },
+  { title: 'Value', key: 'value', align: 'center' },
+  { title: 'MVP', key: 'mvp', align: 'center' },
+] as unknown as any[]
 
 const teamRoster = computed(() => {
   return roster.value.Players.PlayerData.map((player) => {
@@ -79,5 +81,5 @@ const handleClick = (ev: any, x: any) => {
 }
 
 </script>
-        
+
 <style scoped></style>

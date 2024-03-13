@@ -12,23 +12,21 @@
     <h4 class="ma-1">
       {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
     </h4>
-    <v-divider class="my-3" thickness="2" />
-    <v-data-table
-      :items="teamRoster"
-      :headers="[
+    <v-spacer class="my-3" thickness="2" />
+    <v-sheet border rounded>
+      <v-data-table density="comfortable" :items="teamRoster" :headers="[
         { title: 'Number', key: 'number', align: 'center' },
         { title: 'Name', key: 'name', align: 'center' },
         { title: 'Position', key: 'position', align: 'center' },
         { title: 'MVP', key: 'mvp', align: 'center' },
-      ]"
-      items-per-page="16"
-    >
-      <template #bottom></template>
-    </v-data-table>
+      ]" items-per-page="16">
+        <template #bottom></template>
+      </v-data-table>
+    </v-sheet>
   </v-container>
 </template>
-  
-  
+
+
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
@@ -71,6 +69,5 @@ const teamRoster = computed(() => {
   });
 });
 </script>
-    
-<style scoped>
-</style>
+
+<style scoped></style>

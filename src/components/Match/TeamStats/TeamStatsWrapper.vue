@@ -1,8 +1,10 @@
 <template>
   <v-card>
     <v-tabs v-model="tab" color="primary" align-tabs="center">
-      <v-tab value="home">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name }}</v-tab>
-      <v-tab value="away">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[1].Roster.Name }}</v-tab>
+      <v-tab value="home">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name
+        }}</v-tab>
+      <v-tab value="away">{{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[1].Roster.Name
+        }}</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -15,14 +17,16 @@
         </v-window-item>
       </v-window>
     </v-card-text>
-
-    <v-data-table :items="teamStats" :headers="headers" items-per-page="16">
-      <template #bottom></template>
-    </v-data-table>
+    
+    <v-sheet border>
+      <v-data-table density="comfortable" :items="teamStats" :headers="headers" items-per-page="16">
+        <template #bottom></template>
+      </v-data-table>
+    </v-sheet>
   </v-card>
 </template>
-    
-    
+
+
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
@@ -39,7 +43,7 @@ const tab = ref<string>("home");
 
 const headers = [
   { title: 'Stat', key: 'stat', align: 'center', width: '50%' },
-  { title: dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%'},
+  { title: dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[0].Roster.Name, key: 'home', align: 'center', width: '25%' },
   { title: dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[1].Roster.Name, key: 'away', align: 'center', width: '25%' },
 ] as unknown as any[];
 
@@ -98,5 +102,5 @@ const teamStats = computed(() => {
 });
 
 </script>
-      
+
 <style scoped></style>

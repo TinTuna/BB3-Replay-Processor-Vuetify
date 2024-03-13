@@ -16,7 +16,7 @@
                         <v-tooltip text="Injury" location="bottom">
                             <template v-slot:activator="{ props }">
                                 <v-icon v-bind="props" v-if="logEntry.injury"
-                                    color="red">mdi-hospital-box-outline</v-icon>
+                                    color="red">mdi-hospital-box</v-icon>
                             </template>
                         </v-tooltip>
                         <v-tooltip text="Touchdown" location="bottom">

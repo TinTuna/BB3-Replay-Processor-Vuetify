@@ -123,11 +123,11 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                 secondaryIconColour: secondaryIconColour
             };
         }
-        if (value[0] === "injuriesInflicted") {
+        if (value[0] === "injuryInflicted") {
             return {
                 icon: "mdi-hospital-box",
-                value: value[1].toString(),
-                tooltip: `${value[1]} Injurie${value[1] as number > 1 ? 's' : ''} inflicted`,
+                value: '',
+                tooltip: `Injury inflicted - ${value[0]}`,
                 primaryIconColour: "error"
             };
         }

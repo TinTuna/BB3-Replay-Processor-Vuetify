@@ -15,7 +15,7 @@ export type ResultInjuryRoll = {
     }[];
   };
   Dice: {
-    Die: Die[];
+    Die: Die[] | Die;
   };
   Source: string;
   RollType: RollType;

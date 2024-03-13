@@ -67,7 +67,7 @@ const teamRoster = computed(() => {
       av: `${player.Characteristics.PlayerCharacteristic.find((charac) => charac.Characteristic === "4")?.Value}+`,
       level: player.Level,
       spp: player.Experience,
-      value: parseInt(player.Value).toLocaleString(),
+      value: `${parseInt(player.Value).toLocaleString()}gp`,
       mvp: mvp.value?.PlayerData.Id === player.Id ? "MVP" : "",
     };
   });

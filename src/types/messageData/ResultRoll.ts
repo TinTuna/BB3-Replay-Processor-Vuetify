@@ -5,7 +5,7 @@ export type ResultRoll = {
   Requirement: string;
   Modifiers: string;
   Dice: {
-    Die: Die;
+    Die: Die[] | Die;
   };
   Difficulty: string;
   RollType: string;

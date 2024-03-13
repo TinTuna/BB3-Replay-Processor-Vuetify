@@ -7,7 +7,7 @@ export type TurnAction = {
   actionsTaken: {
     yardsMoved?: number;
     blockAttempted?: 'attackerDown' | 'bothDown' | 'push' | 'defenderStumbles' | 'defenderDown';
-    injuriesInflicted?: number;
+    injuryInflicted?: string;
     touchdownScored?: boolean;
   };
 };

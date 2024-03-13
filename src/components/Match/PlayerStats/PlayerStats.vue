@@ -48,7 +48,7 @@
 
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { Ref, computed, ref } from "vue";
 import { Roster } from "@/types/BaseTags/Roster";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { useDataStore } from "@/store/dataStore";
@@ -85,7 +85,14 @@ const playerData = computed(() => {
   return dataStore.getPlayerData(selectedPlayer.value.id);
 });
 
-const characteristics = computed(() => {
+type Characteristic = {
+  name: string;
+  value: string;
+  icon: string;
+  tooltip?: string;
+};
+
+const characteristics: Ref<Characteristic[]> = computed(() => {
   const baseChars = playerData.value.Characteristics.PlayerCharacteristic.map((characteristic) => {
     let name = '';
     let icon = 'mdi-alert';
@@ -121,7 +128,7 @@ const characteristics = computed(() => {
       name,
       value,
       icon,
-    };
+    } as Characteristic;
   });
   baseChars.push(
     {

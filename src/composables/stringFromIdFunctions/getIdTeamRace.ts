@@ -12,6 +12,7 @@ const idTeamRaces = {
   "3": "Skaven",
   "4": "Orc",
   "5": "Lizardmen",
+  "7": "Wood Elf",
   "8": "Chaos Chosen",
   "9": "Dark Elf",
   "10": "Shambling Undead",

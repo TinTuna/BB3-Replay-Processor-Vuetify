@@ -506,79 +506,79 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // This is the roll of the block dice, this gives info on what dice were rolled and the outcome
                   // it also lets us know what rerolls can be used (such as Pro) and whether the defender selects the outome
 
-                  const resultMessageData = xmlToJson(result.MessageData)
-                    .QuestionBlockDice as QuestionBlockDice;
+                  // const resultMessageData = xmlToJson(result.MessageData)
+                  //   .QuestionBlockDice as QuestionBlockDice;
 
-                  // resultMessageData.Dice.Die could be an array or an object, so we need to check for that
-                  let diceRolled = [];
-                  if (Array.isArray(resultMessageData.Dice.Die)) {
-                    diceRolled = resultMessageData.Dice.Die.map(
-                      (die: { DieType: string; Value: string }) => {
-                        return die.Value;
-                      }
-                    );
-                  } else {
-                    diceRolled = [resultMessageData.Dice.Die.Value];
-                  }
-                  const attackerChoice =
-                    resultMessageData.AttackerChoice === "1";
-                  const assists =
-                    resultMessageData.Assists?.AssistInfos?.length || 0;
-                  const canUseTeamReroll =
-                    resultMessageData.CanUseTeamReroll === "1";
+                  // // resultMessageData.Dice.Die could be an array or an object, so we need to check for that
+                  // let diceRolled = [];
+                  // if (Array.isArray(resultMessageData.Dice.Die)) {
+                  //   diceRolled = resultMessageData.Dice.Die.map(
+                  //     (die: { DieType: string; Value: string }) => {
+                  //       return die.Value;
+                  //     }
+                  //   );
+                  // } else {
+                  //   diceRolled = [resultMessageData.Dice.Die.Value];
+                  // }
+                  // const attackerChoice =
+                  //   resultMessageData.AttackerChoice === "1";
+                  // const assists =
+                  //   resultMessageData.Assists?.AssistInfos?.length || 0;
+                  // const canUseTeamReroll =
+                  //   resultMessageData.CanUseTeamReroll === "1";
 
-                  // add roll data to the matchData
-                  diceRolled.forEach((die) => {
-                    switch (die) {
-                      case "1": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.attackerDown += 1;
-                        break;
-                      }
-                      case "2": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.bothDown += 1;
-                        break;
-                      }
-                      case "3": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.push += 1;
-                        break;
-                      }
-                      case "4": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.push += 1;
-                        break;
-                      }
-                      case "5": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.defenderStumbles += 1;
-                        break;
-                      }
-                      case "6": {
-                        matchData.playerData[
-                          stepMessageData.PlayerId
-                        ].blockDiceRolled.defenderDown += 1;
-                        break;
-                      }
-                      default: {
-                        break;
-                      }
-                    }
-                  });
-                  matchData.playerData[
-                    stepMessageData.PlayerId
-                  ].assistsReceived += assists;
+                  // // add roll data to the matchData
+                  // diceRolled.forEach((die) => {
+                  //   switch (die) {
+                  //     case "1": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.attackerDown += 1;
+                  //       break;
+                  //     }
+                  //     case "2": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.bothDown += 1;
+                  //       break;
+                  //     }
+                  //     case "3": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.push += 1;
+                  //       break;
+                  //     }
+                  //     case "4": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.push += 1;
+                  //       break;
+                  //     }
+                  //     case "5": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.defenderStumbles += 1;
+                  //       break;
+                  //     }
+                  //     case "6": {
+                  //       matchData.playerData[
+                  //         stepMessageData.PlayerId
+                  //       ].blockDiceRolled.defenderDown += 1;
+                  //       break;
+                  //     }
+                  //     default: {
+                  //       break;
+                  //     }
+                  //   }
+                  // });
+                  // matchData.playerData[
+                  //   stepMessageData.PlayerId
+                  // ].assistsReceived += assists;
 
-                  // Add block data to the currentTurnAction
-                  currentTurnAction.actionsTaken.blocksAttempted
-                    ? (currentTurnAction.actionsTaken.blocksAttempted += 1)
-                    : (currentTurnAction.actionsTaken.blocksAttempted = 1);
+                  // // Add block data to the currentTurnAction
+                  // currentTurnAction.actionsTaken.blockAttempted
+                  //   ? (currentTurnAction.actionsTaken.blockAttempted += 1)
+                  //   : (currentTurnAction.actionsTaken.blockAttempted = 1);
                   break;
                 }
                 case "QuestionPushBack": {
@@ -600,97 +600,152 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 case "ResultFollowUp": {
                   // This tells us the choice of whether the attacker followed up or not
 
-                  const resultMessageData = xmlToJson(result.MessageData)
-                    .ResultFollowUp as ResultFollowUp;
+                  // const resultMessageData = xmlToJson(result.MessageData)
+                  //   .ResultFollowUp as ResultFollowUp;
 
-                  // add roll data to the matchData
-                  if (resultMessageData.Follow === "1") {
-                    matchData.playerData[
-                      stepMessageData.PlayerId
-                    ].pushFollowUps += 1;
-                  }
+                  // // add roll data to the matchData
+                  // if (resultMessageData.Follow === "1") {
+                  //   matchData.playerData[
+                  //     stepMessageData.PlayerId
+                  //   ].pushFollowUps += 1;
+                  // }
                   break;
                 }
                 case "ResultBlockRoll": {
                   // This tells us which block dice was selected in a block roll
 
-                  const resultMessageData = xmlToJson(result.MessageData)
-                    .ResultBlockRoll as ResultBlockRoll;
+                  // const resultMessageData = xmlToJson(result.MessageData)
+                  //   .ResultBlockRoll as ResultBlockRoll;
 
-                  const diceRolled = resultMessageData.Die.Value;
+                  // const diceRolled = resultMessageData.Die.Value;
 
-                  // add roll data to the matchData
-                  switch (diceRolled) {
-                    case "1": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.attackerDown += 1;
-                      break;
-                    }
-                    case "2": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.bothDown += 1;
-                      break;
-                    }
-                    case "3": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.push += 1;
-                      break;
-                    }
-                    case "4": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.push += 1;
-                      break;
-                    }
-                    case "5": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.defenderStumbles += 1;
-                      break;
-                    }
-                    case "6": {
-                      matchData.playerData[
-                        stepMessageData.PlayerId
-                      ].blockDiceTaken.defenderDown += 1;
-                      break;
-                    }
-                    default: {
-                      break;
-                    }
-                  }
+                  // // add roll data to the matchData
+                  // switch (diceRolled) {
+                  //   case "1": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.attackerDown += 1;
+                  //     break;
+                  //   }
+                  //   case "2": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.bothDown += 1;
+                  //     break;
+                  //   }
+                  //   case "3": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.push += 1;
+                  //     break;
+                  //   }
+                  //   case "4": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.push += 1;
+                  //     break;
+                  //   }
+                  //   case "5": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.defenderStumbles += 1;
+                  //     break;
+                  //   }
+                  //   case "6": {
+                  //     matchData.playerData[
+                  //       stepMessageData.PlayerId
+                  //     ].blockDiceTaken.defenderDown += 1;
+                  //     break;
+                  //   }
+                  //   default: {
+                  //     break;
+                  //   }
+                  // }
 
                   break;
                 }
                 case "ResultPushBack": {
                   // This tells us which player was pushed, and to which cell
 
-                  const resultMessageData = xmlToJson(result.MessageData)
-                    .ResultPushBack as ResultPushBack;
+                  // const resultMessageData = xmlToJson(result.MessageData)
+                  //   .ResultPushBack as ResultPushBack;
 
-                  // add roll data to the matchData
-                  // we could use the targetData BUT I'm not certain how the output handles cascading pushes
-                  // so lets grab the player data from the Id instead
-                  const pushedPlayerData =
-                    matchData.playerData[resultMessageData.PushedPlayerId];
-                  if (!pushedPlayerData) {
-                    console.log(
-                      "Player not found in matchData",
-                      resultMessageData.PushedPlayerId
-                    );
-                  } else {
-                    pushedPlayerData.timesPushed += 1;
-                  }
+                  // // add roll data to the matchData
+                  // // we could use the targetData BUT I'm not certain how the output handles cascading pushes
+                  // // so lets grab the player data from the Id instead
+                  // const pushedPlayerData =
+                  //   matchData.playerData[resultMessageData.PushedPlayerId];
+                  // if (!pushedPlayerData) {
+                  //   console.log(
+                  //     "Player not found in matchData",
+                  //     resultMessageData.PushedPlayerId
+                  //   );
+                  // } else {
+                  //   pushedPlayerData.timesPushed += 1;
+                  // }
                   break;
                 }
                 case "ResultBlockOutcome": {
-                  // ResultBlockOutcome is an overview of the block action. We could grab some of the data from here but it's not
-                  // necessary as we have the same data from other messages
+                  // ResultBlockOutcome is an overview of the block action. 
+                  // For the moment we will use this section to count blocks and block outcomes 
 
-                  // const resultMessageData = xmlToJson(message.MessageData)
-                  //   .ResultBlockOutcome as ResultBlockOutcome;
+                  const resultMessageData = xmlToJson(result.MessageData)
+                    .ResultBlockOutcome as ResultBlockOutcome;
+
+                  // Add the output type to the players data
+                  switch (resultMessageData.Outcome) {
+                    case "1":
+                      // Attacker Down
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.attackerDown += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "attackerDown";
+                      break
+                    case "2":
+                      // Both Down
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.bothDown += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "bothDown";
+                      break
+                    case "3":
+                      // Push
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.push += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "push";
+                      break
+                    case "4":
+                      // Push
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.push += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "push";
+                      break
+                    case "5":
+                      // Defender Stumbles
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.defenderStumbles += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "defenderStumbles";
+                      break
+                    case "6":
+                      // Defender Down
+                      matchData.playerData[
+                        stepMessageData.PlayerId
+                      ].blockDiceTaken.defenderDown += 1;
+                      // Add block data to the currentTurnAction
+                      currentTurnAction.actionsTaken.blockAttempted = "defenderDown";
+                      break
+                    default:
+                      // No result
+                      break
+                  }
 
                   break;
                 }
@@ -723,11 +778,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   // // Not yet used so commenting to save computation
                   // const resultMessageData = xmlToJson(message.MessageData)
                   //   .ResultInjuryRoll as ResultInjuryRoll;
-
-                  // Add ResultInjuryRoll data to the currentTurnAction
-                  currentTurnAction.actionsTaken.blocksSucceeded
-                    ? (currentTurnAction.actionsTaken.blocksSucceeded += 1)
-                    : (currentTurnAction.actionsTaken.blocksSucceeded = 1);
 
                   break;
                 }
@@ -831,5 +881,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     }
   }
 
+  console.log(replaySteps);
   return matchData;
 };

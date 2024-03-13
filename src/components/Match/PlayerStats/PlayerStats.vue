@@ -124,8 +124,8 @@ const playerStats = computed(() => {
 });
 
 const headers = [
-  { title: "Stat", value: "stat", align: "center", width: "50%"},
-  { title: "Value", value: "value", align: "center", width: "50%"},
+  { title: "Stat", value: "stat", align: "center", width: "50%", sortable: true},
+  { title: "Value", value: "value", align: "center", width: "50%", sortable: true},
 ] as unknown as any[];
 
 </script>

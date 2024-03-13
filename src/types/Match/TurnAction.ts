@@ -6,8 +6,7 @@ export type TurnAction = {
   turnActionEvents: TurnActionEvent[];
   actionsTaken: {
     yardsMoved?: number;
-    blocksAttempted?: number;
-    blocksSucceeded?: number;
+    blockAttempted?: 'attackerDown' | 'bothDown' | 'push' | 'defenderStumbles' | 'defenderDown';
     injuriesInflicted?: number;
     touchdownsScored?: number;
   };

@@ -13,6 +13,7 @@ const IdPlayerTypes = {
     "3": "Thrower",
     "4": "Blitzer",
     "5": "Ogre",
+    "1019": "Halfling Hopeful",
 
     // // Dwarf
     "6": "Blocker Lineman",
@@ -121,4 +122,11 @@ const IdPlayerTypes = {
     "1075": "Skeleton Lineman",
     "1076": "Wight Blitzer",
     "1077": "Zombie Lineman",
+
+    // // Wood Elves
+    "1098": "Loren Forest Treeman",
+    "1099": "Catcher",
+    "1100": "Lineman",
+    "1101": "Thrower",
+    "1102": "Wardancer",
 }

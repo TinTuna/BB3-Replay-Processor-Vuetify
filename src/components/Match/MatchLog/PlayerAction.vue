@@ -3,10 +3,17 @@
         <v-card-text>
             <v-row>
                 <v-col v-for="(value, key) in playerActions" :key="key">
-                    <v-tooltip :text="value[2].toString()" location="bottom">
+                    <v-tooltip :text="value.tooltip" location="bottom">
                         <template v-slot:activator="{ props }">
-                            <v-chip v-bind="props" :prepend-icon="value[0].toString()">
-                                {{ value[1] }}
+                            <v-chip v-bind="props">
+                                {{ value.value }}
+
+                                <template v-slot:prepend>
+                                    <v-icon :color="value.primaryIconColour">{{ value.icon }}</v-icon>
+                                </template>
+                                <template v-if="value.secondaryIcon" v-slot:append>
+                                    <v-icon :color="value.secondaryIconColour"> {{ value.secondaryIcon }} </v-icon>
+                                </template>
                             </v-chip>
                         </template>
                     </v-tooltip>
@@ -15,13 +22,13 @@
         </v-card-text>
     </v-card>
 </template>
-      
-      
+
+
 <script lang="ts" setup>
 import { useDataStore } from "@/store/dataStore";
 import { Turn } from "@/types/Match/Turn";
 import { TurnAction } from "@/types/Match/TurnAction";
-import { computed } from "vue";
+import { Ref, computed } from "vue";
 import { ref } from "vue";
 
 const dataStore = useDataStore();
@@ -47,25 +54,91 @@ const playerType = computed(() => {
     return dataStore.getPlayerType(playerData.value.IdPlayerTypes || "");
 });
 
-const playerActions = computed(() => {
+type PlayerActionChip = {
+    icon: string;
+    value: string;
+    tooltip: string;
+    secondaryIcon?: any;
+    primaryIconColour?: string;
+    secondaryIconColour?: string;
+};
+
+
+const playerActions: Ref<PlayerActionChip[]> = computed(() => {
     return Object.entries(playerAction.value.actionsTaken || {}).map((value) => {
         if (value[0] === "yardsMoved") {
-            return ["mdi-run", value[1], `${value[1]} Yard${value[1] > 1 ? 's' : ''} moved`];
+            return {
+                icon: "mdi-run",
+                primaryIconColour: "primary",
+                value: value[1].toString(),
+                tooltip: `${value[1]} Yard${value[1] as number > 1 ? 's' : ''} moved`
+            };
         }
-        if (value[0] === "blocksAttempted") {
-            return ["mdi-shield", value[1], `${value[1]} Block${value[1] > 1 ? 's' : ''} attempted`];
+        if (value[0] === "blockAttempted") {
+            let tooltip = `Block made `
+            let secondaryIcon = ""
+            let secondaryIconColour = ""
+            switch (value[1] as Partial<TurnAction['actionsTaken']['blockAttempted']>) {
+                case 'attackerDown':
+                    secondaryIcon = "mdi-skull"
+                    tooltip += `- Attacker down`
+                    secondaryIconColour = "error"
+                    break
+                case 'bothDown':
+                    secondaryIcon = "mdi-chevron-double-down"
+                    tooltip += `- Both down`
+                    secondaryIconColour = "warning"
+                    break
+                case 'push':
+                    secondaryIcon = "mdi-arrow-top-right-thick"
+                    tooltip += `- Push`
+                    secondaryIconColour = "info"
+                    break
+                case 'defenderStumbles':
+                    secondaryIcon = "mdi-shield-alert"
+                    tooltip += `- Defender stumbles`
+                    secondaryIconColour = "success"
+                    break
+                case 'defenderDown':
+                    secondaryIcon = "mdi-shield"
+                    tooltip += `- Defender down`
+                    secondaryIconColour = "success"
+                    break
+            }
+            return {
+                icon: "mdi-dice-multiple",
+                primaryIconColour: "primary",
+                value: '',
+                tooltip: tooltip,
+                secondaryIcon: secondaryIcon,
+                secondaryIconColour: secondaryIconColour
+            };
         }
         if (value[0] === "injuriesInflicted") {
-            return ["mdi-hospital-box", value[1], `${value[1]} Injurie${value[1] > 1 ? 's' : ''} inflicted`];
+            return {
+                icon: "mdi-hospital-box",
+                value: value[1].toString(),
+                tooltip: `${value[1]} Injurie${value[1] as number > 1 ? 's' : ''} inflicted`,
+                primaryIconColour: "error"
+            };
         }
         if (value[0] === "touchdownsScored") {
-            return ["mdi-football", value[1], `Touchdown scored`];
+            return {
+                icon: "mdi-football",
+                value: '',
+                tooltip: `Touchdown scored`,
+                primaryIconColour: "brown-darken-1"
+            };
         }
-        return ["mdi-alert", value[1], `Unknown action: ${value[0]}`];
+        return {
+            icon: "mdi-alert",
+            value: value[1].toString(),
+            tooltip: `Unknown action: ${value[0]}`
+        };
     });
 });
 
 
 </script>
-        
+
 <style scoped></style>

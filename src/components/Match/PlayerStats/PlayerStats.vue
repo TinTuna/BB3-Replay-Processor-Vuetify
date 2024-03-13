@@ -28,10 +28,10 @@
             <v-card-text>
               <v-row>
                 <v-col cols="2" v-for="(characteristic, i) in characteristics" :key="i">
-                  <v-tooltip :text="`${characteristic.name}: ${characteristic.value}`"
+                  <v-tooltip :text="characteristic.tooltip ? characteristic.tooltip : `${characteristic.name}: ${characteristic.value}`"
                     location="bottom">
                     <template v-slot:activator="{ props }">
-                      <v-chip size="x-large" v-bind="props"
+                      <v-chip size="large" v-bind="props"
                         :prepend-icon="characteristic.icon">{{ characteristic.value }}</v-chip>
                     </template>
                   </v-tooltip>
@@ -126,7 +126,8 @@ const characteristics = computed(() => {
   baseChars.push(
     {
       name: 'Value',
-      value: parseInt(playerData.value.Value).toLocaleString() + 'gp',
+      value: parseInt(playerData.value.Value).toLocaleString(),
+      tooltip: 'Value: ' + parseInt(playerData.value.Value).toLocaleString() + 'gp',
       icon: 'mdi-cash-multiple'
     }
   );

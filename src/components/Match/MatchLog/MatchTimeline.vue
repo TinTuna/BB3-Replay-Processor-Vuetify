@@ -1,5 +1,5 @@
 <template>
-    <v-timeline direction="horizontal" truncate-line="both" class="my-10 py-1" style="overflow-x: auto; overflow-y: hidden;">
+    <v-timeline direction="vertical" truncate-line="both">
         <v-timeline-item dot-color="green" icon="mdi-whistle">
             <template v-slot:opposite>
                 <v-card class="ml-3">
@@ -15,22 +15,42 @@
             </v-card>
         </v-timeline-item>
 
-        <v-timeline-item v-for="(event, i) in events" :key="i" :dot-color="event?.color" :size="event?.size"
-            :icon="event?.icon" fill-dot>
-            <v-card @click="props.drilldown(event)">
+        <v-timeline-item v-for="(event, i) in events" :key="i"
+            :dot-color="event?.iconColor ? event?.iconColor : event?.color" :size="event?.size" :icon="event?.icon"
+            fill-dot>
+            <v-tooltip v-if="event?.tooltip" :text="event?.tooltip" location="bottom">
+                <template v-slot:activator="{ props: tooltipProps }">
+                    <v-card v-bind="tooltipProps" v-if="event?.title" @click.stop="props.drilldown(event)" elevation="3">
+                        <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
+                            {{ event?.title }}
+                        </v-card-title>
+                        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
+                        <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
+                    </v-card>
+                </template>
+            </v-tooltip>
+            <v-card v-if="event?.title && !event?.tooltip && event?.clickable" @click.stop="props.drilldown(event)" elevation="3">
                 <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
                     {{ event?.title }}
                 </v-card-title>
                 <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
                 <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
             </v-card>
-            <template v-if="event?.opp" v-slot:opposite>
+            <v-card v-if="event?.title && !event?.tooltip && !event?.clickable" elevation="3">
+                <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
+                    {{ event?.title }}
+                </v-card-title>
+                <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
+                <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
+            </v-card>
+
+            <!-- <template v-if="event?.opp" v-slot:opposite>
                 <v-card>
                     <v-card-title :class="`${event.oppFont ? event.oppFont : 'text-h6'} ${event.oppColour ? 'bg-' + event.oppColour : ''}`">
                         {{ event?.opp }}
                     </v-card-title>
                 </v-card>
-            </template>
+            </template> -->
         </v-timeline-item>
 
         <v-timeline-item dot-color="green" icon="mdi-whistle">
@@ -56,7 +76,7 @@ import { useDataStore } from "@/store/dataStore";
 import { computed } from "vue";
 
 const props = defineProps({
-  drilldown: { type: Function, required: true }
+    drilldown: { type: Function, required: true }
 });
 
 const dataStore = useDataStore();
@@ -69,7 +89,9 @@ const awayFTScore = dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerR
 export type Event = {
     color: string;
     icon: string;
+    iconColor?: string;
     size?: string;
+    tooltip?: string;
     title: string;
     text?: string;
     opp?: string;
@@ -79,6 +101,7 @@ export type Event = {
         turn: number;
         team: string;
     }
+    clickable?: boolean;
 }
 
 const events = computed(() => {
@@ -107,7 +130,9 @@ const events = computed(() => {
             return {
                 color: event.team === '0' ? 'red-lighten-2' : 'blue-lighten-2',
                 icon: 'mdi-football',
-                size: 'x-small',
+                iconColor: 'brown',
+                size: 'large',
+                tooltip: `Turn: ${event.turn}`,
                 title: `Touchdown`,
                 text: `${dataStore.getTeamName(event.team).replaceAll(' ', '&nbsp;')}<br>${dataStore.getPlayerName(event.touchdownScorer || "").replaceAll(' ', '&nbsp;')}`,
                 opp: `Turn: ${event.turn}`,
@@ -115,9 +140,32 @@ const events = computed(() => {
                 drilldown: {
                     turn: event.turn,
                     team: event.team
-                }
+                },
+                clickable: true
             } as Event
         }
+        if (event.injury) {
+            return {
+                color: event.team === '0' ? 'red-lighten-2' : 'blue-lighten-2',
+                icon: 'mdi-hospital-box',
+                iconColor: 'red',
+                size: 'x-small',
+                tooltip: `Turn: ${event.turn}`,
+                title: `Injury`,
+                text: `${dataStore.getTeamName(event.team).replaceAll(' ', '&nbsp;')}`,
+                // text: `${dataStore.getTeamName(event.team).replaceAll(' ', '&nbsp;')}<br>${dataStore.getPlayerName(event.injuryPlayer || "").replaceAll(' ', '&nbsp;')}`,
+                opp: `Turn: ${event.turn}`,
+                oppFont: 'text-subtitle-1',
+                drilldown: {
+                    turn: event.turn,
+                    team: event.team
+                },
+                clickable: true
+            } as Event
+        }
+
+        console.log('event', event)
+
     }).filter(Boolean) || []
 });
 

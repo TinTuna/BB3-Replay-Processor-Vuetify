@@ -8,6 +8,7 @@ export type Turn = {
   touchdown?: boolean;
   touchdownScorer?: PlayerId;
   injury?: boolean;
+  knockdown?: boolean;
   death?: boolean;
   turnover?: boolean;
 };

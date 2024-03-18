@@ -16,6 +16,7 @@ import { processDamageStep } from "./processDamageStep";
 export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   // before anything else, we need to make sure all StepResult and StringMessage are arrays
   // this also needs to take into account that EventExecuteSequence can be an array of sequences
+
   replaySteps.forEach((step) => {
     if (step.EventExecuteSequence) {
       if (Array.isArray(step.EventExecuteSequence)) {
@@ -338,7 +339,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
             });
           }
         }
-        // If this is a Step, it's the ball scattering from the kickoff
       }
 
       // If the step has EventEndTurn, it's the end of a turn
@@ -369,6 +369,12 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       // If EventExecuteSequence then it's a player or board action
       if (step.EventExecuteSequence) {
         // We need to loop over the sequence and process each StepResult
+        // step.EventExecuteSequence can sometimes be an array of sequences
+        // if (!Array.isArray(step.EventExecuteSequence)) {
+        //   step.EventExecuteSequence = [step.EventExecuteSequence];
+        // }
+
+        // console.log('step.EventExecuteSequence',step.EventExecuteSequence)
         step.EventExecuteSequence.Sequence.StepResult.forEach((stepResult) => {
           // There are three options here, Step, DamageStep, and PlayerStep
           // Step is a board action

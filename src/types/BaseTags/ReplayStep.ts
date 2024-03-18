@@ -56,8 +56,8 @@ export type ReplayStep = {
   EventExecuteSequence: {
     Sequence: {
       StepResult: Step[];
-    }
-  }
+    };
+  };
   EventEndTurn: {
     Reason: EndTurnReasons;
     FinishingTurnType: EndTurnTypes;
@@ -143,7 +143,7 @@ export type ReplayStep = {
             Modifier: Modifier;
           };
           Dice: {
-            Die: Die
+            Die: Die;
           };
           RollType: string;
         }[];

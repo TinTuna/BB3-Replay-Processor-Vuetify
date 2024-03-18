@@ -100,8 +100,6 @@ export const processDamageStep = (opts: {
         const resultMessageData = xmlToJson(result.MessageData)
           .ResultInjuryRoll as ResultInjuryRoll;
 
-          let diceTest = 0
-
         if (Array.isArray(resultMessageData.Dice.Die)) {
           resultMessageData.Dice.Die.forEach((die) => {
             processDieRoll({
@@ -109,7 +107,6 @@ export const processDamageStep = (opts: {
               playerId: stepMessageData.PlayerId,
               matchData,
             });
-            diceTest += parseInt(die.Value)
           });
         } else {
           processDieRoll({
@@ -117,19 +114,19 @@ export const processDamageStep = (opts: {
             playerId: stepMessageData.PlayerId,
             matchData,
           });
-          diceTest += parseInt(resultMessageData.Dice.Die.Value)
         }
 
         // add injury roll data to the playerData
         matchData.playerData[
           stepMessageData.PlayerId
         ].injuryRolls.injuryRolls += 1;
-        console.log("resultMessageData.Outcome", resultMessageData.Outcome, diceTest);
         switch (resultMessageData.Outcome) {
           case "0": {
             matchData.playerData[
               stepMessageData.PlayerId
             ].injuryRolls.injuryStunned += 1;
+            currentTurn.knockdown = true;
+            currentTurnAction.actionsTaken.knockdownInflicted ? currentTurnAction.actionsTaken.knockdownInflicted : 'Stunned';
             break;
           }
           case "2": {
@@ -145,18 +142,15 @@ export const processDamageStep = (opts: {
             break;
           }
         }
-
-        // debugger;
+        
 
         break;
       }
       case "ResultCasualtyRoll": {
         // this doens thappen very frequently, needs testing what it tells us
 
-        const resultMessageData = xmlToJson(result.MessageData)
-          .ResultCasualtyRoll as ResultCasualtyRoll;
-
-        // debugger;
+        // const resultMessageData = xmlToJson(result.MessageData)
+        //   .ResultCasualtyRoll as ResultCasualtyRoll;
 
         // Add ResultCasualtyRoll data to the currentTurnAction
         // currentTurn.injury = true;
@@ -176,16 +170,34 @@ export const processDamageStep = (opts: {
         const resultMessageData = xmlToJson(result.MessageData)
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
-        // debugger;
-
         // Add ResultPlayerRemoval data to the currentTurnAction
         currentTurn.injury = true;
-        currentTurnAction.actionsTaken.injuryInflicted = "ResultPlayerRemoval";
 
-        console.log(
-          "Injury inflicted",
-          currentTurnAction.actionsTaken.injuryInflicted
-        );
+        switch (resultMessageData.Status) {
+          case "0": {
+            // no need to set injury type as stunned is handeled by the ResultInjuryRoll
+            currentTurn.injury = false
+            currentTurn.knockdown = true;
+            currentTurnAction.actionsTaken.knockdownInflicted = 'Stunned - Pushed Out of Bounds';
+            break;
+          }
+          case "3": {
+            currentTurnAction.actionsTaken.injuryInflicted = 'KO'
+            break;
+          }
+          case "4": {
+            currentTurnAction.actionsTaken.injuryInflicted = 'Serious Injury'
+            break;
+          }
+          case "5": {
+            currentTurnAction.actionsTaken.injuryInflicted = 'Death ??'
+            break;
+          }
+          default: {
+            currentTurnAction.actionsTaken.injuryInflicted = resultMessageData.Status
+            break;
+          }
+        }
 
         // add roll data to the matchData
         matchData.playerData[

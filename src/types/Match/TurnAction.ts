@@ -8,6 +8,7 @@ export type TurnAction = {
     yardsMoved?: number;
     blockAttempted?: 'attackerDown' | 'bothDown' | 'push' | 'defenderStumbles' | 'defenderDown';
     injuryInflicted?: string;
+    knockdownInflicted?: string;
     touchdownScored?: boolean;
   };
 };

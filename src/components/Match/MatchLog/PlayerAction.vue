@@ -84,7 +84,7 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
             };
         }
         if (value[0] === "blockAttempted") {
-            let tooltip = `Block made `
+            let tooltip = `Block - `
             let secondaryIcon = ""
             let secondaryIconColour = ""
             switch (value[1] as Partial<TurnAction['actionsTaken']['blockAttempted']>) {
@@ -95,22 +95,22 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                     break
                 case 'bothDown':
                     secondaryIcon = "mdi-chevron-double-down"
-                    tooltip += `- Both down`
+                    tooltip += `Both down`
                     secondaryIconColour = "warning"
                     break
                 case 'push':
                     secondaryIcon = "mdi-arrow-top-right-thick"
-                    tooltip += `- Push`
+                    tooltip += `Push`
                     secondaryIconColour = "info"
                     break
                 case 'defenderStumbles':
                     secondaryIcon = "mdi-shield-alert"
-                    tooltip += `- Defender stumbles`
+                    tooltip += `Defender stumbles`
                     secondaryIconColour = "success"
                     break
                 case 'defenderDown':
                     secondaryIcon = "mdi-shield"
-                    tooltip += `- Defender down`
+                    tooltip += `Defender down`
                     secondaryIconColour = "success"
                     break
             }
@@ -127,15 +127,23 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
             return {
                 icon: "mdi-hospital-box",
                 value: '',
-                tooltip: `Injury inflicted - ${value[0]}`,
+                tooltip: `Injury - ${value[1]}`,
                 primaryIconColour: "error"
+            };
+        }
+        if (value[0] === "knockdownInflicted") {
+            return {
+                icon: "mdi-creation",
+                value: '',
+                tooltip: `Knockdown - ${value[1]}`,
+                primaryIconColour: "yellow-darken-4"
             };
         }
         if (value[0] === "touchdownScored") {
             return {
                 icon: "mdi-football",
                 value: '',
-                tooltip: `Touchdown scored`,
+                tooltip: `Touchdown`,
                 primaryIconColour: "brown-darken-1"
             };
         }

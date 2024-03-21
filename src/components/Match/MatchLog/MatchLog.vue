@@ -12,13 +12,26 @@
                                 class="px-2 py-1 mr-5" style="background-color: white; border-radius: 3px;">
                                 <v-tooltip text="Death" location="bottom">
                                     <template v-slot:activator="{ props }">
-                                        <v-icon v-bind="props" v-if="logEntry.death" color="black">mdi-skull</v-icon>
+                                        <template v-for="(death, i) in logEntry.death" :key="i">
+                                            <v-icon v-bind="props" v-if="death" color="black">mdi-skull</v-icon>
+                                        </template>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip text="Injury" location="bottom">
+                                <v-tooltip text="Injury Inflicted" location="bottom">
                                     <template v-slot:activator="{ props }">
-                                        <v-icon v-bind="props" v-if="logEntry.injury"
-                                            color="red">mdi-hospital-box</v-icon>
+                                        <template v-for="(injury, i) in logEntry.injury" :key="i">
+                                            <v-icon v-if="injury" v-bind="props" color="red">mdi-sword</v-icon>
+                                        </template>
+                                        <!-- <v-chip v-if="logEntry.injury" v-bind="props" variant="flat" color="red" small><v-icon v-if="logEntry.injury"
+                                            color="white">mdi-sword</v-icon><span class="text-white">x3</span></v-chip> -->
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip text="Injury Sustained" location="bottom">
+                                    <template v-slot:activator="{ props }">
+                                        <template v-for="(injurySustained, i) in logEntry.injurySustained" :key="i">
+                                            <v-icon v-bind="props" v-if="injurySustained"
+                                                color="red">mdi-hospital-box</v-icon>
+                                        </template>
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip text="Touchdown" location="bottom">
@@ -37,7 +50,21 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text
                             :class="logEntry.team === '0' ? 'bg-red-lighten-4' : 'bg-blue-lighten-4'">
-                            <Turn :log-entry-prop="logEntry" />
+                            <Turn v-if="logEntry.turnActions.length" :log-entry-prop="logEntry" />
+                            <v-container v-else>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-card height="200" width="200">
+                                            <v-img
+                                                src="https://content.imageresizer.com/images/memes/Waiting-GG-meme-3.jpg"
+                                                cover></v-img>
+                                            <v-card-text>
+                                                <div>Looks like a pretty quiet turn...</div>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
                         </v-expansion-panel-text>
                     </v-expansion-panel>
                 </v-expansion-panels>

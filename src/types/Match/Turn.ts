@@ -7,8 +7,9 @@ export type Turn = {
   turnActions: TurnAction[];
   touchdown?: boolean;
   touchdownScorer?: PlayerId;
-  injury?: boolean;
-  knockdown?: boolean;
-  death?: boolean;
+  injury?: number;
+  injurySustained?: number;
+  knockdown?: number;
+  death?: number;
   turnover?: boolean;
 };

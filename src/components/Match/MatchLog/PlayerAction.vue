@@ -2,10 +2,10 @@
     <v-card :subtitle="playerType" class="my-3" @click.stop="drilldown">
         <template v-slot:title>
             <v-icon color="primary" size="large" style="margin-right: -7px">
-                {{ `mdi-numeric-${playerData.Number[0]}-box` }}
+                {{ `mdi-numeric-${playerNumber[0]}-box` }}
             </v-icon>
-            <v-icon v-if="playerData.Number[1]" color="primary" size="large" style="margin-left: -7px">
-                {{ `mdi-numeric-${playerData.Number[1]}-box` }}
+            <v-icon v-if="playerNumber[1]" color="primary" size="large" style="margin-left: -7px">
+                {{ `mdi-numeric-${playerNumber[1]}-box` }}
             </v-icon>
             <div class="d-inline pl-2">{{ playerName }}</div>
         </template>
@@ -60,7 +60,12 @@ const playerData = computed(() => {
 });
 
 const playerType = computed(() => {
-    return dataStore.getPlayerType(playerData.value.IdPlayerTypes || "");
+    const x = dataStore.getPlayerType(playerData.value.IdPlayerTypes || "");
+    return x ? x : "Unknown";
+});
+
+const playerNumber = computed(() => {
+    return playerData.value.Number || "00"
 });
 
 type PlayerActionChip = {
@@ -125,6 +130,14 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
         }
         if (value[0] === "injuryInflicted") {
             return {
+                icon: "mdi-sword",
+                value: '',
+                tooltip: `Injury - ${value[1]}`,
+                primaryIconColour: "error"
+            };
+        }
+        if (value[0] === "injuryReceived") {
+            return {
                 icon: "mdi-hospital-box",
                 value: '',
                 tooltip: `Injury - ${value[1]}`,
@@ -152,8 +165,6 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
             value: value[1].toString(),
             tooltip: `Unknown action: ${value[0]}`
         };
-
-
     });
 });
 

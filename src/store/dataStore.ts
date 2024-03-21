@@ -40,7 +40,7 @@ export const useDataStore = defineStore("data", () => {
   // getters
   const getPlayerName = (playerId: string) => {
     // console.log(playerId, playerData.value, playerData.value[playerId]);
-    return playerData.value[playerId]?.Name || "Unknown";
+    return playerData.value[playerId]?.Name || "Unknown Name";
   };
   const getPlayerData = (playerId: string) => {
     return playerData.value[playerId] || {};

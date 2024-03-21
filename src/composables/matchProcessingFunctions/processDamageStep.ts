@@ -125,7 +125,7 @@ export const processDamageStep = (opts: {
             matchData.playerData[
               stepMessageData.PlayerId
             ].injuryRolls.injuryStunned += 1;
-            currentTurn.knockdown = true;
+            currentTurn.knockdown ? currentTurn.knockdown += 1 : currentTurn.knockdown = 1;
             currentTurnAction.actionsTaken.knockdownInflicted ? currentTurnAction.actionsTaken.knockdownInflicted : 'Stunned';
             break;
           }
@@ -171,13 +171,14 @@ export const processDamageStep = (opts: {
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
         // Add ResultPlayerRemoval data to the currentTurnAction
-        currentTurn.injury = true;
+        currentTurn.injury ? currentTurn.injury += 1 : currentTurn.injury = 1;
 
         switch (resultMessageData.Status) {
           case "0": {
             // no need to set injury type as stunned is handeled by the ResultInjuryRoll
-            currentTurn.injury = false
-            currentTurn.knockdown = true;
+
+            currentTurn.injury ? currentTurn.injury += 1 : currentTurn.injury = 1;
+            currentTurn.knockdown ? currentTurn.knockdown += 1 : currentTurn.knockdown = 1;
             currentTurnAction.actionsTaken.knockdownInflicted = 'Stunned - Pushed Out of Bounds';
             break;
           }
@@ -190,7 +191,7 @@ export const processDamageStep = (opts: {
             break;
           }
           case "5": {
-            currentTurnAction.actionsTaken.injuryInflicted = 'Death ??'
+            currentTurnAction.actionsTaken.injuryInflicted = 'Death'
             break;
           }
           default: {

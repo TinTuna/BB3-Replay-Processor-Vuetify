@@ -147,7 +147,7 @@ const events = computed(() => {
         if (event.injury) {
             return {
                 color: event.team === '0' ? 'red-lighten-2' : 'blue-lighten-2',
-                icon: 'mdi-hospital-box',
+                icon: 'mdi-sword',
                 iconColor: 'red',
                 size: 'x-small',
                 tooltip: `Turn: ${event.turn}`,

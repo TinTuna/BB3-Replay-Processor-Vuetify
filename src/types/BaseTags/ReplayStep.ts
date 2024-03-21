@@ -56,8 +56,8 @@ export type ReplayStep = {
   EventExecuteSequence: {
     Sequence: {
       StepResult: Step[];
-    };
-  };
+    } ;
+  }[];
   EventEndTurn: {
     Reason: EndTurnReasons;
     FinishingTurnType: EndTurnTypes;

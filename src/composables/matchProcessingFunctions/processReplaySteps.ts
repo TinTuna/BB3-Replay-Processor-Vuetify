@@ -16,40 +16,28 @@ import { processDamageStep } from "./processDamageStep";
 export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   // before anything else, we need to make sure all StepResult and StringMessage are arrays
   // this also needs to take into account that EventExecuteSequence can be an array of sequences
+  replaySteps.forEach((step) => {
+    if (step.EventExecuteSequence) {
+      if (!Array.isArray(step.EventExecuteSequence)) {
+        step.EventExecuteSequence = [step.EventExecuteSequence];
+      }
+    }
+  });
 
   replaySteps.forEach((step) => {
     if (step.EventExecuteSequence) {
-      if (Array.isArray(step.EventExecuteSequence)) {
-        step.EventExecuteSequence.forEach(
-          (sequence: ReplayStep["EventExecuteSequence"]) => {
-            if (sequence.Sequence.StepResult) {
-              if (!Array.isArray(sequence.Sequence.StepResult)) {
-                sequence.Sequence.StepResult = [sequence.Sequence.StepResult];
-              }
-              sequence.Sequence.StepResult.forEach((result) => {
-                if (!Array.isArray(result.Results.StringMessage)) {
-                  result.Results.StringMessage = [result.Results.StringMessage];
-                }
-              });
-            }
+      step.EventExecuteSequence.forEach((sequence) => {
+        if (sequence.Sequence.StepResult) {
+          if (!Array.isArray(sequence.Sequence.StepResult)) {
+            sequence.Sequence.StepResult = [sequence.Sequence.StepResult];
           }
-        );
-      } else {
-        replaySteps.forEach((step) => {
-          if (step.EventExecuteSequence?.Sequence?.StepResult) {
-            if (!Array.isArray(step.EventExecuteSequence.Sequence.StepResult)) {
-              step.EventExecuteSequence.Sequence.StepResult = [
-                step.EventExecuteSequence.Sequence.StepResult,
-              ];
+          sequence.Sequence.StepResult.forEach((result) => {
+            if (!Array.isArray(result.Results.StringMessage)) {
+              result.Results.StringMessage = [result.Results.StringMessage];
             }
-            step.EventExecuteSequence.Sequence.StepResult.forEach((result) => {
-              if (!Array.isArray(result.Results.StringMessage)) {
-                result.Results.StringMessage = [result.Results.StringMessage];
-              }
-            });
-          }
-        });
-      }
+          });
+        }
+      });
     }
   });
 
@@ -279,66 +267,35 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       }
 
       if (step.EventExecuteSequence) {
-        // its possible for EventExecuteSequence to be an array of sequences in phase 4 so we need to handle that
-        if (Array.isArray(step.EventExecuteSequence)) {
-          step.EventExecuteSequence.forEach(
-            (sequence: ReplayStep["EventExecuteSequence"]) => {
-              // TODO - Depending on the kickoff event, there could be PlayerSteps here
-              // Need to abstract the PlayerStep logic to a function to be reused
-              // Will ignore for now
+        step.EventExecuteSequence.forEach((sequence) => {
+          // TODO - Depending on the kickoff event, there could be PlayerSteps here
+          // Need to abstract the PlayerStep logic to a function to be reused
+          // Will ignore for now
 
-              sequence.Sequence.StepResult.forEach((result) => {
-                if (result.Step.Name === "Step") {
-                  const stepMessageData = xmlToJson(result.Step.MessageData)
-                    .Step as Step;
+          sequence.Sequence.StepResult.forEach((result) => {
+            if (result.Step.Name === "Step") {
+              const stepMessageData = xmlToJson(result.Step.MessageData)
+                .Step as Step;
 
-                  if (!stepMessageData) {
-                    console.warn(
-                      "No stepMessageData found in the following step:",
-                      step
-                    );
-                    return;
-                  }
+              if (!stepMessageData) {
+                console.warn(
+                  "No stepMessageData found in the following step:",
+                  step
+                );
+                return;
+              }
 
-                  // the stepMessageData tells us where the ball scattered from and to
+              // the stepMessageData tells us where the ball scattered from and to
 
-                  result.Results.StringMessage.forEach((message) => {
-                    if (message.Name === "ResultRoll") {
-                      // the ResultRoll message.MessageData tells us the dice that were rolled to determine that outcome
-                      // (it needes to be processed from XML to JSON first)
-                    }
-                  });
+              result.Results.StringMessage.forEach((message) => {
+                if (message.Name === "ResultRoll") {
+                  // the ResultRoll message.MessageData tells us the dice that were rolled to determine that outcome
+                  // (it needes to be processed from XML to JSON first)
                 }
               });
             }
-          );
-        } else {
-          if (step.EventExecuteSequence.Sequence.StepResult) {
-            step.EventExecuteSequence.Sequence.StepResult.forEach((result) => {
-              if (result.Step.Name === "Step") {
-                const stepMessageData = xmlToJson(result.Step.MessageData)
-                  .Step as Step;
-
-                if (!stepMessageData) {
-                  console.warn(
-                    "No stepMessageData found in the following step:",
-                    step
-                  );
-                  return;
-                }
-
-                // the stepMessageData tells us where the ball scattered from and to
-
-                result.Results.StringMessage.forEach((message) => {
-                  if (message.Name === "ResultRoll") {
-                    // the ResultRoll message.MessageData tells us the dice that were rolled to determine that outcome
-                    // (it needes to be processed from XML to JSON first)
-                  }
-                });
-              }
-            });
-          }
-        }
+          });
+        });
       }
 
       // If the step has EventEndTurn, it's the end of a turn
@@ -369,73 +326,70 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       // If EventExecuteSequence then it's a player or board action
       if (step.EventExecuteSequence) {
         // We need to loop over the sequence and process each StepResult
-        // step.EventExecuteSequence can sometimes be an array of sequences
-        // if (!Array.isArray(step.EventExecuteSequence)) {
-        //   step.EventExecuteSequence = [step.EventExecuteSequence];
-        // }
 
-        // console.log('step.EventExecuteSequence',step.EventExecuteSequence)
-        step.EventExecuteSequence.Sequence.StepResult.forEach((stepResult) => {
-          // There are three options here, Step, DamageStep, and PlayerStep
-          // Step is a board action
-          // DamageStep is a player injury
-          // PlayerStep is a player action
+        step.EventExecuteSequence.forEach((sequence) => {
+          sequence.Sequence.StepResult.forEach((stepResult) => {
+            // There are three options here, Step, DamageStep, and PlayerStep
+            // Step is a board action
+            // DamageStep is a player injury
+            // PlayerStep is a player action
 
-          // check if the step is a player step and the
-          if (stepResult.Step.Name === "PlayerStep") {
-            stepResult.Results.StringMessage.forEach((result) => {
-              if (result.Name === "ResultUseAction") {
-                // This is a new player action and we need to create a new turnAction
-                const stepMessageData = xmlToJson(stepResult.Step.MessageData)
-                  .PlayerStep as PlayerStep;
+            // check if the step is a player step and the
+            if (stepResult.Step.Name === "PlayerStep") {
+              stepResult.Results.StringMessage.forEach((result) => {
+                if (result.Name === "ResultUseAction") {
+                  // This is a new player action and we need to create a new turnAction
+                  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
+                    .PlayerStep as PlayerStep;
 
-                if (currentTurnAction) {
-                  // if one exists already, log it
-                  currentTurn.turnActions.push(currentTurnAction);
+                  if (currentTurnAction) {
+                    // if one exists already, log it
+                    currentTurn.turnActions.push(currentTurnAction);
+                  }
+                  currentTurnAction = {
+                    playerId: stepMessageData.PlayerId,
+                    turnActionEvents: [],
+                    actionsTaken: {},
+                  };
                 }
-                currentTurnAction = {
-                  playerId: stepMessageData.PlayerId,
-                  turnActionEvents: [],
-                  actionsTaken: {},
-                };
-              }
-            });
-          }
+              });
+            }
 
-          // Check if we have a current turnAction and if so it is still for the same player
+            // Check if we have a current turnAction and if so it is still for the same player
 
-          if (stepResult.Step.Name === "PlayerStep") {
-            processPlayerStep({
-              stepResult,
-              step,
-              matchData,
-              currentTurn,
-              currentTurnAction,
-              hasBall,
-            });
-          }
+            if (stepResult.Step.Name === "PlayerStep") {
+              processPlayerStep({
+                stepResult,
+                step,
+                matchData,
+                currentTurn,
+                currentTurnAction,
+                hasBall,
+              });
+            }
 
-          if (stepResult.Step.Name === "Step") {
-            processStep({
-              stepResult,
-              step,
-              matchData,
-              currentTurn,
-              currentTurnAction,
-              hasBall,
-            });
-          }
+            if (stepResult.Step.Name === "Step") {
+              processStep({
+                stepResult,
+                step,
+                matchData,
+                currentTurn,
+                currentTurnAction,
+                hasBall,
+              });
+            }
 
-          if (stepResult.Step.Name === "DamageStep") {
-            processDamageStep({
-              stepResult,
-              step,
-              matchData,
-              currentTurn,
-              currentTurnAction,
-              hasBall,
-            });
-          }
+            if (stepResult.Step.Name === "DamageStep") {
+              processDamageStep({
+                stepResult,
+                step,
+                matchData,
+                currentTurn,
+                currentTurnAction,
+                hasBall,
+              });
+            }
+          });
         });
       }
 

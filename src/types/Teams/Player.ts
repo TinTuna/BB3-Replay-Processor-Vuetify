@@ -4,7 +4,9 @@ import { SkillId } from "../IdTypes/SkillId";
 import { Characteristic } from "./Characteristic";
 
 export type Player = {
-  AcquiredSkills: [];
+  AcquiredSkills: {
+    AcquiredSkillsItem: SkillId[] | SkillId;
+  };
   Characteristics: {
     PlayerCharacteristic: Characteristic[];
   };
@@ -19,7 +21,7 @@ export type Player = {
   Id: PlayerId;
   IdPlayerTypes: PlayerIdType;
   InnateSkills: {
-    InnateSkillsItem: SkillId;
+    InnateSkillsItem: SkillId[] | SkillId;
   };
   Level: string;
   ListCasualties: {};

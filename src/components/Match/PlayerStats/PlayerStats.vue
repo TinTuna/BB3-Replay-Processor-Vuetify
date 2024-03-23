@@ -1,49 +1,111 @@
 <template>
-  <v-container>
-    <v-select v-model="selectedPlayer" :items="listPlayers" item-title="name" item-value="id" label="Player" outlined
-      dense return-object>
-    </v-select>
 
-    <!-- Statline -->
-    <div>
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-sheet border rounded elevation="2">
-            <v-data-table density="compact" :items="playerStats" :headers="headers" items-per-page="100">
-              <template #bottom></template>
-            </v-data-table>
-          </v-sheet>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-card elevation="2">
-            <v-card-title class="text-h4">
-              {{ playerName }}<br>
-              <v-icon color="primary" size="small"
-                style="margin-right: -4px">{{ `mdi-numeric-${playerData.Number[0]}-box` }}</v-icon>
-              <v-icon v-if="playerData.Number[1]" color="primary" size="small"
-                style="margin-left: -4px">{{ `mdi-numeric-${playerData.Number[1]}-box` }}</v-icon><br>
-              <!-- <span class="text-subtitle-2">{{ dataStore.getPlayerType(playerData.IdPlayerTypes) }}</span> -->
-            </v-card-title>
+  <v-dialog max-width="500">
+    <template v-slot:activator="{ props: activatorProps }">
 
-            <v-card-text>
-              <v-row>
-                <v-col cols="2" v-for="(characteristic, i) in characteristics" :key="i">
-                  <v-tooltip :text="characteristic.tooltip ? characteristic.tooltip : `${characteristic.name}: ${characteristic.value}`"
-                    location="bottom">
-                    <template v-slot:activator="{ props }">
-                      <v-chip size="large" v-bind="props"
-                        :prepend-icon="characteristic.icon">{{ characteristic.value }}</v-chip>
-                    </template>
-                  </v-tooltip>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </div>
+      <v-container>
 
-  </v-container>
+        <v-select v-model="selectedPlayer" :items="listPlayers" item-title="name" item-value="id" label="Player"
+          outlined dense return-object>
+        </v-select>
+
+        <!-- Statline -->
+        <div>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-sheet border rounded elevation="2">
+                <v-data-table density="compact" :items="playerStats" :headers="headers" items-per-page="100">
+                  <template #bottom></template>
+                </v-data-table>
+              </v-sheet>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-card elevation="2">
+                <v-card-title class="text-h4">
+                  {{ playerName }}<br>
+                  <v-icon color="primary" size="small" style="margin-right: -4px">{{
+      `mdi-numeric-${playerData.Number[0]}-box`
+    }}</v-icon>
+                  <v-icon v-if="playerData.Number[1]" color="primary" size="small" style="margin-left: -4px">{{
+      `mdi-numeric-${playerData.Number[1]}-box` }}</v-icon><br>
+                  <!-- <span class="text-subtitle-2">{{ dataStore.getPlayerType(playerData.IdPlayerTypes) }}</span> -->
+                </v-card-title>
+
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="2" v-for="(characteristic, i) in characteristics" :key="i">
+                      <v-tooltip
+                        :text="characteristic.tooltip ? characteristic.tooltip : `${characteristic.name}: ${characteristic.value}`"
+                        location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-chip size="large" v-bind="props" :prepend-icon="characteristic.icon">{{
+      characteristic.value
+    }}</v-chip>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col v-if="acquiredSkills.length" cols="6">
+                      <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
+                        <div class="text-h6 py-1">
+                          Acquired Skills
+                        </div>
+                        <div class="d-flex mx-auto">
+                          <template v-for="(skill, i) in acquiredSkills" :key="i">
+                            <v-tooltip :text="skill.name" location="bottom">
+                              <template v-slot:activator="{ props }">
+                                <span v-bind="props">
+                                  <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="50"
+                                    height="50" v-ripple @click.stop="openSkillDialog(skill)" class="cursor-pointer"></v-img>
+                                </span>
+                              </template>
+                            </v-tooltip>
+                          </template>
+                        </div>
+                      </v-sheet>
+                    </v-col>
+                    <v-col v-if="innateSkills.length" cols="6">
+                      <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
+                        <div class="text-h6 py-1">
+                          Innate Skills
+                        </div>
+                        <div class="d-flex mx-auto">
+                          <template v-for="(skill, i) in innateSkills" :key="i">
+                            <v-tooltip :text="skill.name" location="bottom">
+                              <template v-slot:activator="{ props }">
+                                <span v-bind="props">
+                                  <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="50"
+                                    height="50" v-ripple @click.stop="openSkillDialog(skill)" class="cursor-pointer"></v-img>
+                                </span>
+                              </template>
+                            </v-tooltip>
+                          </template>
+                        </div>
+                      </v-sheet>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+      </v-container>
+    </template>
+    <template v-slot:default="{ isActive }">
+      <v-card v-if="selectedSkill" :title="selectedSkill.name">
+        <v-card-text>
+          {{ selectedSkill.description }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn text="Close" @click="isActive.value = false"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </template>
+  </v-dialog>
 </template>
 
 
@@ -53,6 +115,7 @@ import { Roster } from "@/types/BaseTags/Roster";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { useDataStore } from "@/store/dataStore";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
+import { SkillData } from "@/composables/stringFromIdFunctions/getSkillData";
 
 const dataStore = useDataStore();
 
@@ -168,6 +231,43 @@ const playerStats = computed(() => {
   }
   return stats;
 });
+
+
+
+const innateSkills = computed(() => {
+  if (playerData.value?.InnateSkills?.InnateSkillsItem) {
+    if (typeof playerData.value.InnateSkills.InnateSkillsItem === 'string') {
+      return [
+        dataStore.getSkillData(playerData.value.InnateSkills.InnateSkillsItem)
+      ];
+    }
+    return playerData.value.InnateSkills.InnateSkillsItem.map((skill) => {
+      // Get skill and skill specifics from the skills database
+      return dataStore.getSkillData(skill);
+    });
+  }
+  return [];
+});
+const acquiredSkills = computed(() => {
+  if (playerData.value?.AcquiredSkills?.AcquiredSkillsItem) {
+    if (typeof playerData.value.AcquiredSkills.AcquiredSkillsItem === 'string') {
+      return [
+        dataStore.getSkillData(playerData.value.AcquiredSkills.AcquiredSkillsItem)
+      ];
+    }
+    return playerData.value.AcquiredSkills.AcquiredSkillsItem.map((skill) => {
+      // Get skill and skill specifics from the skills database
+      return dataStore.getSkillData(skill);
+    });
+  }
+  return [];
+});
+
+const selectedSkill = ref<SkillData | undefined>();
+
+const openSkillDialog = (skill: SkillData) => {
+  selectedSkill.value = skill;
+};
 
 const headers = [
   { title: "Stat", value: "stat", align: "center", width: "50%", sortable: true },

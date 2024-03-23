@@ -1,9 +1,11 @@
 // Utilities
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
+import { getSkillDataFromId } from "@/composables/stringFromIdFunctions/getSkillData";
 import { EndGame } from "@/types/BaseTags/EndGame";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
 import { Roster, Rosters } from "@/types/BaseTags/Roster";
 import { PlayerIdType } from "@/types/IdTypes/PlayerIdTypes";
+import { SkillId } from "@/types/IdTypes/SkillId";
 import { MatchData } from "@/types/MatchData";
 import { Player } from "@/types/Teams/Player";
 import { defineStore } from "pinia";
@@ -54,6 +56,9 @@ export const useDataStore = defineStore("data", () => {
   const getPlayerType = (playerTypeId: PlayerIdType) => {
     return getIdPlayerType(playerTypeId);
   }
+  const getSkillData = (skillId: SkillId) => {
+    return getSkillDataFromId(skillId);
+  }
 
   return {
     notificationGameJoined,
@@ -65,6 +70,7 @@ export const useDataStore = defineStore("data", () => {
     getPlayerData,
     getTeamName,
     getTeamData,
-    getPlayerType
+    getPlayerType,
+    getSkillData
   };
 });

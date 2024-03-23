@@ -10,6 +10,10 @@ import { Step } from "@/types/Match/Step";
 import { processPlayerStep } from "./processPlayerStep";
 import { processStep } from "./processStep";
 import { processDamageStep } from "./processDamageStep";
+import { EventNewInducementsTurn } from "@/types/Inducements/EventNewInducementsTurn";
+import { Inducement } from "@/types/Inducements/Inducement";
+import { Player } from "@/types/Teams/Player";
+import { addBasePlayerData } from "./addBasePlayerData";
 // import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
 // import { ResultRoll } from "@/types/messageData/ResultRoll";
 
@@ -41,88 +45,23 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     }
   });
 
-  const matchData: MatchData = {
+  let matchData: MatchData = {
     matchLog: [] as Turn[],
     playerData: {},
+    inducements: {
+      homeTeam: {},
+      awayTeam: {},
+    },
   };
 
   // in the match data, generate each player and their actions
-  matchData.playerData = {};
   replaySteps[0].BoardState.ListTeams.TeamState.forEach((team) => {
     team.ListPitchPlayers.PlayerState.forEach((player) => {
-      matchData.playerData[player.Id] = {
-        playerId: player.Id as PlayerId,
-        teamId:
-          replaySteps[0].BoardState.ListTeams.TeamState.indexOf(
-            team
-          ).toString(),
-        // movement stats
-        yardsMoved: 0,
-        yardsMovedWithBall: 0,
-        // passing stats
-        passesAttempted: {
-          handoff: 0,
-          short: 0,
-          long: 0,
-          longBomb: 0,
-        },
-        passesCompleted: {
-          handoff: 0,
-          short: 0,
-          long: 0,
-          longBomb: 0,
-        },
-        passesCaught: 0,
-        passesDropped: 0,
-        passesIntercepted: 0,
-        // blocking stats
-        blocksAttempted: 0,
-        blockDiceRolled: {
-          attackerDown: 0,
-          bothDown: 0,
-          push: 0,
-          defenderStumbles: 0,
-          defenderDown: 0,
-        },
-        blockDiceTaken: {
-          attackerDown: 0,
-          bothDown: 0,
-          push: 0,
-          defenderStumbles: 0,
-          defenderDown: 0,
-        },
-        blockingRerollsUsed: {
-          team: 0,
-          pro: 0,
-          brawler: 0,
-        },
-        assistsReceived: 0,
-        pushFollowUps: 0,
-        // receiving blocks
-        timesPushed: 0,
-        timesRemovedFromPlay: 0,
-        // d6 rolls
-        dSixRolls: {
-          one: 0,
-          two: 0,
-          three: 0,
-          four: 0,
-          five: 0,
-          six: 0,
-        },
-        // injuries
-        armourRolls: {
-          armourRolls: 0,
-          armourRollsPassed: 0,
-          armourRollsFailed: 0,
-        },
-        injuryRolls: {
-          injuryRolls: 0,
-          injuryStunned: 0,
-          injuryKO: 0,
-          injuryCasualty: 0,
-        },
-      };
+      matchData = addBasePlayerData(
+        matchData,
+        replaySteps[0].BoardState.ListTeams.TeamState.indexOf(team).toString(),
+        player.Id as PlayerId
+      );
     });
   });
 
@@ -139,6 +78,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     turnActionEvents: [],
     actionsTaken: {},
   };
+
+  let inducementTurnData: EventNewInducementsTurn | undefined;
+  let eventInducementsData: any | undefined;
+
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
     // Process step by game phase
@@ -149,8 +92,73 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       continue;
     }
 
+    if (gamePhase === "0") {
+      // // This is the pre-match Inducement phase
+
+      // If the step has EventNewInducementsTurn, we need to set the current inducement turn data for the current team for use later
+      if (step.EventNewInducementsTurn) {
+        inducementTurnData = step.EventNewInducementsTurn;
+      }
+
+      const teamId = inducementTurnData?.GamerId || "0";
+      const team = teamId === "1" ? "awayTeam" : "homeTeam";
+
+      // If the step has EventInducementsData, we need to store the possible inducements for the two teams
+      if (step.EventInducementsData) {
+        eventInducementsData = step.EventInducementsData;
+      }
+
+      if (step.EventBuyMercenary) {
+        // If the step has EventBuyMercenary, a team has bought a mercenary or star player
+        if (!matchData.inducements[team].mercenaryPlayers) {
+          matchData.inducements[team].mercenaryPlayers = [];
+          matchData.inducements[team].starPlayers = [];
+        }
+
+        // We need to get the player data for the mercenary from the eventInducementsData
+        const mercenaryPlayer =
+          eventInducementsData?.TeamInducements?.TeamInducements?.[
+            parseInt(teamId)
+          ]?.InducementsCategories?.InducementsCategory?.find(
+            (inducementCategory: Inducement) => {
+              return (
+                inducementCategory?.Players?.PlayerData?.IdPlayerTypes ===
+                step?.EventBuyMercenary?.MercenaryType
+              );
+            }
+          );
+        if (!mercenaryPlayer) {
+          console.warn(
+            "No mercenary player found for the following step:",
+            step
+          );
+          continue;
+        }
+        // Add Id, Number and TeamId to the player
+        mercenaryPlayer.Players.PlayerData.Id =
+          step.EventBuyMercenary.MercenaryId;
+        mercenaryPlayer.Players.PlayerData.Number =
+          step.EventBuyMercenary.MercenaryId;
+        mercenaryPlayer.Players.PlayerData.TeamId = teamId;
+        if (mercenaryPlayer.Type === "6") {
+          // This is a Journeyman player
+          matchData.inducements[team].mercenaryPlayers?.push(
+            mercenaryPlayer.Players.PlayerData as Player
+          );
+          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+        }
+        if (mercenaryPlayer.Type === "7") {
+          // This is a Star player
+          matchData.inducements[team].starPlayers?.push(
+            mercenaryPlayer.Players.PlayerData as Player
+          );
+          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+        }
+      }
+    }
+
     if (gamePhase === "1") {
-      // // Game phase 1 is match start and inducements
+      // // Game phase 1 is match start
 
       // If the setp has EventMatchStart, it's the start of the match
       // We can grab the EventFanFactor and the initial weather roll
@@ -170,19 +178,14 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         };
       }
 
-      // If the step has EventNewInducementsTurn, we can ignore it for now
-      if (step.EventNewInducementsTurn) {
-        // Dont do anything
+      // If the step has EventEndInducements, we can ignore it for now
+      if (step.EventEndInducements) {
+        // Dont log anything
       }
     }
 
     if (gamePhase === "2") {
       // Game phase 2 is pre-kick
-
-      // If the step has EventEndInducements, we can ignore it for now
-      if (step.EventEndInducements) {
-        // Dont log anything
-      }
 
       // If the step has EventQuestionKickingChoice, a player is choosing to kick or receive
       if (step.EventQuestionKickingChoice) {

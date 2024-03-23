@@ -57,7 +57,8 @@
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
                                   <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="50"
-                                    height="50" v-ripple @click.stop="openSkillDialog(skill)" class="cursor-pointer"></v-img>
+                                    height="50" v-ripple @click.stop="openSkillDialog(skill)"
+                                    class="cursor-pointer"></v-img>
                                 </span>
                               </template>
                             </v-tooltip>
@@ -76,7 +77,8 @@
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
                                   <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="50"
-                                    height="50" v-ripple @click.stop="openSkillDialog(skill)" class="cursor-pointer"></v-img>
+                                    height="50" v-ripple @click.stop="openSkillDialog(skill)"
+                                    class="cursor-pointer"></v-img>
                                 </span>
                               </template>
                             </v-tooltip>

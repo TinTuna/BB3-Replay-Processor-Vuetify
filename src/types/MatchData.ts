@@ -1,5 +1,6 @@
 import { PlayerId } from "./IdTypes/PlayerId";
 import { Turn } from "./Match/Turn";
+import { Player } from "./Teams/Player";
 
 export type MatchData = {
   matchLog: Turn[];
@@ -14,6 +15,46 @@ export type MatchData = {
   kickoff?: {
     firstHalfKick: 0 | 1; // 0 = home, 1 = away
     secondHalfKick: 0 | 1; // 0 = home, 1 = away
+  };
+  inducements: {
+    homeTeam: {
+      cheerleaders?: number; // 0-4
+      assistantCoaches?: number; // 0-3
+      weatherMage?: number; // 0-1
+      bloodweiserKeg?: number; // 0-2
+      specialPlays?: number; // 0-5
+      extraTraining?: number; // 0-8
+      bribes?: number; // 0-3
+      wanderingApothecary?: number; // 0-2
+      mortuaryAssistant?: number; // 0-1
+      plagueDoctor?: number; // 0-1
+      riotousRookies?: number; // 0-1
+      halflingMasterChef?: number; // 0-1
+      infamousCoachingStaff?: number; // 0-2
+      wizard?: number; // 0-1
+      biasedReferee?: number; // 0-1
+      mercenaryPlayers?: Player[];
+      starPlayers?: Player[];
+    };
+    awayTeam: {
+      cheerleaders?: number; // 0-4
+      assistantCoaches?: number; // 0-3
+      weatherMage?: number; // 0-1
+      bloodweiserKeg?: number; // 0-2
+      specialPlays?: number; // 0-5
+      extraTraining?: number; // 0-8
+      bribes?: number; // 0-3
+      wanderingApothecary?: number; // 0-2
+      mortuaryAssistant?: number; // 0-1
+      plagueDoctor?: number; // 0-1
+      riotousRookies?: number; // 0-1
+      halflingMasterChef?: number; // 0-1
+      infamousCoachingStaff?: number; // 0-2
+      wizard?: number; // 0-1
+      biasedReferee?: number; // 0-1
+      mercenaryPlayers?: Player[];
+      starPlayers?: Player[];
+    };
   };
   playerData: {
     [key: string]: {

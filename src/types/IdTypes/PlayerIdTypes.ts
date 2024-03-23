@@ -121,3 +121,42 @@ export type PlayerIdType =
     | "1100" // Lineman
     | "1101" // Thrower
     | "1102" // Wardancer
+
+
+
+    // // Star Players
+    | "1112" // name_sp_gobbler
+    | "1113" // name_sp_griff
+    | "1114" // name_sp_karla
+    | "1115" // name_sp_borak
+    | "1116" // name_sp_roxanna
+    | "1117" // name_sp_varag
+    | "1118" // name_sp_grombrindal
+    | "1119" // name_sp_morg
+    | "1120" // 
+    | "1121" // name_sp_helmut
+    | "1122" // name_sp_willow
+    | "1123" // 
+    | "1124" // name_sp_hakflem
+    | "1125" // name_sp_eldril
+    | "1126" // name_sp_ironjaw
+    | "1127" // name_sp_zug
+    | "1128" // 
+    | "1129" // name_sp_bolgrot
+    | "1130" // name_sp_farblast
+    | "1131" // name_sp_withergrasp
+    | "1132" // 
+    | "1133" // 
+    | "1134" // name_sp_kiroth
+    | "1135" // 
+    | "1136" // name_sp_asperon
+    | "1137" // name_sp_heartripper
+    | "1138" // name_sp_ivan
+    | "1139" // name_sp_curnoth
+    | "1140" // 
+    | "1141" // name_sp_freshbreeze
+    | "1142" // name_sp_anqi
+    | "1143" // name_sp_glotl
+    | "1445" // name_sp_bilerot
+    | "1450" // name_sp_gloriel
+    | "1453" // name_sp_bryceTheSliceCambuel

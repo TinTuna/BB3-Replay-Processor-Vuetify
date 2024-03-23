@@ -42,7 +42,7 @@ export type SkillId =
   | "41" // Jump Up
   | "42" // 
   | "43" //
-  | "44" // 
+  | "44" // Loner 
   | "45" // Nerves of Steel
   | "46" //
   | "47" // Pass
@@ -57,7 +57,7 @@ export type SkillId =
   | "56" // Sidestep
   | "57" // Tackle
   | "58" // Strong Arm
-  | "59" // 
+  | "59" // Stunty
   | "60" // Sure Feet
   | "61" // Sure Hands
   | "62" //
@@ -103,6 +103,7 @@ export type SkillId =
   | "102" // Animosity
   
   | "1005" // Fumblerooskie
+  | "1008" // Loner
   | "1010" // Monstrous Mouth
   | "1012" // Pile Driver
   | "1015" // Safe Pair of Hands

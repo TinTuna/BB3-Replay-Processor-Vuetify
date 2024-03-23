@@ -58,8 +58,7 @@ const skillList: { [key in SkillId]: SkillData } = {
   },
   "6": {
     name: "Catch",
-    description:
-      "This Player can Re-roll all Catch tests.",
+    description: "This Player can Re-roll all Catch tests.",
     icon: new URL("/icons/skills/6.jpg", import.meta.url).href,
     skillCategory: "Agility",
     id: "6",
@@ -74,8 +73,7 @@ const skillList: { [key in SkillId]: SkillData } = {
   },
   "8": {
     name: "Sprint",
-    description:
-      "This Player can attempt to Rush three times instead of two.",
+    description: "This Player can attempt to Rush three times instead of two.",
     icon: new URL("/icons/skills/8.jpg", import.meta.url).href,
     skillCategory: "Agility",
     id: "8",
@@ -353,10 +351,11 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "43",
   },
   "44": {
-    name: "Unknown Skill" + " 44",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Loner",
+    description:
+      "If this Player wants to use a Team re-roll, roll a D6. If the result is equal to or greater than 4, this Player plays normally. On any other result, the first result is kept and the Team re-roll is lost. This Trait may still be used if the Player is Prone or has lost their Tackle Zone.",
+    icon: new URL("/icons/skills/44.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "44",
   },
   "45": {
@@ -467,10 +466,11 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "58",
   },
   "59": {
-    name: "Unknown Skill" + " 59",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Stunty",
+    description:
+      "On Agility tests for a Dodge, this player ignores the -1 marking penalty on the square he has just occupied. Bombardier, Chainsaw and Swoop cancel this advantage. However, an opposition player gains +1 on his Agility test when he Interferes with a pass by this player.",
+    icon: new URL("/icons/skills/59.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "59",
   },
   "60": {
@@ -801,9 +801,18 @@ const skillList: { [key in SkillId]: SkillData } = {
     skillCategory: "Passing",
     id: "1005",
   },
+  "1008": {
+    name: "Loner",
+    description:
+      "If this Player wants to use a Team re-roll, roll a D6. If the result is equal to or greater than 3, this Player plays normally. On any other result, the first result is kept and the Team re-roll is lost. This Trait may still be used if the Player is Prone or has lost their Tackle Zone.",
+    icon: new URL("/icons/skills/1008.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
+    id: "1008",
+  },
   "1010": {
     name: "Monstrous Mouth",
-    description: "This Player can Re-roll each failed Catch. Moreover, the Strip Ball Skill cannot be used against this Player.",
+    description:
+      "This Player can Re-roll each failed Catch. Moreover, the Strip Ball Skill cannot be used against this Player.",
     icon: new URL("/icons/skills/1010.jpg", import.meta.url).href,
     skillCategory: "Mutation",
     id: "1005",

@@ -37,6 +37,34 @@ export const useDataStore = defineStore("data", () => {
         }
       }
     );
+    // Then from the MatchData we need to grab any Inducement Players / Star Players that have been purchased
+    if (matchData.value) {
+      matchData.value.inducements.homeTeam.mercenaryPlayers?.forEach(
+        (player) => {
+          playerData.value[player.Id] = player;
+          rosters.value?.TeamRoster?.[0].Players.PlayerData.push(player);
+        }
+      );
+      matchData.value.inducements.homeTeam.starPlayers?.forEach(
+        (player) => {
+          playerData.value[player.Id] = player;
+          rosters.value?.TeamRoster?.[0].Players.PlayerData.push(player);
+        }
+      );
+      matchData.value.inducements.awayTeam.mercenaryPlayers?.forEach(
+        (player) => {
+          playerData.value[player.Id] = player;
+          rosters.value?.TeamRoster?.[1].Players.PlayerData.push(player);
+        }
+      );
+      matchData.value.inducements.awayTeam.starPlayers?.forEach(
+        (player) => {
+          console.log(player);
+          playerData.value[player.Id] = player;
+          rosters.value?.TeamRoster?.[1].Players.PlayerData.push(player);
+        }
+      );
+    }
   };
 
   // getters

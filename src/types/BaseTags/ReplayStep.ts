@@ -1,7 +1,7 @@
 import { Modifier } from "typescript";
 import { Die } from "../Pitch/Die";
 import { BoardState } from "../States/BoardState";
-import { TeamInducement } from "../Teams/TeamInducement";
+import { TeamInducement } from "../Inducements/TeamInducement";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 import { GamePhase } from "../Pitch/GamePhase";
@@ -12,6 +12,8 @@ import { SkillId } from "../IdTypes/SkillId";
 import { KickoffIds } from "../IdTypes/KickoffIds";
 import { PrayerIds } from "../IdTypes/PrayerIds";
 import { EndTurnReasons } from "../IdTypes/EndTurnReasons";
+import { EventNewInducementsTurn } from "../Inducements/EventNewInducementsTurn";
+import { PlayerIdType } from "../IdTypes/PlayerIdTypes";
 
 export type ReplayStep = {
   BoardState: BoardState;
@@ -90,16 +92,19 @@ export type ReplayStep = {
       TeamInducements: TeamInducement[];
     };
   };
+  EventBuyMercenary: {
+    GamerId: "0" | "1";
+    MercenaryId: PlayerId;
+    MercenaryType: PlayerIdType;
+  };
+
   EventJourneyMen: [
     {
       TeamId: string;
     }
   ];
   EventMatchStart: {};
-  EventNewInducementsTurn: {
-    GamerId: string;
-    InducementsPhase: string;
-  };
+  EventNewInducementsTurn: EventNewInducementsTurn;
   EventPauseActiveTimer: {};
   EventWeatherRoll: {
     Dice: {

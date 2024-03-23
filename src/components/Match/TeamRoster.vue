@@ -64,7 +64,7 @@ const teamRoster = computed(() => {
       number: player.Number,
       name: player.Name,
       position: getIdPlayerType(player.IdPlayerTypes),
-      mvp: mvp.value?.PlayerData.Id === player.Id ? "MVP" : "",
+      mvp: mvp.value?.PlayerData.Id && mvp.value?.PlayerData.Id === player.Id ? "MVP" : "",
     };
   });
 });

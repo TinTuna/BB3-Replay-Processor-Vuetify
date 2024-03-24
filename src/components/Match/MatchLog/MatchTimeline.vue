@@ -163,9 +163,6 @@ const events = computed(() => {
                 clickable: true
             } as Event
         }
-
-        console.log('event', event)
-
     }).filter(Boolean) || []
 });
 

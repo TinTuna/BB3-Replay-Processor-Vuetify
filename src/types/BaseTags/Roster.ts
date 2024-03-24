@@ -1,3 +1,5 @@
+import { AggregatedStatistic } from "../Statistics/AggregatedStatistic";
+import { DiceStatistic } from "../Statistics/DiceStatistic";
 import { Player } from "../Teams/Player";
 import { Team } from "../Teams/Team";
 
@@ -25,4 +27,12 @@ export type Roster = {
     PlayerData: Player[];
   };
   Team: Team;
+  TeamStatistics?: {
+    AggregatedStatistics: {
+      AggregatedStatistics: AggregatedStatistic[];
+    };
+    DiceStatistics: {
+      DieStatistic: DiceStatistic[];
+    };
+  };
 };

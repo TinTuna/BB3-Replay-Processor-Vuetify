@@ -1,14 +1,10 @@
 <template>
-
   <v-dialog max-width="500">
     <template v-slot:activator="{ props: activatorProps }">
-
       <v-container>
-
         <v-select v-model="selectedPlayer" :items="listPlayers" item-title="name" item-value="id" label="Player"
           outlined dense return-object>
         </v-select>
-
         <!-- Statline -->
         <div>
           <v-row>
@@ -23,10 +19,10 @@
               <v-card elevation="2">
                 <v-card-title class="text-h4">
                   {{ playerName }}<br>
-                  <v-icon color="primary" size="small" style="margin-right: -4px">{{
+                  <v-icon color="primary" size="small" style="margin-right: -8px">{{
       `mdi-numeric-${playerData.Number[0]}-box`
     }}</v-icon>
-                  <v-icon v-if="playerData.Number[1]" color="primary" size="small" style="margin-left: -4px">{{
+                  <v-icon v-if="playerData.Number[1]" color="primary" size="small" style="margin-left: -8px">{{
       `mdi-numeric-${playerData.Number[1]}-box` }}</v-icon><br>
                   <!-- <span class="text-subtitle-2">{{ dataStore.getPlayerType(playerData.IdPlayerTypes) }}</span> -->
                 </v-card-title>
@@ -39,33 +35,12 @@
                         location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-chip size="large" v-bind="props" :prepend-icon="characteristic.icon">{{
-      characteristic.value
-    }}</v-chip>
+      characteristic.value }}</v-chip>
                         </template>
                       </v-tooltip>
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col v-if="acquiredSkills.length" cols="6">
-                      <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
-                        <div class="text-h6 py-1">
-                          Acquired Skills
-                        </div>
-                        <div class="d-flex mx-auto">
-                          <template v-for="(skill, i) in acquiredSkills" :key="i">
-                            <v-tooltip :text="skill.name" location="bottom">
-                              <template v-slot:activator="{ props }">
-                                <span v-bind="props">
-                                  <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="50"
-                                    height="50" v-ripple @click.stop="openSkillDialog(skill)"
-                                    class="cursor-pointer"></v-img>
-                                </span>
-                              </template>
-                            </v-tooltip>
-                          </template>
-                        </div>
-                      </v-sheet>
-                    </v-col>
                     <v-col v-if="innateSkills.length" cols="6">
                       <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
                         <div class="text-h6 py-1">
@@ -76,8 +51,28 @@
                             <v-tooltip :text="skill.name" location="bottom">
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
-                                  <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="50"
-                                    height="50" v-ripple @click.stop="openSkillDialog(skill)"
+                                  <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="60"
+                                    height="60" v-ripple @click.stop="openSkillDialog(skill)"
+                                    class="cursor-pointer"></v-img>
+                                </span>
+                              </template>
+                            </v-tooltip>
+                          </template>
+                        </div>
+                      </v-sheet>
+                    </v-col>
+                    <v-col v-if="acquiredSkills.length" cols="6">
+                      <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
+                        <div class="text-h6 py-1">
+                          Acquired Skills
+                        </div>
+                        <div class="d-flex mx-auto">
+                          <template v-for="(skill, i) in acquiredSkills" :key="i">
+                            <v-tooltip :text="skill.name" location="bottom">
+                              <template v-slot:activator="{ props }">
+                                <span v-bind="props">
+                                  <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="60"
+                                    height="60" v-ripple @click.stop="openSkillDialog(skill)"
                                     class="cursor-pointer"></v-img>
                                 </span>
                               </template>
@@ -158,10 +153,16 @@ type Characteristic = {
 };
 
 const characteristics: Ref<Characteristic[]> = computed(() => {
-  const baseChars = playerData.value.Characteristics.PlayerCharacteristic.map((characteristic) => {
+  // Sort characteristics by order of characteristic.Characteristic
+  const characteristics =playerData.value.Characteristics.PlayerCharacteristic
+  characteristics.sort((a, b) => {
+    return parseInt(a.Characteristic) - parseInt(b.Characteristic);
+  });
+  const baseChars = characteristics.map((characteristic) => {
     let name = '';
     let icon = 'mdi-alert';
     let value = '';
+    if (!characteristic.Characteristic) characteristic.Characteristic = '0';
     switch (characteristic.Characteristic) {
       case '0':
         name = 'Movement';

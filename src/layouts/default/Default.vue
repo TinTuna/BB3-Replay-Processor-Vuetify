@@ -13,12 +13,13 @@
             </v-card-title>
             <v-card-text class="d-flex" style="display: flex;align-items: center;">
               <p>
-                Email me the .bbr file and I'll take a look:
+                Send me the .bbr file and I'll take a look:
                 <br />
                 <b>BB3Replay@gmail.com</b>
               </p>
-
-              <p></p>
+              <v-btn icon href="https://discordapp.com/users/299945264242753546" target="_blank" class="ml-3">
+                <v-img :src="discord" height="30" width="30" contain></v-img>
+              </v-btn>
               <v-btn icon href="mailto:bb3replay@gmail.com?subject=BB3Replay File" target="_blank" class="ml-3">
                 <v-icon color="blue">mdi-email</v-icon>
               </v-btn>
@@ -55,4 +56,8 @@ import AppBar from './AppBar.vue'
 
 const version = APP_VERSION
 
+const discord = new URL('/discord.webp', import.meta.url).href
+
 </script>
+
+

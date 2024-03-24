@@ -203,10 +203,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "24",
   },
   "25": {
-    name: "Unknown Skill" + " 25",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Chainsaw",
+    description: "This action can replace a lone Block action or one that is part of a Blitz or a Foul. On a D6 result of 1: the Player injures himself. On other results, the target is hit. In all cases, an Armour Value test is made. All Armour Value tests caused by, or suffered by, the Chainsaw carrier have a +3 modifier.",
+    icon: new URL("/icons/skills/25.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "25",
   },
   "26": {
@@ -218,9 +218,9 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "26",
   },
   "27": {
-    name: "Dirty Player",
+    name: "Dirty Player (+1)",
     description:
-      "During a Foul action performed by this Player, the result of the Armour Value or the Injury test can be modified by the amount shown in brackets after the Skill.",
+      "During a Foul action performed by this Player, the result of the Armour Value or the Injury test can be modified by +1.",
     icon: new URL("/icons/skills/27.jpg", import.meta.url).href,
     skillCategory: "General",
     id: "27",
@@ -250,10 +250,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "30",
   },
   "31": {
-    name: "Unknown Skill" + " 31",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Bone Head",
+    description: "On the activation of this Player, on a D6 result of 1: the Turn of this Player ends, and he loses his Tackle Zone. If this player was attempting a Declaration that was usable only once per Turn, it is lost.",
+    icon: new URL("/icons/skills/31.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "31",
   },
   "32": {
@@ -337,10 +337,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "41",
   },
   "42": {
-    name: "Unknown Skill" + " 42",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "No Hands",
+    description: "This Player cannot take possession of the Ball nor attempt any action that would lead him to take possession of the Ball.",
+    icon: new URL("/icons/skills/46.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "42",
   },
   "43": {
@@ -412,10 +412,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "51",
   },
   "52": {
-    name: "Unknown Skill" + " 52",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Right Stuff",
+    description: "If this Player has an ST of 3 or less, he can be thrown by a Team-mate with the Throw Team-Mate Skill. This Trait may still be used if the Player is Prone, Stunned or has lost their Tackle Zone.",
+    icon: new URL("/icons/skills/52.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "52",
   },
   "53": {
@@ -427,10 +427,11 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "53",
   },
   "54": {
-    name: "Unknown Skill" + " 54",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Secret Weapon",
+    description:
+      "When a Drive involving this Player comes to an end, he is Sent off for having committed a Foul.",
+    icon: new URL("/icons/skills/54.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "54",
   },
   "55": {
@@ -609,10 +610,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "77",
   },
   "78": {
-    name: "Unknown Skill" + " 78",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Hypnotic Gaze",
+    description: "Target an opponent who is Standing adjacent and who has not lost his Tackle Zone. This Player carries out an Agility test with -1 for each Player Marking him. If the test is successful, the opponent loses his Tackle Zone until his activation.",
+    icon: new URL("/icons/skills/78.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "78",
   },
   "79": {
@@ -652,10 +653,10 @@ const skillList: { [key in SkillId]: SkillData } = {
     id: "83",
   },
   "84": {
-    name: "Unknown Skill" + " 84",
-    description: "Unknown Description",
-    icon: new URL("/icons/skills/unknown.jpg", import.meta.url).href,
-    skillCategory: "Unknown Category",
+    name: "Animal Savagery",
+    description: "After declaring an action, on a D6 result of 1-3 (with +2 if the declared action is a Blitz): an adjacent Team-mate is Knocked down. Only causes a Turnover if the victim was carrying the Ball. During an Armour Value test, the opposition Manager can use the Mighty Blow Skill if your Player has it. The Turn of the Player stops immediately if no Team-mate is adjacent. This Player loses his Tackle Zone until next activated.",
+    icon: new URL("/icons/skills/84.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
     id: "84",
   },
   "85": {
@@ -809,6 +810,14 @@ const skillList: { [key in SkillId]: SkillData } = {
     skillCategory: "Trait Skill",
     id: "1008",
   },
+  "1009": {
+    name: "Mighty Blow (+2)",
+    description:
+      "When an opponent is Knocked down following a Block by this Player, you can change the Armour Value or Injury test by +2. This modifier can be applied after the test. This Skill is not usable with Stab or Chainsaw.",
+    icon: new URL("/icons/skills/1009.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
+    id: "1005",
+  },
   "1010": {
     name: "Monstrous Mouth",
     description:
@@ -848,5 +857,19 @@ const skillList: { [key in SkillId]: SkillData } = {
     icon: new URL("/icons/skills/1020.jpg", import.meta.url).href,
     skillCategory: "Trait Skill",
     id: "1020",
+  },
+  "1021": {
+    name: "Dirty Player (+2)",
+    description: "During a Foul action performed by this Player, the result of the Armour Value or the Injury test can be modified by +2.",
+    icon: new URL("/icons/skills/1021.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
+    id: "1021",
+  },
+  "1022": {
+    name: "Loner (5+)",
+    description: "If this Player wants to use a Team re-roll, roll a D6. If the result is equal to or greater than 5, this Player plays normally. On any other result, the first result is kept and the Team re-roll is lost. This Trait may still be used if the Player is Prone or has lost their Tackle Zone.",
+    icon: new URL("/icons/skills/1022.jpg", import.meta.url).href,
+    skillCategory: "Trait Skill",
+    id: "1022",
   },
 };

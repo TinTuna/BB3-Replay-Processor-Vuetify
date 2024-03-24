@@ -58,7 +58,7 @@ export type ReplayStep = {
   EventExecuteSequence: {
     Sequence: {
       StepResult: Step[];
-    } ;
+    };
   }[];
   EventEndTurn: {
     Reason: EndTurnReasons;
@@ -191,4 +191,29 @@ export type ReplayStep = {
       };
     };
   };
+  EventMatchEnd: {
+    MatchCompletionStatus: "0" | "1";
+    GamersEndMatchStatus: {
+      GamerEndMatchStatus: {
+        EndStatus?: "0" | "1";
+        GamerId?: "0" | "1";
+      }[];
+    };
+  };
 };
+
+/* 
+
+<EventMatchEnd>
+  <MatchCompletionStatus>1</MatchCompletionStatus>
+  <GamersEndMatchStatus>
+    <GamerEndMatchStatus>
+      <EndStatus>1</EndStatus>
+    </GamerEndMatchStatus>
+    <GamerEndMatchStatus>
+      <GamerId>1</GamerId>
+    </GamerEndMatchStatus>
+  </GamersEndMatchStatus>
+</EventMatchEnd>
+
+*/

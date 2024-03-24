@@ -29,6 +29,11 @@ export const useDataStore = defineStore("data", () => {
         teamData.value[`${i}`] = roster.Roster;
       }
     );
+    // Add the overall team statistics to the team data
+    teamData.value["0"].TeamStatistics = endGame.value?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.Statistics;
+    teamData.value["1"].TeamStatistics = endGame.value?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.Statistics;
+
+    // Now we need to process the players
     rosters.value?.TeamRoster.forEach(
       (roster) => {
         // Process the players for this team
@@ -69,7 +74,6 @@ export const useDataStore = defineStore("data", () => {
 
   // getters
   const getPlayerName = (playerId: string) => {
-    // console.log(playerId, playerData.value, playerData.value[playerId]);
     return playerData.value[playerId]?.Name || "Unknown Name";
   };
   const getPlayerData = (playerId: string) => {
@@ -87,6 +91,13 @@ export const useDataStore = defineStore("data", () => {
   const getSkillData = (skillId: SkillId) => {
     return getSkillDataFromId(skillId);
   }
+  const getTeamDataByDataId = (teamId: "0" | "1", teamDataId: string) => {
+    return teamData.value?.[teamId]?.TeamStatistics?.AggregatedStatistics?.AggregatedStatistics?.find(
+      (stat) => {
+        return stat.StatId === teamDataId
+      }
+    )?.Value || "0"
+  }
 
   return {
     notificationGameJoined,
@@ -94,11 +105,13 @@ export const useDataStore = defineStore("data", () => {
     endGame,
     setTeamData,
     matchData,
+    teamData,
     getPlayerName,
     getPlayerData,
     getTeamName,
     getTeamData,
     getPlayerType,
-    getSkillData
+    getSkillData,
+    getTeamDataByDataId
   };
 });

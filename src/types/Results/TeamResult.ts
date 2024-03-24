@@ -16,7 +16,7 @@ export type TeamResult = {
   };
   Statistics: {
     AggregatedStatistics: {
-        AggregatedStatistic: AggregatedStatistic[];
+        AggregatedStatistics: AggregatedStatistic[];
     }
     ;
     DiceStatistics: {
@@ -25,4 +25,5 @@ export type TeamResult = {
   };
   TeamData: Team;
   TouchdownsBeforeConcede: string;
+  Score: string;
 };

@@ -14,6 +14,7 @@ import { EventNewInducementsTurn } from "@/types/Inducements/EventNewInducements
 import { Inducement } from "@/types/Inducements/Inducement";
 import { Player } from "@/types/Teams/Player";
 import { addBasePlayerData } from "./addBasePlayerData";
+import { getStarPlayerName } from "../stringFromIdFunctions/getStarPlayerName";
 // import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
 // import { ResultRoll } from "@/types/messageData/ResultRoll";
 
@@ -84,6 +85,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
+    // Update the game phase
+    if (step.EventNewGamePhase) {
+      gamePhase = step.EventNewGamePhase.Phase;
+    }
+
     // Process step by game phase
 
     // If the step has EventGamersAreReady, it's a information only step
@@ -142,6 +148,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         mercenaryPlayer.Players.PlayerData.TeamId = teamId;
         if (mercenaryPlayer.Type === "6") {
           // This is a Journeyman player
+          mercenaryPlayer.Players.PlayerData.Journeyman = true;
           matchData.inducements[team].mercenaryPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
@@ -149,6 +156,12 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
         if (mercenaryPlayer.Type === "7") {
           // This is a Star player
+          // Get the star player name
+          mercenaryPlayer.Players.PlayerData.StarPlayer = true;
+          const starPlayerName = getStarPlayerName(mercenaryPlayer.Players.PlayerData.IdPlayerTypes);
+          if (starPlayerName) {
+            mercenaryPlayer.Players.PlayerData.Name = starPlayerName;
+          }
           matchData.inducements[team].starPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
@@ -231,8 +244,8 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         if (step.EventNewGamePhase) {
           // the phase is over and setup is complete
           // EventActiveGamerChanged will tell us who will select the kicker
-          const kickingTeam =
-            step.EventActiveGamerChanged.NewActiveGamer || "0";
+          // const kickingTeam =
+          //   step.EventActiveGamerChanged.NewActiveGamer || "0";
         }
       }
     }
@@ -429,9 +442,23 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       }
     }
 
-    // Update the game phase
-    if (step.EventNewGamePhase) {
-      gamePhase = step.EventNewGamePhase.Phase;
+    if (gamePhase === "6") {
+      // This is the post-match phase
+
+      if (step.EventMatchEnd) {
+        // This is the end of the match event
+        // If the MatchCompletionStatus is 1, the match was conceded
+        if (step.EventMatchEnd.MatchCompletionStatus === "1") {
+          // The match was conceded
+          // The GamersEndMatchStatus will tell us who conceded
+          step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach((gamerEndMatchStatus, i) => {
+            if (gamerEndMatchStatus.EndStatus) {
+              matchData.conceded = i.toString() as "0" | "1";
+            }
+          });
+        }
+
+      }
     }
   }
 

@@ -8,6 +8,7 @@ export type EndGame = {
   Clock: string;
   RulesEventGameFinished: {
     MatchResult: {
+      CompletionStatus: "0" | "1";
       FanAttendance: string;
       GamerResults: {
         GamerResult: GamerResult[];

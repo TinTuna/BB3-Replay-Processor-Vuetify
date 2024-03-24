@@ -30,4 +30,6 @@ export type Player = {
   Number: string;
   TeamId: string;
   Value: string;
+  Journeyman: boolean;
+  StarPlayer: boolean;
 };

@@ -123,4 +123,5 @@ export type MatchData = {
       };
     };
   };
+  conceded?: "0" | "1";
 };

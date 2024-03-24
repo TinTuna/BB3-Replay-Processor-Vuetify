@@ -1,13 +1,13 @@
 export type SkillId =
-  | "1"  // Strip Ball
-  | "2"  //
-  | "3"  //
-  | "4"  //
-  | "5"  //
-  | "6"  // Catch
-  | "7"  // Dodge
-  | "8"  // Sprint
-  | "9"  //
+  | "1" // Strip Ball
+  | "2" //
+  | "3" //
+  | "4" //
+  | "5" //
+  | "6" // Catch
+  | "7" // Dodge
+  | "8" // Sprint
+  | "9" //
   | "10" // Foul Appearance
   | "11" // Leap
   | "12" // Extra Arms
@@ -16,9 +16,9 @@ export type SkillId =
   | "15" // Horns
   | "16" // Two Heads
   | "17" // Stand Firm
-  | "18" //
+  | "18" // Always Hungry
   | "19" // Regeneration
-  | "20" //
+  | "20" // Take Root
   | "21" // Accurate
   | "22" // Break Tackle
   | "23" // Sneaky Git
@@ -40,16 +40,16 @@ export type SkillId =
   | "39" // Hail Mary Pass
   | "40" // Juggernaut
   | "41" // Jump Up
-  | "42" // 
+  | "42" //
   | "43" //
-  | "44" // Loner 
+  | "44" // Loner
   | "45" // Nerves of Steel
   | "46" // No Hands
   | "47" // Pass
   | "48" //
   | "49" // Prehensile Tail
   | "50" // Pro
-  | "51" //
+  | "51" // Really Stupid
   | "52" // Right Stuff
   | "53" // Safe Pass
   | "54" // Secret Weapon
@@ -62,10 +62,10 @@ export type SkillId =
   | "61" // Sure Hands
   | "62" //
   | "63" // Thick Skull
-  | "64" //
+  | "64" // Throw Team-Mate
   | "65" //
   | "66" //
-  | "67" // 
+  | "67" // Unchannelled Fury
   | "68" // Wrestle
   | "69" // Tentacles
   | "70" // Multiple Block
@@ -74,18 +74,18 @@ export type SkillId =
   | "73" //
   | "74" // Big Hand
   | "75" // Claws
-  | "76" //
-  | "77" //
+  | "76" // Ball and Chain
+  | "77" // Stab
   | "78" // Hypnotic Gaze
   | "79" //
-  | "80" //
+  | "80" // Bombardier
   | "81" // Decay
   | "82" //
-  | "83" //
+  | "83" // Titchy
   | "84" // Animal Savagery
   | "85" //
-  | "86" //
-  | "87" //
+  | "86" // Animosity: All Team-Mates
+  | "87" // Timmm-ber!
   | "88" // Cannoneer
   | "89" //
   | "90" // Defensive
@@ -93,15 +93,14 @@ export type SkillId =
   | "92" // Iron Hard Skin
   | "93" // Running Pass
   | "94" // Cloud Burster
-  | "95" //
+  | "95" // Projectile Vomit
   | "96" // Brawler
   | "97" // On the Ball
-  | "98" // 
-  | "99" // 
-  | "100" // 
-  | "101" //
-  | "102" // Animosity
-  
+  | "98" // Animosity: Dwarf and Halfling Team-Mates
+  | "99" // Animosity: Dwarf and Human Team-Mates
+  | "100" // Animosity: Orc Lineman
+  | "101" // Animosity: Big Un Blocker
+  | "102" // Animosity: Underworld Goblin Lineman
   | "1005" // Fumblerooskie
   | "1008" // Loner
   | "1009" // Mighty Blow (+2)
@@ -111,4 +110,4 @@ export type SkillId =
   | "1016" // Swarming
   | "1020" // Plague Ridden
   | "1021" // Dirty Player (+2)
-  | "1022" // Loner (5+)
+  | "1022"; // Loner (5+)

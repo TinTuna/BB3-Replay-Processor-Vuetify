@@ -7,5 +7,5 @@ export type ResultUseAction = {
 // 3 blitz
 // 4 pass
 // 5 handoff
-// throw teammate?
+// throw team-mate?
 // foul

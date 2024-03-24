@@ -29,11 +29,6 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
-import { Rosters } from "@/types/BaseTags/Roster";
-import { EndGame } from "@/types/BaseTags/EndGame";
-import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
-import { getIdTeamRace } from "@/composables/stringFromIdFunctions/getIdTeamRace";
 import TeamStats from "@/components/Match/TeamStats/TeamStats.vue";
 import { useDataStore } from "@/store/dataStore";
 
@@ -87,7 +82,7 @@ const teamStats = computed(() => {
   // GFIs
   // Re-Rolls Used
   // Turnovers
-  // Throw Teammates
+  // Throw Team-mates
   // Star Players
   // Inducements Bought
   // Chainsaw

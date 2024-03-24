@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
   <v-dialog max-width="500">
     <template v-slot:activator="{ props: activatorProps }">
@@ -51,9 +52,11 @@
                             <v-tooltip :text="skill.name" location="bottom">
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
-                                  <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="60"
-                                    height="60" v-ripple @click.stop="openSkillDialog(skill)"
-                                    class="cursor-pointer"></v-img>
+                                  <v-sheet elevation="2" class="pa-1" color="black" dark>
+                                    <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="60"
+                                      height="60" v-ripple @click.stop="openSkillDialog(skill)"
+                                      class="cursor-pointer"></v-img>
+                                  </v-sheet>
                                 </span>
                               </template>
                             </v-tooltip>
@@ -71,9 +74,11 @@
                             <v-tooltip :text="skill.name" location="bottom">
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
-                                  <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="60"
-                                    height="60" v-ripple @click.stop="openSkillDialog(skill)"
-                                    class="cursor-pointer"></v-img>
+                                  <v-sheet elevation="2" class="pa-1" color="black" dark>
+                                    <v-img v-bind="activatorProps" v-if="skill.icon" :src="skill.icon" width="60"
+                                      height="60" v-ripple @click.stop="openSkillDialog(skill)"
+                                      class="cursor-pointer"></v-img>
+                                  </v-sheet>
                                 </span>
                               </template>
                             </v-tooltip>
@@ -90,16 +95,19 @@
       </v-container>
     </template>
     <template v-slot:default="{ isActive }">
-      <v-card v-if="selectedSkill" :title="selectedSkill.name">
-        <v-card-text>
-          {{ selectedSkill.description }}
+      <v-card v-if="selectedSkill" :title="selectedSkill.name" :subtitle="selectedSkill.skillCategory">
+        <v-divider class="mt-3"></v-divider>
+        <v-card-text v-html="selectedSkill.description">
         </v-card-text>
-
         <v-card-actions>
           <v-spacer></v-spacer>
-
           <v-btn text="Close" @click="isActive.value = false"></v-btn>
         </v-card-actions>
+        <template v-slot:append>
+          <v-sheet elevation="2" rounded class="pa-1" color="black" dark>
+            <v-img v-if="selectedSkill.icon" :src="selectedSkill.icon" width="75" height="75"></v-img>
+          </v-sheet>
+        </template>
       </v-card>
     </template>
   </v-dialog>
@@ -154,7 +162,7 @@ type Characteristic = {
 
 const characteristics: Ref<Characteristic[]> = computed(() => {
   // Sort characteristics by order of characteristic.Characteristic
-  const characteristics =playerData.value.Characteristics.PlayerCharacteristic
+  const characteristics = playerData.value.Characteristics.PlayerCharacteristic
   characteristics.sort((a, b) => {
     return parseInt(a.Characteristic) - parseInt(b.Characteristic);
   });

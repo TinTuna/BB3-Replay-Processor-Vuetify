@@ -113,6 +113,9 @@ const processReplayFile = async () => {
 
 const downloadProcessedReplayFile = () => {
   if (!processedReplay.value) return;
+  // Remove the IP addresses from the XML
+  const ipAddresses = processedReplay.value.querySelectorAll("IpAddress");
+  ipAddresses.forEach((ip) => ip.remove());
   const serialisedtoString = new XMLSerializer().serializeToString(
     processedReplay.value
   );

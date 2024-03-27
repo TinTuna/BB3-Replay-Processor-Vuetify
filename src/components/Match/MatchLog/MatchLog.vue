@@ -56,7 +56,7 @@
                                     <v-col cols="12">
                                         <v-card height="200" width="200">
                                             <v-img
-                                                src="https://content.imageresizer.com/images/memes/Waiting-GG-meme-3.jpg"
+                                                :src="waiting"
                                                 cover></v-img>
                                             <v-card-text>
                                                 <div>Looks like a pretty quiet turn...</div>
@@ -100,6 +100,8 @@ const handleDrilldown = (event: Event) => {
         el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 };
+
+const waiting = new URL("/waiting.jpg", import.meta.url).href;
 
 </script>
 

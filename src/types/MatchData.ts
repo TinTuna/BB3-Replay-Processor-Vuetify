@@ -16,6 +16,10 @@ export type MatchData = {
     firstHalfKick: 0 | 1; // 0 = home, 1 = away
     secondHalfKick: 0 | 1; // 0 = home, 1 = away
   };
+  ballPossession: {
+    homeTeam: number;
+    awayTeam: number;
+  };
   inducements: {
     homeTeam: {
       cheerleaders?: number; // 0-4

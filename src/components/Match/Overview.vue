@@ -21,7 +21,7 @@
             <v-divider class="my-5"></v-divider>
             <v-sheet border rounded elevation="2" class="pb-2 pt-1">
               <GameBalance title="Touchdowns Scored" :home-stat="homeTeamTouchdownsScored" :away-stat="awayTeamTouchdownsScored" />
-              <GameBalance title="Posession" home-stat="0" away-stat="0" type="percentage" />
+              <GameBalance title="Possession" :home-stat="homePossession" :away-stat="awayPossession" type="percentage" />
               <GameBalance title="Blocks Made" :home-stat="homeBlocksMade" :away-stat="awayBlocksMade" />
               <GameBalance title="Injuries Inflicted" :home-stat="homeInjuriesInflicted" :away-stat="awayInjuriesInflicted" />
               <GameBalance title="Casualties Inflicted" :home-stat="homeCasualtiesInflicted" :away-stat="awayCasualtiesInflicted" />
@@ -47,7 +47,6 @@ import TeamRoster from "@/components/Match/TeamRoster.vue";
 import GameBalance from "@/components/Match/GameBalance.vue";
 import { useDataStore } from "@/store/dataStore";
 import { computed } from "vue";
-import { h } from "vue";
 
 const dataStore = useDataStore();
 
@@ -121,6 +120,13 @@ const homeKillsInflicted = computed(() => {
 })
 const awayKillsInflicted = computed(() => {
   return dataStore.getTeamDataByDataId("1", "21")
+})
+
+const homePossession = computed(() => {
+  return dataStore.matchData?.ballPossession.homeTeam.toString() || "0"
+})
+const awayPossession = computed(() => {
+  return dataStore.matchData?.ballPossession.awayTeam.toString() || "0"
 })
 
 </script>

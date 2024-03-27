@@ -43,19 +43,18 @@
                   </v-row>
                   <v-row>
                     <v-col v-if="innateSkills.length" cols="6">
-                      <v-sheet border rounded elevation="2" class="d-flex flex-column my-3 pb-2">
+                      <v-sheet border rounded elevation="2" class="d-flex justify-center flex-column my-3 pb-2 px-auto">
                         <div class="text-h6 py-1">
                           Innate Skills
                         </div>
-                        <div class="d-flex mx-auto">
+                        <div class="d-flex flex-wrap justify-center">
                           <template v-for="(skill, i) in innateSkills" :key="i">
                             <v-tooltip :text="skill.name" location="bottom">
                               <template v-slot:activator="{ props }">
                                 <span v-bind="props">
-                                  <v-sheet elevation="2" class="pa-1" color="black" dark>
-                                    <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="60"
-                                      height="60" v-ripple @click.stop="openSkillDialog(skill)"
-                                      class="cursor-pointer"></v-img>
+                                  <v-sheet elevation="2" class="pa-1 d-flex" color="black" dark>
+                                    <v-img v-if="skill.icon" v-bind="activatorProps" :src="skill.icon" width="60" height="60"
+                                      v-ripple @click.stop="openSkillDialog(skill)" class="cursor-pointer"></v-img>
                                   </v-sheet>
                                 </span>
                               </template>
@@ -120,7 +119,7 @@ import { Roster } from "@/types/BaseTags/Roster";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { useDataStore } from "@/store/dataStore";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import { SkillData } from "@/composables/stringFromIdFunctions/getSkillData";
+import { Skill } from "@/composables/stringFromIdFunctions/getSkillData";
 
 const dataStore = useDataStore();
 
@@ -274,9 +273,9 @@ const acquiredSkills = computed(() => {
   return [];
 });
 
-const selectedSkill = ref<SkillData | undefined>();
+const selectedSkill = ref<Skill | undefined>();
 
-const openSkillDialog = (skill: SkillData) => {
+const openSkillDialog = (skill: Skill) => {
   selectedSkill.value = skill;
 };
 

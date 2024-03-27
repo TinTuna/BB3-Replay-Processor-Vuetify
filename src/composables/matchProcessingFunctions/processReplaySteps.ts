@@ -53,6 +53,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       homeTeam: {},
       awayTeam: {},
     },
+    ballPossession: {
+      homeTeam: 0,
+      awayTeam: 0,
+    },
   };
 
   // in the match data, generate each player and their actions
@@ -425,12 +429,24 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         // add the Turn to the list of match turns and start a new turn
         matchData.matchLog.push(currentTurn);
 
+        // increment the turn number
         turnNumber += 1;
 
         // check if the half is over, if so swap the kickoff team
         if (turnNumber === 18) {
           // swap the kickoff team
           currentTurn.team = currentTurn.team === "0" ? "1" : "0";
+        }
+
+        // Check who (if anyone) has the ball and increment the possession counter
+        if (hasBall) {
+          // Find the player from the matchData
+          const player = matchData.playerData[hasBall];
+          if (player) {
+            // Increment the players team possession counter
+            const team = player.teamId === "1" ? "awayTeam" : "homeTeam";
+            matchData.ballPossession[team] += 1;
+          }
         }
 
         // Setup a new turn for the next team

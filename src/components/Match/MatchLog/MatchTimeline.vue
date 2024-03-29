@@ -15,33 +15,33 @@
             </v-card>
         </v-timeline-item>
 
-        <v-timeline-item v-for="(event, i) in events" :key="i"
+        <v-timeline-item right v-for="(event, i) in events" :key="i"
             :dot-color="event?.iconColor ? event?.iconColor : event?.color" :size="event?.size" :icon="event?.icon"
             fill-dot>
             <v-tooltip v-if="event?.tooltip" :text="event?.tooltip" location="bottom">
                 <template v-slot:activator="{ props: tooltipProps }">
-                    <v-card v-bind="tooltipProps" v-if="event?.title" @click.stop="props.drilldown(event)" elevation="3">
-                        <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
+                    <v-card v-bind="tooltipProps" v-if="event?.title" @click.stop="props.drilldown(event)" elevation="3" :color="event.color">
+                        <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]" >
                             {{ event?.title }}
                         </v-card-title>
                         <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-                        <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
+                        <v-card-text v-if="event?.text" class="py-2 text-body-2 bg-white" v-html="event?.text"></v-card-text>
                     </v-card>
                 </template>
             </v-tooltip>
-            <v-card v-if="event?.title && !event?.tooltip && event?.clickable" @click.stop="props.drilldown(event)" elevation="3">
+            <v-card v-if="event?.title && !event?.tooltip && event?.clickable" @click.stop="props.drilldown(event)" elevation="3" :color="event.color">
                 <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
                     {{ event?.title }}
                 </v-card-title>
                 <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-                <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
+                <v-card-text v-if="event?.text" class="py-2 text-body-2 bg-white" v-html="event?.text"></v-card-text>
             </v-card>
-            <v-card v-if="event?.title && !event?.tooltip && !event?.clickable" elevation="3">
+            <v-card v-if="event?.title && !event?.tooltip && !event?.clickable" elevation="3" :color="event.color">
                 <v-card-title :class="['text-subtitle-1', `bg-${event?.color}`]">
                     {{ event?.title }}
                 </v-card-title>
                 <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-                <v-card-text v-if="event?.text" class="py-2 text-body-2" v-html="event?.text"></v-card-text>
+                <v-card-text v-if="event?.text" class="py-2 text-body-2 bg-white" v-html="event?.text"></v-card-text>
             </v-card>
 
             <!-- <template v-if="event?.opp" v-slot:opposite>
@@ -86,6 +86,13 @@ const homeFTScore = dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerR
 const awayFTScore = dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults
     .GamerResult[1].TeamResult.TouchdownsBeforeConcede || 0;
 
+const homeTeamColours = computed(() => {
+    return dataStore.getTeamColours("0");
+});
+const awayTeamColours = computed(() => {
+    return dataStore.getTeamColours("1");
+});
+
 export type Event = {
     color: string;
     icon: string;
@@ -128,7 +135,7 @@ const events = computed(() => {
                 currAwayScore++
             }
             return {
-                color: event.team === '0' ? 'red-lighten-2' : 'blue-lighten-2',
+                color: event.team === '0' ? homeTeamColours.value.primary : awayTeamColours.value.primary,
                 icon: 'mdi-football',
                 iconColor: 'brown',
                 size: 'large',
@@ -146,7 +153,7 @@ const events = computed(() => {
         }
         if (event.injury) {
             return {
-                color: event.team === '0' ? 'red-lighten-2' : 'blue-lighten-2',
+                color: event.team === '0' ? homeTeamColours.value.primary : awayTeamColours.value.primary,
                 icon: 'mdi-sword',
                 iconColor: 'red',
                 size: 'x-small',

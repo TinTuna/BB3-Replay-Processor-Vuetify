@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <h2>
+  <v-sheet border rounded elevation="2" :color="dataStore.getTeamColours(team.toString()).primary">
+    <h2 class="mt-4">
       {{ teamName }}
       <v-tooltip v-if="concede" text="Conceded" location="bottom">
         <template v-slot:activator="{ props }">
@@ -15,7 +15,7 @@
       {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
     </h4>
     <v-spacer class="my-3" thickness="2" />
-    <v-sheet border rounded elevation="2">
+    <v-sheet rounded="">
       <v-data-table density="comfortable" :items="teamRoster" :headers="[
         { title: 'Number', key: 'number', align: 'center' },
         { title: 'Name', key: 'name', align: 'center' },
@@ -32,7 +32,7 @@
         <template #bottom></template>
       </v-data-table>
     </v-sheet>
-  </v-container>
+  </v-sheet>
 </template>
 
 

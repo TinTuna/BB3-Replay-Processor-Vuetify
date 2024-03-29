@@ -1,4 +1,5 @@
 // Utilities
+import { getColourFromGuid } from "@/composables/stringFromIdFunctions/getColourFromGuid";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { getSkillDataFromId } from "@/composables/stringFromIdFunctions/getSkillData";
 import { EndGame } from "@/types/BaseTags/EndGame";
@@ -32,6 +33,16 @@ export const useDataStore = defineStore("data", () => {
     // Add the overall team statistics to the team data
     teamData.value["0"].TeamStatistics = endGame.value?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.Statistics;
     teamData.value["1"].TeamStatistics = endGame.value?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.Statistics;
+
+    // base64 decode the colours in the team data
+    teamData.value["0"].Customization.PrimaryColor = atob(teamData.value["0"].Customization.PrimaryColor);
+    teamData.value["0"].Customization.SecondaryColor = atob(teamData.value["0"].Customization.SecondaryColor);
+    teamData.value["0"].Customization.TertiaryColor = atob(teamData.value["0"].Customization.TertiaryColor);
+
+    teamData.value["1"].Customization.PrimaryColor = atob(teamData.value["1"].Customization.PrimaryColor);
+    teamData.value["1"].Customization.SecondaryColor = atob(teamData.value["1"].Customization.SecondaryColor);
+    teamData.value["1"].Customization.TertiaryColor = atob(teamData.value["1"].Customization.TertiaryColor);
+
 
     // Now we need to process the players
     rosters.value?.TeamRoster.forEach(
@@ -85,6 +96,13 @@ export const useDataStore = defineStore("data", () => {
   const getTeamData = (teamId: string) => {
     return teamData.value[teamId] || {};
   };
+  const getTeamColours = (teamId: string) => {
+    return {
+      primary: getColourFromGuid(teamData.value[teamId]?.Customization.PrimaryColor),
+      secondary: getColourFromGuid(teamData.value[teamId]?.Customization.SecondaryColor),
+      tertiary: getColourFromGuid(teamData.value[teamId]?.Customization.TertiaryColor)
+    };
+  }
   const getPlayerType = (playerTypeId: PlayerIdType) => {
     return getIdPlayerType(playerTypeId);
   }
@@ -112,6 +130,7 @@ export const useDataStore = defineStore("data", () => {
     getTeamData,
     getPlayerType,
     getSkillData,
-    getTeamDataByDataId
+    getTeamDataByDataId,
+    getTeamColours
   };
 });

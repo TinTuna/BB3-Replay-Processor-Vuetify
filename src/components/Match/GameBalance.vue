@@ -9,7 +9,7 @@
             {{ processedHomeStat || 0 }}{{ props.type === 'percentage' ? '%' : '' }}
         </v-col>
         <v-col cols="6" class="d-flex justify-center align-center">
-            <v-progress-linear color="blue" bg-color="red" bg-opacity="1" height="10" rounded
+            <v-progress-linear :color="homeTeamPrimaryColour" :bg-color="awayTeamPrimaryColour" bg-opacity="1" height="10" rounded
                 :model-value="progressPercentage" class="py-auto"></v-progress-linear>
         </v-col>
         <v-col cols="3" class="d-flex justify-center align-center text-subtitle-2">
@@ -20,8 +20,10 @@
 
 
 <script lang="ts" setup>
+import { useDataStore } from '@/store/dataStore';
 import { computed } from 'vue';
 
+const dataStore = useDataStore();
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -50,6 +52,13 @@ const progressPercentage = computed(() => {
         return 50;
     }
     return percentage;
+});
+
+const homeTeamPrimaryColour = computed(() => {
+    return dataStore.getTeamColours('0').primary;
+});
+const awayTeamPrimaryColour = computed(() => {
+    return dataStore.getTeamColours('1').primary;
 });
 
 </script>

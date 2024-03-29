@@ -1,42 +1,39 @@
 <template>
   <v-container>
-    <v-card elevation="0">
-      <v-card-title class="mt-2">
-        <!-- Title of the competition -->
-        <h2>{{ title }}</h2>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="5">
-            <TeamRoster team="0" :concede="concede === '0'" />
-          </v-col>
-          <v-col cols="2">
-            <v-container>
-              <h1>
-                {{ homeTeamScore }}
-                -
-                {{ awayTeamScore }}
-              </h1>
-            </v-container>
-            <v-divider class="my-5"></v-divider>
-            <v-sheet border rounded elevation="2" class="pb-2 pt-1">
-              <GameBalance title="Touchdowns Scored" :home-stat="homeTeamTouchdownsScored" :away-stat="awayTeamTouchdownsScored" />
-              <GameBalance title="Possession" :home-stat="homePossession" :away-stat="awayPossession" type="percentage" />
-              <GameBalance title="Blocks Made" :home-stat="homeBlocksMade" :away-stat="awayBlocksMade" />
-              <GameBalance title="Injuries Inflicted" :home-stat="homeInjuriesInflicted" :away-stat="awayInjuriesInflicted" />
-              <GameBalance title="Casualties Inflicted" :home-stat="homeCasualtiesInflicted" :away-stat="awayCasualtiesInflicted" />
-              <GameBalance title="Kills Inflicted" :home-stat="homeKillsInflicted" :away-stat="awayKillsInflicted" />
-              <GameBalance title="Yards Run With Ball" :home-stat="homeYardsRunWithBall" :away-stat="awayYardsRunWithBall" />
-              <!-- <GameBalance title="Passes Completed" home-stat="0" away-stat="0" />
+    <v-row>
+      <v-col cols="5">
+        <TeamRoster team="0" :concede="concede === '0'" />
+      </v-col>
+      <v-col cols="2">
+        <h1 >{{ title }}</h1>
+        <v-container>
+          <h1>
+            {{ homeTeamScore }}
+            -
+            {{ awayTeamScore }}
+          </h1>
+        </v-container>
+        <v-divider class="my-5"></v-divider>
+        <v-sheet border rounded elevation="2" class="pb-2 pt-1">
+          <GameBalance title="Touchdowns Scored" :home-stat="homeTeamTouchdownsScored"
+            :away-stat="awayTeamTouchdownsScored" />
+          <GameBalance title="Possession" :home-stat="homePossession" :away-stat="awayPossession" type="percentage" />
+          <GameBalance title="Blocks Made" :home-stat="homeBlocksMade" :away-stat="awayBlocksMade" />
+          <GameBalance title="Injuries Inflicted" :home-stat="homeInjuriesInflicted"
+            :away-stat="awayInjuriesInflicted" />
+          <GameBalance title="Casualties Inflicted" :home-stat="homeCasualtiesInflicted"
+            :away-stat="awayCasualtiesInflicted" />
+          <GameBalance title="Kills Inflicted" :home-stat="homeKillsInflicted" :away-stat="awayKillsInflicted" />
+          <GameBalance title="Yards Run With Ball" :home-stat="homeYardsRunWithBall"
+            :away-stat="awayYardsRunWithBall" />
+          <!-- <GameBalance title="Passes Completed" home-stat="0" away-stat="0" />
               <GameBalance title="Fouls Comitted" home-stat="0" away-stat="0" /> -->
-            </v-sheet>
-          </v-col>
-          <v-col cols="5">
-            <TeamRoster team="1" :concede="concede === '1'" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+        </v-sheet>
+      </v-col>
+      <v-col cols="5">
+        <TeamRoster team="1" :concede="concede === '1'" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -55,7 +52,7 @@ const title = ref<string | undefined>(
 );
 
 const concede = computed(() => {
-  if(dataStore.endGame?.RulesEventGameFinished.MatchResult.CompletionStatus === "1") {
+  if (dataStore.endGame?.RulesEventGameFinished.MatchResult.CompletionStatus === "1") {
     // If this is true, we know one of the teams has conceded
     // We get the data on who conceded from the MatchResult
     return dataStore.matchData?.conceded
@@ -72,18 +69,18 @@ const awayTeamTouchdownsScored = computed(() => {
 
 const homeTeamScore = computed(() => {
   let points = 0
-  if(concede.value === "1") {
+  if (concede.value === "1") {
     points += 1
   }
-  if(!homeTeamTouchdownsScored.value) return points.toString()
+  if (!homeTeamTouchdownsScored.value) return points.toString()
   return (parseInt(homeTeamTouchdownsScored.value) + points).toString()
 })
 const awayTeamScore = computed(() => {
   let points = 0
-  if(concede.value === "0") {
+  if (concede.value === "0") {
     points += 1
   }
-  if(!awayTeamTouchdownsScored.value) return points.toString()
+  if (!awayTeamTouchdownsScored.value) return points.toString()
   return (parseInt(awayTeamTouchdownsScored.value) + points).toString()
 })
 

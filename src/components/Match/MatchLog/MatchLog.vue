@@ -5,7 +5,8 @@
                 <v-expansion-panels variant="accordion" v-model="matchPanels">
                     <v-expansion-panel v-for="logEntry in dataStore.matchData?.matchLog" :key="logEntry.turn"
                         :id="`turn-${logEntry.turn}-${logEntry.team}`">
-                        <v-expansion-panel-title :color="logEntry.team === '0' ? 'red-lighten-2' : 'blue-lighten-2'">
+                        <v-expansion-panel-title
+                            :color="logEntry.team === '0' ? homeTeamColours.primary : awayTeamColours.primary">
                             Turn {{ logEntry.turn }} - {{ dataStore.getTeamName(logEntry.team) }}
                             <v-spacer />
                             <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover"
@@ -48,16 +49,16 @@
                                 </v-tooltip>
                             </div>
                         </v-expansion-panel-title>
-                        <v-expansion-panel-text
-                            :class="logEntry.team === '0' ? 'bg-red-lighten-4' : 'bg-blue-lighten-4'">
+                        <v-expansion-panel-text :style="`background-color:#eee;
+                            border-left:2px solid ${logEntry.team === '0' ? homeTeamColours.primary : awayTeamColours.primary};
+                            border-right:2px solid ${logEntry.team === '0' ? homeTeamColours.primary : awayTeamColours.primary};`
+                    ">
                             <Turn v-if="logEntry.turnActions.length" :log-entry-prop="logEntry" />
                             <v-container v-else>
                                 <v-row>
                                     <v-col cols="12">
                                         <v-card height="200" width="200">
-                                            <v-img
-                                                :src="waiting"
-                                                cover></v-img>
+                                            <v-img :src="waiting" cover></v-img>
                                             <v-card-text>
                                                 <div>Looks like a pretty quiet turn...</div>
                                             </v-card-text>
@@ -82,6 +83,7 @@ import { useDataStore } from "@/store/dataStore";
 import Turn from "./Turn.vue";
 import MatchTimeline, { Event } from "./MatchTimeline.vue";
 import { ref } from "vue";
+import { computed } from "vue";
 
 const dataStore = useDataStore();
 
@@ -100,6 +102,13 @@ const handleDrilldown = (event: Event) => {
         el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 };
+
+const homeTeamColours = computed(() => {
+    return dataStore.getTeamColours("0");
+});
+const awayTeamColours = computed(() => {
+    return dataStore.getTeamColours("1");
+});
 
 const waiting = new URL("/waiting.jpg", import.meta.url).href;
 

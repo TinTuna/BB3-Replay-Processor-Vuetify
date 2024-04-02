@@ -1,6 +1,7 @@
 // Utilities
 import { getColourFromGuid } from "@/composables/stringFromIdFunctions/getColourFromGuid";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
+import { LogoGuids, getLogoFromGuid } from "@/composables/stringFromIdFunctions/getLogoFromGuid";
 import { getSkillDataFromId } from "@/composables/stringFromIdFunctions/getSkillData";
 import { EndGame } from "@/types/BaseTags/EndGame";
 import { NotificationGameJoined } from "@/types/BaseTags/NotificationGameJoined";
@@ -75,7 +76,6 @@ export const useDataStore = defineStore("data", () => {
       );
       matchData.value.inducements.awayTeam.starPlayers?.forEach(
         (player) => {
-          console.log(player);
           playerData.value[player.Id] = player;
           rosters.value?.TeamRoster?.[1].Players.PlayerData.push(player);
         }
@@ -97,11 +97,34 @@ export const useDataStore = defineStore("data", () => {
     return teamData.value[teamId] || {};
   };
   const getTeamColours = (teamId: string) => {
-    return {
+    const colours = {
       primary: getColourFromGuid(teamData.value[teamId]?.Customization.PrimaryColor),
       secondary: getColourFromGuid(teamData.value[teamId]?.Customization.SecondaryColor),
-      tertiary: getColourFromGuid(teamData.value[teamId]?.Customization.TertiaryColor)
-    };
+      tertiary: getColourFromGuid(teamData.value[teamId]?.Customization.TertiaryColor),
+      clash: ''
+    }
+    // If this is the away team, check that their colours dont clash with home team
+    if (teamId === "1") {
+      // Check if it clashes with the primary colour
+      if (teamData.value["0"]?.Customization.PrimaryColor !== teamData.value["1"]?.Customization.PrimaryColor) {
+        // If it doesn't clash, return colours
+        return colours;
+      }
+      // Check if it also clashes with the secondary colour
+      else if (teamData.value["0"]?.Customization.PrimaryColor !== teamData.value["1"]?.Customization.SecondaryColor) {
+        colours.clash = colours.secondary;
+      }
+      // Check if it also clashes with the tertiary colour
+      else if (teamData.value["0"]?.Customization.PrimaryColor !== teamData.value["1"]?.Customization.TertiaryColor) {
+        colours.clash = getColourFromGuid(teamData.value["1"]?.Customization.TertiaryColor);
+      }
+      // If all colours clash, return a default colour
+      else {
+        colours.clash = getColourFromGuid('');
+      }
+    }
+    
+    return colours;
   }
   const getPlayerType = (playerTypeId: PlayerIdType) => {
     return getIdPlayerType(playerTypeId);
@@ -115,6 +138,9 @@ export const useDataStore = defineStore("data", () => {
         return stat.StatId === teamDataId
       }
     )?.Value || "0"
+  }
+  const getTeamLogo = (teamId: string) => {
+    return getLogoFromGuid(getTeamData(teamId).Team.IdRace, teamData.value[teamId]?.Customization.Logo as LogoGuids);
   }
 
   return {
@@ -131,6 +157,7 @@ export const useDataStore = defineStore("data", () => {
     getPlayerType,
     getSkillData,
     getTeamDataByDataId,
-    getTeamColours
+    getTeamColours,
+    getTeamLogo
   };
 });

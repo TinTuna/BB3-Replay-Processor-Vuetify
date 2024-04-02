@@ -1,20 +1,30 @@
 <template>
-  <v-sheet border rounded elevation="2" :color="dataStore.getTeamColours(team.toString()).primary">
-    <h2 class="mt-4">
-      {{ teamName }}
-      <v-tooltip v-if="concede" text="Conceded" location="bottom">
-        <template v-slot:activator="{ props }">
-          <v-icon v-bind="props">mdi-flag-variant-outline</v-icon>
-        </template>
-      </v-tooltip>
-    </h2>
-    <h4 class="ma-1">
-      {{ teamRace }}
-    </h4>
-    <h4 class="ma-1">
-      {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
-    </h4>
-    <v-spacer class="my-3" thickness="2" />
+  <v-card border rounded elevation="2" class="stripe">
+    <div class="logo">
+      <v-img :src="teamLogo.logo" class="" />
+    </div>
+
+    <v-card-title>
+      <h2 class="mt-4 flex-fill">
+        {{ teamName }}
+        <v-tooltip v-if="concede" text="Conceded" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-icon v-bind="props">mdi-flag-variant-outline</v-icon>
+          </template>
+        </v-tooltip>
+      </h2>
+    </v-card-title>
+    <v-card-subtitle>
+      <h4 class="ma-1">
+        {{ teamRace }}
+      </h4>
+      <h4 class="ma-1">
+        {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
+      </h4>
+    </v-card-subtitle>
+
+
+    <v-divider class="my-3" thickness="2" />
     <v-sheet rounded="">
       <v-data-table density="comfortable" :items="teamRoster" :headers="[
         { title: 'Number', key: 'number', align: 'center' },
@@ -32,7 +42,7 @@
         <template #bottom></template>
       </v-data-table>
     </v-sheet>
-  </v-sheet>
+  </v-card>
 </template>
 
 
@@ -58,6 +68,14 @@ const teamName = computed(() => {
   return dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team.value].Roster.Name;
 });
 
+const teamColours = computed(() => {
+  return dataStore.getTeamColours(team.value.toString());
+});
+
+const teamLogo = computed(() => {
+  return dataStore.getTeamLogo(team.value.toString());
+});
+
 const mvp = computed(() => {
   return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
     (player: PlayerResult) => player.Mvp
@@ -81,6 +99,35 @@ const teamRoster = computed(() => {
     };
   });
 });
+
+const teamColoursPrimary = computed(() => {
+  return teamColours.value.primary;
+});
+const teamColoursSecondary = computed(() => {
+  return teamColours.value.secondary;
+});
+const teamColoursTertiary = computed(() => {
+  return teamColours.value.tertiary;
+});
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.stripe {
+  background-image: linear-gradient(135deg, #ffffff00 6%, v-bind(teamColoursPrimary) 6%, v-bind(teamColoursPrimary) 11%, #ffffff00 11%),
+    linear-gradient(135deg, #ffffff00 5%, v-bind(teamColoursSecondary) 5%, v-bind(teamColoursSecondary) 6%, #ffffff00 6%),
+    linear-gradient(135deg, #ffffff00 11%, v-bind(teamColoursTertiary) 11%, v-bind(teamColoursTertiary) 12%, #ffffff00 12%);
+  background-size: 100%, 100%, 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  /* To avoid multiple instances */
+}
+
+.logo {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  height: 125px;
+  width: 125px;
+  background-color: #ffffff80;
+  border-radius: 50%
+}
+</style>

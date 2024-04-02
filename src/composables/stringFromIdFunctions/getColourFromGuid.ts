@@ -130,7 +130,7 @@ const colourData: ColourData = {
 		hex: "#d2a770",
 		name: "Kislev Flesh"
 	},
-	"a27502": {
+	"1e383987-177f-58d0-a7db-0244ba893678": {
 		hex: "#a27502",
 		name: "Tallarn Sand"
 	},
@@ -346,95 +346,95 @@ const colourData: ColourData = {
 		hex: "#450959",
 		name: "Xereus Purple"
 	},
-	"592949": {
+	"8c95044d-1d49-5b60-8a59-f93a5ddea363": {
 		hex: "#592949",
 		name: "Gal Vorbak Red"
 	},
-	"f14517": {
+	"eca81547-0119-5439-8806-6fa833503195": {
 		hex: "#f14517",
 		name: "Jokaero Orange"
 	},
-	"00155d": {
+	"d23c9d6b-0df2-5710-ab87-6de83ba176b8": {
 		hex: "#00155d",
 		name: "Kantor Blue"
 	},
-	"c0a7d2": {
+	"d264c494-2ba0-5516-af7f-3b4ecb70d2a1": {
 		hex: "#c0a7d2",
 		name: "Dechala Lilac"
 	},
-	"009872": {
+	"a18060c0-7a1f-5b75-92f7-7f73672b056a": {
 		hex: "#009872",
 		name: "Kabalite Green"
 	},
-	"f7965d": {
+	"65f89a2b-3c90-5a01-893c-480fb62f1e62": {
 		hex: "#f7965d",
 		name: "Fire Dragon Bright"
 	},
-	"970300": {
+	"a7ae1116-bf38-508e-8d02-25db70c60392": {
 		hex: "#970300",
 		name: "Wazdakka Red"
 	},
-	"9ab0b0": {
+	"e3aba2aa-91f3-550b-86d3-057fe104917b": {
 		hex: "#9ab0b0",
 		name: "Celestra Grey"
 	},
-	"3a5e94": {
+	"4f5a3cf2-9fd9-5534-b2ba-2cf8edaa28ac": {
 		hex: "#3a5e94",
 		name: "Alaitoc Blue"
 	},
-	"756f90": {
+	"6109ed30-5e21-5617-8dd5-43bcb9517cc4": {
 		hex: "#756f90",
 		name: "Daemonette Hide"
 	},
-	"675d38": {
+	"b7bc6f95-f596-55ae-b8a5-827c061b0b10": {
 		hex: "#675d38",
 		name: "Steel Legion Drab"
 	},
-	"005f7e": {
+	"b3781b8a-7bed-5b88-947e-6fb9c62b5e86": {
 		hex: "#005f7e",
 		name: "Thousand Sons Blue"
 	},
-	"4abb52": {
+	"313ff9c8-149d-5832-a975-9faa05147e26": {
 		hex: "#4abb52",
 		name: "Moot Green"
 	},
-	"003635": {
+	"ac67882f-3454-5060-94c2-94645bac2a2b": {
 		hex: "#003635",
 		name: "Lupercal Green"
 	},
-	"aaa79c": {
+	"045950b3-aec9-531c-956c-4feed121231e": {
 		hex: "#aaa79c",
 		name: "Rakarth Flesh"
 	},
-	"8ecbb2": {
+	"dfcd4c18-740d-5280-999a-ec8ff2f26d2b": {
 		hex: "#8ecbb2",
 		name: "Gauss Blaster Green"
 	},
-	"520061": {
+	"ad3c98ac-0d57-51df-9cb3-2c125c99f400": {
 		hex: "#520061",
 		name: "Phoenician Purple"
 	},
-	"9a97a1": {
+	"c6bfaa4f-38a9-5e5b-b521-f89f8b7ed44f": {
 		hex: "#9a97a1",
 		name: "Slaanesh Grey"
 	},
-	"966303": {
+	"339a109b-01f3-519a-b245-e7f7bc446f28": {
 		hex: "#966303",
 		name: "Balor Brown"
 	},
-	"ffe700": {
+	"40282a42-85e7-56e2-b826-2d17438289d1": {
 		hex: "#ffe700",
 		name: "Phalanx Yellow"
 	},
-	"1b1517": {
+	"2c6dc602-e726-5dc5-a4e0-b1285fbcd525": {
 		hex: "#1b1517",
 		name: "Corvus Black"
 	},
-	"720000": {
+	"e2d97ca5-91f5-53ce-b16d-8c19e0e8a788": {
 		hex: "#720000",
 		name: "Word Bearers Red"
 	},
-	"8ea66e": {
+	"a7c5583d-ca8d-58d8-9f38-130d24a1deb5": {
 		hex: "#8ea66e",
 		name: "Nurgling Green"
 	},

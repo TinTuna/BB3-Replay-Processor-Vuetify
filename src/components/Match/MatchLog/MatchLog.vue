@@ -9,7 +9,7 @@
                             :color="logEntry.team === '0' ? homeTeamColours.primary : awayTeamColours.primary">
                             Turn {{ logEntry.turn }} - {{ dataStore.getTeamName(logEntry.team) }}
                             <v-spacer />
-                            <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover"
+                            <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover || logEntry.injurySustained"
                                 class="px-2 py-1 mr-5" style="background-color: white; border-radius: 3px;">
                                 <v-tooltip text="Death" location="bottom">
                                     <template v-slot:activator="{ props }">
@@ -21,7 +21,7 @@
                                 <v-tooltip text="Injury Inflicted" location="bottom">
                                     <template v-slot:activator="{ props }">
                                         <template v-for="(injury, i) in logEntry.injury" :key="i">
-                                            <v-icon v-if="injury" v-bind="props" color="red">mdi-sword</v-icon>
+                                            <v-icon v-if="injury" v-bind="props" color="error">mdi-sword</v-icon>
                                         </template>
                                         <!-- <v-chip v-if="logEntry.injury" v-bind="props" variant="flat" color="red" small><v-icon v-if="logEntry.injury"
                                             color="white">mdi-sword</v-icon><span class="text-white">x3</span></v-chip> -->
@@ -31,7 +31,7 @@
                                     <template v-slot:activator="{ props }">
                                         <template v-for="(injurySustained, i) in logEntry.injurySustained" :key="i">
                                             <v-icon v-bind="props" v-if="injurySustained"
-                                                color="red">mdi-hospital-box</v-icon>
+                                                color="error">mdi-hospital-box</v-icon>
                                         </template>
                                     </template>
                                 </v-tooltip>

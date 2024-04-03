@@ -7,7 +7,6 @@ import { StepResult } from "@/types/Match/StepResult";
 import { TurnAction } from "@/types/Match/TurnAction";
 import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
 import { DamageStep } from "@/types/messageData/DamageStep";
-import { ResultCasualtyRoll } from "@/types/messageData/ResultCasualtyRoll";
 import { ResultInjuryRoll } from "@/types/messageData/ResultInjuryRoll";
 import { ResultRoll } from "@/types/messageData/ResultRoll";
 import { processDieRoll } from "../helperFns/processDieRoll";
@@ -31,7 +30,8 @@ export const processDamageStep = (opts: {
 
   // Create a new turnActionEvent for this event
   const turnActionEvent = {
-    eventType: stepResult.Step.Name,
+    eventName: stepResult.Step.Name,
+    eventType: stepMessageData.StepType,
     eventResults: [] as StepResult[],
   };
 
@@ -125,8 +125,12 @@ export const processDamageStep = (opts: {
             matchData.playerData[
               stepMessageData.PlayerId
             ].injuryRolls.injuryStunned += 1;
-            currentTurn.knockdown ? currentTurn.knockdown += 1 : currentTurn.knockdown = 1;
-            currentTurnAction.actionsTaken.knockdownInflicted ? currentTurnAction.actionsTaken.knockdownInflicted : 'Stunned';
+            currentTurn.knockdown
+              ? (currentTurn.knockdown += 1)
+              : (currentTurn.knockdown = 1);
+            currentTurnAction.actionsTaken.knockdownInflicted
+              ? currentTurnAction.actionsTaken.knockdownInflicted
+              : "Stunned";
             break;
           }
           case "2": {
@@ -142,7 +146,6 @@ export const processDamageStep = (opts: {
             break;
           }
         }
-        
 
         break;
       }
@@ -171,33 +174,48 @@ export const processDamageStep = (opts: {
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
         // Add ResultPlayerRemoval data to the currentTurnAction
-        currentTurn.injury ? currentTurn.injury += 1 : currentTurn.injury = 1;
 
+        let injuryType = "";
         switch (resultMessageData.Status) {
           case "0": {
-            // no need to set injury type as stunned is handeled by the ResultInjuryRoll
-
-            currentTurn.injury ? currentTurn.injury += 1 : currentTurn.injury = 1;
-            currentTurn.knockdown ? currentTurn.knockdown += 1 : currentTurn.knockdown = 1;
-            currentTurnAction.actionsTaken.knockdownInflicted = 'Stunned - Pushed Out of Bounds';
+            injuryType = "Stunned - Pushed Out of Bounds";
             break;
           }
           case "3": {
-            currentTurnAction.actionsTaken.injuryInflicted = 'KO'
+            injuryType = "KO";
             break;
           }
           case "4": {
-            currentTurnAction.actionsTaken.injuryInflicted = 'Serious Injury'
+            injuryType = "Serious Injury";
             break;
           }
           case "5": {
-            currentTurnAction.actionsTaken.injuryInflicted = 'Death'
+            injuryType = "Death";
             break;
           }
           default: {
-            currentTurnAction.actionsTaken.injuryInflicted = resultMessageData.Status
+            injuryType = resultMessageData.Status;
             break;
           }
+        }
+
+        // Check if this was a self inflicted injury
+        if (resultMessageData.PlayerId === stepMessageData.PlayerId) {
+          currentTurnAction.actionsTaken.injurySustained = injuryType;
+          currentTurn.injurySustained
+            ? (currentTurn.injurySustained += 1)
+            : (currentTurn.injurySustained = 1);
+          currentTurn.knockdownSustained
+            ? (currentTurn.knockdownSustained += 1)
+            : (currentTurn.knockdownSustained = 1);
+        } else {
+          currentTurnAction.actionsTaken.injuryInflicted = injuryType;
+          currentTurn.injury
+            ? (currentTurn.injury += 1)
+            : (currentTurn.injury = 1);
+          currentTurn.knockdown
+            ? (currentTurn.knockdown += 1)
+            : (currentTurn.knockdown = 1);
         }
 
         // add roll data to the matchData

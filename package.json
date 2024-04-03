@@ -1,6 +1,6 @@
 {
   "name": "BB3-Replay-Processor-Vuetify",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
@@ -9,33 +9,33 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
-    "pinia": "^2.0.23",
-    "roboto-fontface": "*",
-    "vue": "^3.2.38",
-    "vue-router": "^4.0.0",
-    "vuetify": "^3.0.0",
-    "webfontloader": "^1.0.0",
     "@types/node": "^18.11.9",
     "@types/pako": "^2.0.3",
     "@types/webfontloader": "^1.6.35",
     "core-js": "^3.8.3",
     "he": "^1.2.0",
     "node-html-parser": "^6.1.12",
-    "pako": "^2.1.0"
+    "pako": "^2.1.0",
+    "pinia": "^2.0.23",
+    "roboto-fontface": "*",
+    "vue": "^3.2.38",
+    "vue-router": "^4.0.0",
+    "vuetify": "^3.0.0",
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/types": "^7.23.9",
     "@types/node": "^18.11.9",
+    "@types/pako": "^2.0.3",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^3.0.3",
     "@vue/eslint-config-typescript": "^11.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
+    "sass": "^1.55.0",
     "typescript": "^4.0.0",
     "vite": "^3.0.9",
     "vite-plugin-vuetify": "^1.0.0-alpha.12",
-    "vue-tsc": "^1.0.9",
-    "@babel/types": "^7.23.9",
-    "@types/pako": "^2.0.3",
-    "sass": "^1.55.0"
+    "vue-tsc": "^1.0.9"
   }
 }

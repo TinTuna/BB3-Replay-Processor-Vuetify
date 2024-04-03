@@ -1,6 +1,9 @@
 export type ResultUseAction = {
-  // this is for the activation type of a player activation
+  Action: Action
+  TeamId: "0" | "1"
 };
+
+type Action = "1" | "2" | "3" | "4" | "5"
 
 // 1 move
 // 2 block

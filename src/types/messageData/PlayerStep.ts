@@ -1,5 +1,6 @@
 import { PlayerId } from "../IdTypes/PlayerId";
 import { SkillId } from "../IdTypes/SkillId";
+import { StepType } from "../IdTypes/StepType";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 
@@ -16,6 +17,6 @@ export type PlayerStep = {
   Probability: string;
   Skill: SkillId;
   State: string;
-  StepType: string;
-  TargetId: string;
+  StepType: StepType;
+  TargetId: PlayerId;
 };

@@ -391,6 +391,50 @@ const logoList: { [key in LogoGuids]: LogoData } = {
     name: "Blood Bowl Clan",
     logoFileId: "Logo_Skaven_01",
   },
+  "612c63fd-8b6d-53fa-a290-5a2e5ccb5957": {
+    name: "Checkered Orc",
+    logoFileId: "Logo_BlackOrc_10",
+  },
+  "270c4253-c8eb-552e-8984-af1f4649ce83": {
+    name: "Ceremonial Necklace",
+    logoFileId: "Logo_BlackOrc_11",
+  },
+  "f1ee02ae-a61b-5e7a-bb1c-449f5b40ef91": {
+    name: "Savage Orc",
+    logoFileId: "Logo_BlackOrc_12",
+  },
+  "51ef5139-a599-57b4-aab3-92d2442c9834": {
+    name: "Horned Headdress",
+    logoFileId: "Logo_BlackOrc_13",
+  },
+  "30d0dbf8-2f39-556f-bade-6e5f2509727b": {
+    name: "Gork's Moon",
+    logoFileId: "Logo_BlackOrc_14",
+  },
+  "42b2552b-b07f-5940-819f-9eebd08c9535": {
+    name: "Brutal Orc",
+    logoFileId: "Logo_BlackOrc_25",
+  },
+  "b639aa82-e857-542f-b26e-88208c3d63ca": {
+    name: "Bugman's Brewery",
+    logoFileId: "Logo_Campaign_Bugman_Beer",
+  },
+  "af322180-90bf-5f41-b4f0-dfaffb2b8126": {
+    name: "Nurgle King",
+    logoFileId: "Logo_Campaign_Nurgle_King",
+  },
+  "d1cbf84b-eedc-5168-94f6-e1540176e01d": {
+    name: "Star of Nuln",
+    logoFileId: "Logo_ImperialNobility_02",
+  },
+  "35b585b1-8ca3-5b78-bfec-7046e894f6a1": {
+    name: "Noble Halberd",
+    logoFileId: "Logo_ImperialNobility_03",
+  },
+  "d958bf9a-b4b9-5073-b325-da77dc4132cc": {
+    name: "Cup and Badge",
+    logoFileId: "Logo_ImperialNobility_04",
+  },
 };
 
 export type LogoGuids =
@@ -443,4 +487,15 @@ export type LogoGuids =
   | "dc8b8bf2-ec85-5531-ba55-a572511c9b2a"
   | "e74d24fc-2e0e-5334-9bed-4fd36d519591"
   | "0ad6e1c5-4a61-5290-a194-4b0bd99ef82c"
-  | "cbd35bd1-f664-5187-ba11-fb163ca189ab";
+  | "cbd35bd1-f664-5187-ba11-fb163ca189ab"
+  | "612c63fd-8b6d-53fa-a290-5a2e5ccb5957"
+  | "270c4253-c8eb-552e-8984-af1f4649ce83"
+  | "f1ee02ae-a61b-5e7a-bb1c-449f5b40ef91"
+  | "51ef5139-a599-57b4-aab3-92d2442c9834"
+  | "30d0dbf8-2f39-556f-bade-6e5f2509727b"
+  | "42b2552b-b07f-5940-819f-9eebd08c9535"
+  | "b639aa82-e857-542f-b26e-88208c3d63ca"
+  | "af322180-90bf-5f41-b4f0-dfaffb2b8126"
+  | "d1cbf84b-eedc-5168-94f6-e1540176e01d"
+  | "35b585b1-8ca3-5b78-bfec-7046e894f6a1"
+  | "d958bf9a-b4b9-5073-b325-da77dc4132cc";

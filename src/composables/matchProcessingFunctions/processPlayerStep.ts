@@ -111,9 +111,12 @@ export const processPlayerStep = (opts: {
 
   // Create a new turnActionEvent for this event
   const turnActionEvent = {
-    eventType: stepResult.Step.Name,
+    eventName: stepResult.Step.Name,
+    eventType: stepMessageData.StepType,
     eventResults: [] as StepResult[],
   };
+
+  // console.log("stepMessageData.StepType", stepMessageData.StepType);
 
   // Process the player step
 
@@ -421,7 +424,7 @@ export const processPlayerStep = (opts: {
         // This tells us the skill used, and by which player
 
         // // Not yet used so commenting to save computation
-        // const resultMessageData = xmlToJson(message.MessageData)
+        // const resultMessageData = xmlToJson(result.MessageData)
         //   .ResultSkillUsage as ResultSkillUsage;
 
         break;
@@ -467,9 +470,17 @@ export const processPlayerStep = (opts: {
         // This tells us a reroll was used and by which _player_ (not by which team)
 
         // // Not yet used so commenting to save computation
-        // const resultMessageData = xmlToJson(message.MessageData)
+        // const resultMessageData = xmlToJson(result.MessageData)
         //   .ResultTeamRerollUsage as ResultTeamRerollUsage;
 
+        break;
+      }
+      case "ResultUseAction": {
+        //
+        break;
+      }
+      case "ResultDoMove": {
+        //
         break;
       }
       default: {
@@ -483,6 +494,6 @@ export const processPlayerStep = (opts: {
 
   // Add the turnActionEvent to the currentTurnAction
   currentTurnAction.turnActionEvents.push(turnActionEvent);
-  
+
   return opts;
 };

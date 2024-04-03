@@ -10,6 +10,7 @@ export type Turn = {
   injury?: number;
   injurySustained?: number;
   knockdown?: number;
+  knockdownSustained?: number;
   death?: number;
   turnover?: boolean;
 };

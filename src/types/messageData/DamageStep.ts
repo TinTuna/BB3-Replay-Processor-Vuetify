@@ -1,5 +1,6 @@
 import { PlayerId } from "../IdTypes/PlayerId";
 import { SkillId } from "../IdTypes/SkillId";
+import { StepType } from "../IdTypes/StepType";
 import { XPos } from "../Pitch/xPos";
 import { YPos } from "../Pitch/yPos";
 
@@ -9,7 +10,7 @@ export type DamageStep = {
   Source: number;
   PlayerId: PlayerId;
   TargetId: PlayerId;
-  StepType: number;
+  StepType: StepType;
   CellTo: {
     Y: YPos;
     X: XPos;

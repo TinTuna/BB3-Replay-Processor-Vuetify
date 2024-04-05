@@ -105,12 +105,12 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         break;
       case "10":
         // Shambling Undead
-        logo.name = "Destiny";
+        logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_07.png`,
+          `../../assets/logos/Logo_Neutral_01.png`,
           import.meta.url
         ).href;
-        logo.logoFileId = "Logo_Neutral_07";
+        logo.logoFileId = "Logo_Neutral_01";
         break;
       case "14":
         // Elven Union
@@ -132,12 +132,12 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         break;
       case "22":
         // Underworld Denizens
-        logo.name = "Destiny";
+        logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_07.png`,
+          `../../assets/logos/Logo_Neutral_01.png`,
           import.meta.url
         ).href;
-        logo.logoFileId = "Logo_Neutral_07";
+        logo.logoFileId = "Logo_Neutral_01";
         break;
       case "24":
         // Imperial Nobility
@@ -159,30 +159,30 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         break;
       case "1001":
         // Chaos Renegades
-        logo.name = "Destiny";
+        logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_07.png`,
+          `../../assets/logos/Logo_Neutral_01.png`,
           import.meta.url
         ).href;
-        logo.logoFileId = "Logo_Neutral_07";
+        logo.logoFileId = "Logo_Neutral_01";
         break;
       case "1002":
         // Old World Alliance
-        logo.name = "Destiny";
+        logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_07.png`,
+          `../../assets/logos/Logo_Neutral_01.png`,
           import.meta.url
         ).href;
-        logo.logoFileId = "Logo_Neutral_07";
+        logo.logoFileId = "Logo_Neutral_01";
         break;
       default:
-        // Default to the human logo
-        logo.name = "Imperial Eagle";
+        // Default to the neutral logo
+        logo.name = "The Honoured Ball";
         logo.logo = new URL(
           `../../assets/logos/Logo_Human_01.png`,
           import.meta.url
         ).href;
-        logo.logoFileId = "Logo_Human_01";
+        logo.logoFileId = "Logo_Neutral_01";
         break;
     }
   }
@@ -435,6 +435,86 @@ const logoList: { [key in LogoGuids]: LogoData } = {
     name: "Cup and Badge",
     logoFileId: "Logo_ImperialNobility_04",
   },
+  "9df0c6c0-e4a5-500a-b1d2-68c8ab5cb8d9": {
+    name: "Sigmar Wings",
+    logoFileId: "Logo_ImperialNobility_05",
+  },
+  "bddb85ec-9aae-59f7-840c-1f286795c088": {
+    name: "Joyful Eagle",
+    logoFileId: "Logo_ImperialNobility_06",
+  },
+  "21d3f82d-9e19-58fc-a448-8de5eeb023d6": {
+    name: "Reiksguard",
+    logoFileId: "Logo_ImperialNobility_07",
+  },
+  "515a8429-1bed-54c5-96c9-3b18e4529938": {
+    name: "Simple Cross",
+    logoFileId: "Logo_ImperialNobility_08",
+  },
+  "af143149-35fe-55fa-84d6-00476aad4667": {
+    name: "Glaives",
+    logoFileId: "Logo_ImperialNobility_09",
+  },
+  "ebf7d7cb-1b8b-561e-9348-95090ccc9a53": {
+    name: "Imperial Announcement",
+    logoFileId: "Logo_ImperialNobility_10",
+  },
+  "f237e8d0-fb76-564e-b854-15a00c6d4469": {
+    name: "Impetuous Unicorn",
+    logoFileId: "Logo_ImperialNobility_11",
+  },
+  "26a095f3-1c66-5841-9be5-052aaadbdac0": {
+    name: "Scroll",
+    logoFileId: "Logo_ImperialNobility_12",
+  },
+  "de3e807c-c033-528d-9b0d-f04d3155cd5b": {
+    name: "Heraldric Cross",
+    logoFileId: "Logo_ImperialNobility_13",
+  },
+  "afdda955-5844-5579-9197-271c0e1d1f92": {
+    name: "Brutal Comet",
+    logoFileId: "Logo_ImperialNobility_24",
+  },
+  "b3bb6cbd-7e9f-5110-bc56-3800657d8495": {
+    name: "Brutal Skull",
+    logoFileId: "Logo_Neutral_31",
+  },
+  "77edafff-7433-5d59-b0ab-074a82472ad9": {
+    name: "Black Skulls",
+    logoFileId: "Logo_Orc_03",
+  },
+  "e3699cc5-f117-5815-a089-104aaf6ff4d9": {
+    name: "Dazzlers",
+    logoFileId: "Logo_Orc_04",
+  },
+  "b468c199-88b2-5dcb-8429-d93ce0c0cd46": {
+    name: "Orc Dawn",
+    logoFileId: "Logo_Orc_05",
+  },
+  "1a89880f-5f6a-5de9-aa56-c94d716fde63": {
+    name: "M'Orckery",
+    logoFileId: "Logo_Orc_06",
+  },
+  "090270e5-2e65-503a-b6c7-ecf777f8ec6c": {
+    name: "Fang of Royal Gold",
+    logoFileId: "Logo_Orc_07",
+  },
+  "b81ff481-2297-553c-b437-4282d78db9c2": {
+    name: "Blood-Covered Orc",
+    logoFileId: "Logo_Orc_08",
+  },
+  "19542c1d-cbb9-5b64-bc6d-73ecc602ee04": {
+    name: "Orc Footmark",
+    logoFileId: "Logo_Orc_09",
+  },
+  "23667032-8170-552d-a554-6763d5419721": {
+    name: "Declaration of War",
+    logoFileId: "Logo_Orc_10",
+  },
+  "8e10d403-bcee-5bae-8baf-db6fbbdaca9f": {
+    name: "Orc Shield",
+    logoFileId: "Logo_Orc_11",
+  },
 };
 
 export type LogoGuids =
@@ -498,4 +578,24 @@ export type LogoGuids =
   | "af322180-90bf-5f41-b4f0-dfaffb2b8126"
   | "d1cbf84b-eedc-5168-94f6-e1540176e01d"
   | "35b585b1-8ca3-5b78-bfec-7046e894f6a1"
-  | "d958bf9a-b4b9-5073-b325-da77dc4132cc";
+  | "d958bf9a-b4b9-5073-b325-da77dc4132cc"
+  | "9df0c6c0-e4a5-500a-b1d2-68c8ab5cb8d9"
+  | "bddb85ec-9aae-59f7-840c-1f286795c088"
+  | "21d3f82d-9e19-58fc-a448-8de5eeb023d6"
+  | "515a8429-1bed-54c5-96c9-3b18e4529938"
+  | "af143149-35fe-55fa-84d6-00476aad4667"
+  | "ebf7d7cb-1b8b-561e-9348-95090ccc9a53"
+  | "f237e8d0-fb76-564e-b854-15a00c6d4469"
+  | "26a095f3-1c66-5841-9be5-052aaadbdac0"
+  | "de3e807c-c033-528d-9b0d-f04d3155cd5b"
+  | "afdda955-5844-5579-9197-271c0e1d1f92"
+  | "b3bb6cbd-7e9f-5110-bc56-3800657d8495"
+  | "77edafff-7433-5d59-b0ab-074a82472ad9"
+  | "e3699cc5-f117-5815-a089-104aaf6ff4d9"
+  | "b468c199-88b2-5dcb-8429-d93ce0c0cd46"
+  | "1a89880f-5f6a-5de9-aa56-c94d716fde63"
+  | "090270e5-2e65-503a-b6c7-ecf777f8ec6c"
+  | "b81ff481-2297-553c-b437-4282d78db9c2"
+  | "19542c1d-cbb9-5b64-bc6d-73ecc602ee04"
+  | "23667032-8170-552d-a554-6763d5419721"
+  | "8e10d403-bcee-5bae-8baf-db6fbbdaca9f";

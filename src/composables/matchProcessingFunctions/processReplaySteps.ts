@@ -94,10 +94,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
-    // Update the game phase
-    if (step.EventNewGamePhase) {
-      gamePhase = step.EventNewGamePhase.Phase;
-    }
+    // // THIS MIGHT CAUSE AN ISSUE THAT IVE FORGOTTEN ABOUT! 
+    // // Update the game phase
+    // if (step.EventNewGamePhase) {
+    //   gamePhase = step.EventNewGamePhase.Phase;
+    // }
 
     // Process step by game phase
 
@@ -213,6 +214,23 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventQuestionKickingChoice) {
         // TODO see what EventQuestionKickingChoice actually contains as this replay is empty, assuming that means the home team is selecting
       }
+      // If the step has EventKickingChoice, a player has chosen to kick or receive
+      if (step.EventKickingChoice) {
+        // GamerId tells us who picks, Receive tells us if they're receiving
+        const receive = step.EventKickingChoice.Receive === "1";
+        // home or away choice: true = home, false = away
+        const selection = step.EventKickingChoice.GamerId === "1";
+        // if receive is true, the team that selected is the receiving team
+        const firstHalfKick = receive ? (selection ? 1 : 0) : selection ? 0 : 1;
+
+        matchData.kickoff = {
+          firstHalfKick: firstHalfKick,
+          secondHalfKick: firstHalfKick === 0 ? 1 : 0,
+        };
+
+        // Set the currentTurn to the team that will receive the ball
+        currentTurn.team = firstHalfKick.toString() as "0" | "1";
+      }
     }
 
     if (gamePhase === "3") {
@@ -240,23 +258,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
       }
 
-      // If the step has EventKickingChoice, a player has chosen to kick or receive
-      if (step.EventKickingChoice) {
-        // GamerId tells us who picks, Receive tells us if they're receiving
-        const receive = step.EventKickingChoice.Receive === "1";
-        // home or away choice: true = home, false = away
-        const selection = step.EventKickingChoice.GamerId === "1";
-        // if receive is true, the team that selected is the receiving team
-        const firstHalfKick = receive ? (selection ? 1 : 0) : selection ? 0 : 1;
-
-        matchData.kickoff = {
-          firstHalfKick: firstHalfKick,
-          secondHalfKick: firstHalfKick === 0 ? 1 : 0,
-        };
-
-        // Set the currentTurn to the team that will receive the ball
-        currentTurn.team = firstHalfKick.toString() as "0" | "1";
-      }
+      
     }
 
     if (gamePhase === "4") {
@@ -423,6 +425,14 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         });
       }
 
+      
+      if(step.EventTouchdown)  {
+        // This is a touchdown event, we need to record the touchdown and the player that scored it
+        currentTurnAction.actionsTaken.touchdownScored = true;
+        currentTurn.touchdown = true;
+        currentTurn.touchdownScorer = step.EventTouchdown.PlayerId;
+      }
+
       if (step.EventEndTurn) {
         // there is a caveat here where the 'end turn' could be due to a pre-match setup event
         // we will know this if the EventNewGamePhase is 5. Hopefully this works...
@@ -502,6 +512,12 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
       }
     }
+
+    // Update the game phase
+    if (step.EventNewGamePhase) {
+      gamePhase = step.EventNewGamePhase.Phase;
+    }
+
   }
 
   return matchData;

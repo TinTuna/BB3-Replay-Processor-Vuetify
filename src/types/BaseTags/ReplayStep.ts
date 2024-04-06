@@ -14,6 +14,7 @@ import { PrayerIds } from "../IdTypes/PrayerIds";
 import { EndTurnReasons } from "../IdTypes/EndTurnReasons";
 import { EventNewInducementsTurn } from "../Inducements/EventNewInducementsTurn";
 import { PlayerIdType } from "../IdTypes/PlayerIdTypes";
+import { EventTouchdown } from "../messageData/EventTouchdown";
 
 export type ReplayStep = {
   BoardState: BoardState;
@@ -202,6 +203,7 @@ export type ReplayStep = {
       }[];
     };
   };
+  EventTouchdown: EventTouchdown;
 };
 
 /* 

@@ -6,6 +6,7 @@ export type TurnAction = {
   hasBall?: PlayerId | undefined;
   turnActionEvents: TurnActionEvent[];
   actionsTaken: {
+    standUp?: boolean;
     yardsMoved?: number;
     blockAttempted?: 'attackerDown' | 'bothDown' | 'push' | 'defenderStumbles' | 'defenderDown';
     injuryInflicted?: {

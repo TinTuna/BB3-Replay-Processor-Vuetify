@@ -126,6 +126,19 @@ export const processPlayerStep = (opts: {
   // Log what type of step we are processing if necessary
   switch (stepMessageData.StepType) {
     case "0":
+      // If this player is moving to cell -1 -1, they are standing up
+      if (
+        stepMessageData.CellTo.X === "-1" &&
+        stepMessageData.CellTo.Y === "-1"
+      ) {
+        currentTurnAction.actionsTaken.standUp = true;
+      }
+      if (
+        stepMessageData.CellTo.X === stepMessageData.CellFrom.X &&
+        stepMessageData.CellTo.Y === stepMessageData.CellFrom.Y
+      ) {
+        currentTurnAction.actionsTaken.standUp = true;
+      }
       break;
     case "1":
       break;
@@ -203,16 +216,6 @@ export const processPlayerStep = (opts: {
           ].yardsMovedWithBall += 1;
         }
 
-        // We can work out from the StepMessageData where the player moved from and to, and if it was into an endzone
-        // the tochdown endzones are X: 0 and X: 25, we can work out which end they need to be in from the currentTurn.team
-        const touchdownEnd = currentTurn.team === "0" ? "25" : "0";
-        currentTurn.touchdown = stepMessageData.CellTo.X === touchdownEnd;
-
-        // Add touchdown data to the currentTurnAction
-        if (currentTurn.touchdown) {
-          currentTurn.touchdownScorer = stepMessageData.PlayerId;
-          currentTurnAction.actionsTaken.touchdownScored = true;
-        }
         break;
       }
       case "QuestionBlockDice": {
@@ -518,8 +521,9 @@ export const processPlayerStep = (opts: {
           stepMessageData.CellTo.X === step.BoardState.Ball.Cell?.X &&
           stepMessageData.CellTo.Y === step.BoardState.Ball.Cell?.Y
         ) {
-          currentTurnAction.actionsTaken.pickupAttempted= {};
-          currentTurnAction.actionsTaken.pickupAttempted.pickupSuccess = resultMessageData.Outcome === "1";
+          currentTurnAction.actionsTaken.pickupAttempted = {};
+          currentTurnAction.actionsTaken.pickupAttempted.pickupSuccess =
+            resultMessageData.Outcome === "1";
         }
         break;
       }
@@ -554,7 +558,6 @@ export const processPlayerStep = (opts: {
         currentTurnAction.actionsTaken.injuryInflicted = {
           type: "injuryInflicted",
           player: stepMessageData.PlayerId,
-        
         };
 
         break;

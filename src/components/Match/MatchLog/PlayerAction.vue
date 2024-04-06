@@ -219,6 +219,14 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                 primaryIconColour: `${pickupObject.pickupSuccess ? 'success' : 'error'}`,
             };
         }
+        if (value[0] === "standUp") {
+            return {
+                icon: "mdi-chevron-up-circle",
+                value: '',
+                tooltip: `Stand Up`,
+                primaryIconColour: "blue"
+            };
+        }
         return {
             icon: "mdi-alert",
             value: '',

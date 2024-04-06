@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <template v-for="playerAction in logEntry.turnActions" :key="`${playerAction.playerId}-${logEntry.turn}`">
-            <v-col v-if="playerAction.playerId" cols="12" md="3">
+            <v-col v-if="playerAction.playerId" cols="12" md="2" class="d-flex">
                 <PlayerAction :player-action-prop="playerAction" :log-entry-prop="logEntry" />
             </v-col>
         </template>

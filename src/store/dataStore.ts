@@ -20,6 +20,7 @@ export const useDataStore = defineStore("data", () => {
 
   const teamData = ref<{ [key: string]: Roster }>({});
   const playerData = ref<{ [key: string]: Player }>({});
+  const competitionData = ref<{ [key: string]: string }>({});
 
   const matchData = ref<MatchData | null>(null);
 
@@ -43,6 +44,9 @@ export const useDataStore = defineStore("data", () => {
     teamData.value["1"].Customization.PrimaryColor = atob(teamData.value["1"].Customization.PrimaryColor);
     teamData.value["1"].Customization.SecondaryColor = atob(teamData.value["1"].Customization.SecondaryColor);
     teamData.value["1"].Customization.TertiaryColor = atob(teamData.value["1"].Customization.TertiaryColor);
+
+    // Add the competition logo to the competition data
+    competitionData.value.CompetitionLogo = notificationGameJoined.value?.GameInfos.Competition.CompetitionInfos.Logo as LogoGuids;
 
 
     // Now we need to process the players
@@ -143,6 +147,10 @@ export const useDataStore = defineStore("data", () => {
     return getLogoFromGuid(getTeamData(teamId).Team.IdRace, teamData.value[teamId]?.Customization.Logo as LogoGuids);
   }
 
+  const getCompetitionLogo = () => {
+    return getLogoFromGuid("1", competitionData.value.CompetitionLogo as LogoGuids);
+  }
+
   return {
     notificationGameJoined,
     rosters,
@@ -158,6 +166,7 @@ export const useDataStore = defineStore("data", () => {
     getSkillData,
     getTeamDataByDataId,
     getTeamColours,
-    getTeamLogo
+    getTeamLogo,
+    getCompetitionLogo
   };
 });

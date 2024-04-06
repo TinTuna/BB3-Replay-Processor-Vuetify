@@ -114,7 +114,9 @@ export type ReplayStep = {
   EventGamersAreReady: {};
   EventStartActiveTimer: {};
   EventEndInducements: {};
-  EventQuestionKickingChoice: {};
+  EventQuestionKickingChoice: {
+    GamerId: "0" | "1";
+  };
   EventSetUpConfiguration: {
     SetUpValidity: {
       ScrimmageValid: "0" | "1";

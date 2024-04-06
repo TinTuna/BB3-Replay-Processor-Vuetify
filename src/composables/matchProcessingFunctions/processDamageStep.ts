@@ -17,6 +17,7 @@ export const processDamageStep = (opts: {
   matchData: MatchData;
   currentTurn: Turn;
   currentTurnAction: TurnAction;
+  nextTurnAction: TurnAction;
   hasBall: string | undefined;
 }) => {
   const { stepResult, step, matchData, currentTurn, currentTurnAction } = opts;
@@ -128,9 +129,10 @@ export const processDamageStep = (opts: {
             currentTurn.knockdown
               ? (currentTurn.knockdown += 1)
               : (currentTurn.knockdown = 1);
-            currentTurnAction.actionsTaken.knockdownInflicted
-              ? currentTurnAction.actionsTaken.knockdownInflicted
-              : "Stunned";
+              currentTurnAction.actionsTaken.knockdownInflicted = {
+                type: "Stunned",
+                player: stepMessageData.PlayerId,
+              };
             break;
           }
           case "2": {
@@ -200,8 +202,11 @@ export const processDamageStep = (opts: {
         }
 
         // Check if this was a self inflicted injury
-        if (resultMessageData.PlayerId === stepMessageData.PlayerId) {
-          currentTurnAction.actionsTaken.injurySustained = injuryType;
+        if (resultMessageData.PlayerId === currentTurnAction.playerId) {
+          currentTurnAction.actionsTaken.injurySustained = {
+            type: injuryType,
+            player: resultMessageData.PlayerId,
+          };
           currentTurn.injurySustained
             ? (currentTurn.injurySustained += 1)
             : (currentTurn.injurySustained = 1);
@@ -209,7 +214,11 @@ export const processDamageStep = (opts: {
             ? (currentTurn.knockdownSustained += 1)
             : (currentTurn.knockdownSustained = 1);
         } else {
-          currentTurnAction.actionsTaken.injuryInflicted = injuryType;
+          currentTurnAction.actionsTaken.injuryInflicted = {
+            type: injuryType,
+            player: resultMessageData.PlayerId,
+          
+          };
           currentTurn.injury
             ? (currentTurn.injury += 1)
             : (currentTurn.injury = 1);

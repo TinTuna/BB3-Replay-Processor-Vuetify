@@ -1,7 +1,7 @@
 <template>
-  <v-card border rounded elevation="2" class="stripe">
+  <v-card border rounded elevation="2" class="stripe" color="blue-grey-lighten-5">
     <div class="logo">
-      <v-img :src="teamLogo.logo" class="" />
+      <v-img :src="teamLogo.logo"/>
     </div>
 
     <v-card-title>
@@ -24,14 +24,14 @@
     </v-card-subtitle>
 
 
-    <v-divider class="my-3" thickness="2" />
-    <v-sheet rounded="">
+    <v-spacer class="my-5" thickness="2" />
+    <v-sheet>
       <v-data-table density="comfortable" :items="teamRoster" :headers="[
         { title: 'Number', key: 'number', align: 'center' },
         { title: 'Name', key: 'name', align: 'center' },
         { title: 'Position', key: 'position', align: 'center' },
         { title: 'MVP', key: 'mvp', align: 'center' },
-      ]" items-per-page="16">
+      ]" items-per-page="16" style="background-color: #ECEFF1;">
         <template v-slot:[`item.position`]="{ item }">
           <span>
             <v-icon v-if="item.starPlayer" color="yellow-darken-3">mdi-star-circle</v-icon>

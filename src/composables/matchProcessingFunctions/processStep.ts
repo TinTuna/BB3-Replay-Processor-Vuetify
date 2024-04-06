@@ -16,6 +16,7 @@ export const processStep = (opts: {
   matchData: MatchData;
   currentTurn: Turn;
   currentTurnAction: TurnAction;
+  nextTurnAction: TurnAction;
   hasBall: string | undefined;
 }) => {
   const {

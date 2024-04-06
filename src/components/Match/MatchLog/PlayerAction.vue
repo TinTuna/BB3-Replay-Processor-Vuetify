@@ -1,5 +1,5 @@
 <template>
-    <v-card :subtitle="playerType" class="my-3" @click.stop="drilldown">
+    <v-card :subtitle="playerType" class="my-3 d-flex flex-column flex-grow-1" @click.stop="drilldown">
         <template v-slot:title>
             <v-icon color="primary" size="large" style="margin-right: -7px">
                 {{ `mdi-numeric-${playerNumber[0]}-box` }}
@@ -7,11 +7,11 @@
             <v-icon v-if="playerNumber[1]" color="primary" size="large" style="margin-left: -7px">
                 {{ `mdi-numeric-${playerNumber[1]}-box` }}
             </v-icon>
-            <div class="d-inline pl-2">{{ playerName }}</div>
+            <div class="d-inline pl-2 text-wrap">{{ playerName }}</div>
         </template>
-        <v-card-text>
-            <v-row>
-                <v-col v-for="(value, key) in playerActions" :key="key">
+        <v-card-text class="d-flex">
+            <v-row class="d-flex align-end">
+                <v-col v-for="(value, key) in playerActions" :key="key" class="px-1">
                     <v-tooltip :text="value.tooltip" location="bottom">
                         <template v-slot:activator="{ props }">
                             <v-chip size="large" v-bind="props">
@@ -129,26 +129,29 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
             };
         }
         if (value[0] === "injuryInflicted") {
+            const injuryObject = value[1] as Partial<TurnAction['actionsTaken']['injuryInflicted']>
             return {
                 icon: "mdi-sword",
                 value: '',
-                tooltip: `Injury - ${value[1]}`,
+                tooltip: `Injury Inflicted to ${dataStore.getPlayerName(injuryObject?.player || '')} - ${injuryObject?.type}`,
                 primaryIconColour: "error"
             };
         }
         if (value[0] === "injurySustained") {
+            const injuryObject = value[1] as Partial<TurnAction['actionsTaken']['injurySustained']>
             return {
                 icon: "mdi-hospital-box",
                 value: '',
-                tooltip: `Injury Sustained - ${value[1]}`,
+                tooltip: `Injury Sustained - ${injuryObject?.type}`,
                 primaryIconColour: "error"
             };
         }
         if (value[0] === "knockdownInflicted") {
+            const knockdownObject = value[1] as Partial<TurnAction['actionsTaken']['knockdownInflicted']>
             return {
                 icon: "mdi-creation",
                 value: '',
-                tooltip: `Knockdown - ${value[1]}`,
+                tooltip: `Knockdown Inflicted to ${dataStore.getPlayerName(knockdownObject?.player || '')} - ${knockdownObject?.type}`,
                 primaryIconColour: "yellow-darken-4"
             };
         }
@@ -160,9 +163,65 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                 primaryIconColour: "brown-darken-1"
             };
         }
+        if (value[0] === "passAttempted") {
+            const passObject = value[1] as Partial<TurnAction['actionsTaken']['passAttempted']>
+            if(!passObject) return {
+                icon: "mdi-alert",
+                value: '',
+                tooltip: `Unknown action: ${value[0]}`
+            };
+            return {
+                icon: "mdi-target",
+                value: '',
+                tooltip: `Pass Attempted to ${dataStore.getPlayerName(passObject.receiverId || '')}  - ${passObject.passSuccess ? 'Succeeded' : 'Failed'}`,
+                primaryIconColour: `${passObject.passSuccess ? 'success' : 'error'}`,
+            };
+        }
+        if (value[0] === "handoffAttempted") {
+            const handoffObject = value[1] as Partial<TurnAction['actionsTaken']['handoffAttempted']>
+            if(!handoffObject) return {
+                icon: "mdi-alert",
+                value: '',
+                tooltip: `Unknown action: ${value[0]}`
+            };
+            return {
+                icon: "mdi-hand-clap",
+                value: '',
+                tooltip: `Handoff Attempted to ${dataStore.getPlayerName(handoffObject.receiverId || '')}`,
+                primaryIconColour: 'success',
+            };
+        }
+        if (value[0] === "catchAttempted") {
+            const catchObject = value[1] as Partial<TurnAction['actionsTaken']['catchAttempted']>
+            if(!catchObject) return {
+                icon: "mdi-alert",
+                value: '',
+                tooltip: `Unknown action: ${value[0]}`
+            };
+            return {
+                icon: "mdi-handball",
+                value: '',
+                tooltip: `Catch Attempted - ${catchObject.catchSuccess ? 'Succeeded' : 'Failed'}`,
+                primaryIconColour: `${catchObject.catchSuccess ? 'success' : 'error'}`,
+            };
+        }
+        if (value[0] === "pickupAttempted") {
+            const pickupObject = value[1] as Partial<TurnAction['actionsTaken']['pickupAttempted']>
+            if(!pickupObject) return {
+                icon: "mdi-alert",
+                value: '',
+                tooltip: `Unknown action: ${value[0]}`
+            };
+            return {
+                icon: "mdi-hand-front-right",
+                value: '',
+                tooltip: `Pickup Attempted - ${pickupObject.pickupSuccess ? 'Succeeded' : 'Failed'}`,
+                primaryIconColour: `${pickupObject.pickupSuccess ? 'success' : 'error'}`,
+            };
+        }
         return {
             icon: "mdi-alert",
-            value: value[1].toString(),
+            value: '',
             tooltip: `Unknown action: ${value[0]}`
         };
     });

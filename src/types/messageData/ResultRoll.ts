@@ -1,9 +1,12 @@
 import { Die } from "../Pitch/Die";
+import { Modifier } from "../Pitch/Modifier";
 
 export type ResultRoll = {
   Status: string;
   Requirement: string;
-  Modifiers: string;
+  Modifiers: {
+    Modifier: Modifier[] | Modifier;
+  };
   Dice: {
     Die: Die[] | Die;
   };

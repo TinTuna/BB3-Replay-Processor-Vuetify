@@ -84,6 +84,11 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     actionsTaken: {},
   };
 
+  let nextTurnAction: TurnAction = {
+    turnActionEvents: [],
+    actionsTaken: {},
+  };
+
   let inducementTurnData: EventNewInducementsTurn | undefined;
   let eventInducementsData: any | undefined;
 
@@ -208,24 +213,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventQuestionKickingChoice) {
         // TODO see what EventQuestionKickingChoice actually contains as this replay is empty, assuming that means the home team is selecting
       }
-
-      // If the step has EventKickingChoice, a player has chosen to kick or receive
-      if (step.EventKickingChoice) {
-        // GamerId tells us who picks, Receive tells us if they're receiving
-        const receive = step.EventKickingChoice.Receive === "1";
-        // home or away choice: true = home, false = away
-        const selection = step.EventKickingChoice.GamerId === "1";
-        // if receive is true, the team that selected is the receiving team
-        const firstHalfKick = receive ? (selection ? 1 : 0) : selection ? 0 : 1;
-
-        matchData.kickoff = {
-          firstHalfKick: firstHalfKick,
-          secondHalfKick: firstHalfKick === 0 ? 1 : 0,
-        };
-
-        // Set the currentTurn to the team that will receive the ball
-        currentTurn.team = firstHalfKick.toString() as "0" | "1";
-      }
     }
 
     if (gamePhase === "3") {
@@ -251,6 +238,24 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           // const kickingTeam =
           //   step.EventActiveGamerChanged.NewActiveGamer || "0";
         }
+      }
+
+      // If the step has EventKickingChoice, a player has chosen to kick or receive
+      if (step.EventKickingChoice) {
+        // GamerId tells us who picks, Receive tells us if they're receiving
+        const receive = step.EventKickingChoice.Receive === "1";
+        // home or away choice: true = home, false = away
+        const selection = step.EventKickingChoice.GamerId === "1";
+        // if receive is true, the team that selected is the receiving team
+        const firstHalfKick = receive ? (selection ? 1 : 0) : selection ? 0 : 1;
+
+        matchData.kickoff = {
+          firstHalfKick: firstHalfKick,
+          secondHalfKick: firstHalfKick === 0 ? 1 : 0,
+        };
+
+        // Set the currentTurn to the team that will receive the ball
+        currentTurn.team = firstHalfKick.toString() as "0" | "1";
       }
     }
 
@@ -328,7 +333,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       // Game phase 5 general match play, it is the most common and complex phase
 
       // Work out who, if anyone, has the ball
-      let hasBall: string | undefined;
+      let hasBall: PlayerId | undefined;
       if (step.BoardState.Ball.IsHeld === "1") {
         step.BoardState.ListTeams.TeamState.forEach((team) => {
           team.ListPitchPlayers.PlayerState.forEach((player) => {
@@ -337,7 +342,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 (step.BoardState.Ball.Cell?.X || "0") &&
               (player.Cell?.Y || "0") === (step.BoardState.Ball.Cell?.Y || "0")
             ) {
-              hasBall = player.Id;
+              hasBall = player.Id as PlayerId;
             }
           });
         });
@@ -366,8 +371,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                     // if one exists already, log it
                     currentTurn.turnActions.push(currentTurnAction);
                   }
-                  currentTurnAction = {
-                    playerId: stepMessageData.PlayerId,
+                  currentTurnAction = nextTurnAction;
+                  currentTurnAction.playerId = stepMessageData.PlayerId;
+                  nextTurnAction = {
                     turnActionEvents: [],
                     actionsTaken: {},
                   };
@@ -383,7 +389,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 step,
                 matchData,
                 currentTurn,
+                previousTurnAction: currentTurn.turnActions[currentTurn.turnActions.length - 1],
                 currentTurnAction,
+                nextTurnAction,
                 hasBall,
               });
             }
@@ -395,6 +403,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 matchData,
                 currentTurn,
                 currentTurnAction,
+                nextTurnAction,
                 hasBall,
               });
             }
@@ -406,6 +415,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 matchData,
                 currentTurn,
                 currentTurnAction,
+                nextTurnAction,
                 hasBall,
               });
             }
@@ -414,6 +424,13 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       }
 
       if (step.EventEndTurn) {
+        // there is a caveat here where the 'end turn' could be due to a pre-match setup event
+        // we will know this if the EventNewGamePhase is 5. Hopefully this works...
+        if(step.EventNewGamePhase?.Phase === "5") {
+          continue;
+        }
+
+
         // If the step has EventEndTurn, it's the end of a turn
         // This is the end of a turn
 
@@ -421,6 +438,15 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         if (currentTurnAction?.playerId) {
           currentTurn.turnActions.push(currentTurnAction);
           currentTurnAction = {
+            turnActionEvents: [],
+            actionsTaken: {},
+          };
+        }
+
+        // Check if the nextTurnAction is populated, if so add it to the currentTurn before we continue
+        if (nextTurnAction?.playerId) {
+          currentTurn.turnActions.push(nextTurnAction);
+          nextTurnAction = {
             turnActionEvents: [],
             actionsTaken: {},
           };

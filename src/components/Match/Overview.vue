@@ -5,16 +5,22 @@
         <TeamRoster team="0" :concede="concede === '0'" />
       </v-col>
       <v-col cols="2">
-        <h1 >{{ title }}</h1>
-        <v-container>
-          <h1>
-            {{ homeTeamScore }}
-            -
-            {{ awayTeamScore }}
-          </h1>
-        </v-container>
+        <v-card class="py-2" elevation="2" color="blue-grey-lighten-5 d-flex flex-column justify-center align-center">
+          <div class="logo">
+            <v-img :src="competitionLogo.logo" />
+          </div>
+          <h1 class="text-h5">{{ title }}</h1>
+          <v-divider></v-divider>
+          <v-container>
+            <h1>
+              {{ homeTeamScore }}
+              -
+              {{ awayTeamScore }}
+            </h1>
+          </v-container>
+        </v-card>
         <v-divider class="my-5"></v-divider>
-        <v-sheet border rounded elevation="2" class="pb-2 pt-1">
+        <v-sheet border rounded elevation="2" class="pb-2 pt-1" color="blue-grey-lighten-5">
           <GameBalance title="Touchdowns Scored" :home-stat="homeTeamTouchdownsScored"
             :away-stat="awayTeamTouchdownsScored" />
           <GameBalance title="Possession" :home-stat="homePossession" :away-stat="awayPossession" type="percentage" />
@@ -29,6 +35,10 @@
           <!-- <GameBalance title="Passes Completed" home-stat="0" away-stat="0" />
               <GameBalance title="Fouls Comitted" home-stat="0" away-stat="0" /> -->
         </v-sheet>
+        <!-- <v-divider class="my-5"></v-divider>
+        <v-sheet border rounded elevation="2" class="pb-2 pt-1" color="blue-grey-lighten-5">
+          Nuffle-y things
+        </v-sheet> -->
       </v-col>
       <v-col cols="5">
         <TeamRoster team="1" :concede="concede === '1'" />
@@ -58,6 +68,10 @@ const concede = computed(() => {
     return dataStore.matchData?.conceded
   }
   return undefined
+})
+
+const competitionLogo = computed(() => {
+  return dataStore.getCompetitionLogo();
 })
 
 const homeTeamTouchdownsScored = computed(() => {
@@ -128,4 +142,11 @@ const awayPossession = computed(() => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.logo {
+  position: absolute;
+  opacity: 0.1;
+  height: 200px;
+  width: 200px
+}
+</style>

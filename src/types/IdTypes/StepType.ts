@@ -1,11 +1,11 @@
 export type StepType = 
-| "0" // Move
-| "1" // Pick up ball
+| "0" // Use action (what type of player activation)
+| "1" // Move?
 | "2"
 | "3"
 | "4" // Catch
-| "5"
-| "6"
+| "5" // Handoff
+| "6" // Move player during setup?
 | "7"
 | "8"
 | "9"

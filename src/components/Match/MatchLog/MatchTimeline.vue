@@ -1,5 +1,5 @@
 <template>
-    <v-timeline direction="vertical" truncate-line="both">
+    <v-timeline density="comfortable" direction="vertical" truncate-line="both">
         <v-timeline-item dot-color="green" icon="mdi-whistle">
             <template v-slot:opposite>
                 <v-card class="ml-3">

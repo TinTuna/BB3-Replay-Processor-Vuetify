@@ -9,21 +9,26 @@ import { StepResult } from "@/types/Match/StepResult";
 import { TurnAction } from "@/types/Match/TurnAction";
 import { ResultBlockOutcome } from "@/types/messageData/ResultBlockOutcome";
 import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
+import { ResultRoll } from "@/types/messageData/ResultRoll";
 
 export const processPlayerStep = (opts: {
   stepResult: Step;
   step: ReplayStep;
   matchData: MatchData;
   currentTurn: Turn;
+  previousTurnAction: TurnAction;
   currentTurnAction: TurnAction;
-  hasBall: string | undefined;
+  nextTurnAction: TurnAction;
+  hasBall: PlayerId | undefined;
 }) => {
   const {
     stepResult,
     step,
     matchData,
     currentTurn,
+    previousTurnAction,
     currentTurnAction,
+    nextTurnAction,
     hasBall,
   } = opts;
   const stepMessageData = xmlToJson(stepResult.Step.MessageData)
@@ -117,6 +122,56 @@ export const processPlayerStep = (opts: {
   };
 
   // console.log("stepMessageData.StepType", stepMessageData.StepType);
+
+  // Log what type of step we are processing if necessary
+  switch (stepMessageData.StepType) {
+    case "0":
+      break;
+    case "1":
+      break;
+    case "2":
+      // debugger
+      break;
+    case "3":
+      // debugger
+      break;
+    case "4":
+      // This is a catch step
+      // this will all be handlesin the ResultRoll section as we need to process the roll result before we know what happened
+      break;
+    case "5":
+      // Attempted handoff
+      currentTurnAction.actionsTaken.handoffAttempted = {};
+      currentTurnAction.actionsTaken.handoffAttempted.receiverId =
+        stepMessageData.TargetId;
+      // debugger
+      break;
+    case "6":
+      // debugger
+      break;
+    case "7":
+      // debugger
+      break;
+    case "8":
+      // debugger
+      break;
+    case "9":
+      // debugger
+      break;
+    case "10":
+      // debugger
+      break;
+    case "11":
+      // Attempted Pass
+      currentTurnAction.actionsTaken.passAttempted = {};
+      currentTurnAction.actionsTaken.passAttempted.receiverId =
+        stepMessageData.TargetId;
+      // debugger
+      break;
+    default:
+      // debugger
+      break;
+  }
 
   // Process the player step
 
@@ -412,12 +467,60 @@ export const processPlayerStep = (opts: {
         // it has data such as the type of roll, the value rolled and the target value
         // it also tells us if the roll was a success or a failure
 
-        // // Not yet used so commenting to save computation
-        // const resultMessageData = xmlToJson(message.MessageData)
-        //   .ResultRoll as ResultRoll;
+        const resultMessageData = xmlToJson(result.MessageData)
+          .ResultRoll as ResultRoll;
 
-        // add roll data to the matchData
-        // TODO: process the roll data
+        // if this is a pass roll, we can add some data to the playerData
+        if (stepMessageData.StepType === "11") {
+          if (!currentTurnAction.actionsTaken.passAttempted) {
+            currentTurnAction.actionsTaken.passAttempted = {};
+          }
+          currentTurnAction.actionsTaken.passAttempted.passSuccess = Boolean(
+            resultMessageData.Outcome === "1"
+          );
+        }
+
+        // We can check if this ResultRoll was a Catch
+        if (stepMessageData.StepType === "4") {
+          if (
+            currentTurnAction.actionsTaken.passAttempted &&
+            currentTurnAction.actionsTaken.passAttempted.receiverId ===
+              stepMessageData.PlayerId
+          ) {
+            // This was a catch
+            nextTurnAction.playerId =
+              currentTurnAction.actionsTaken.passAttempted.receiverId;
+            nextTurnAction.actionsTaken.catchAttempted = {};
+            nextTurnAction.actionsTaken.catchAttempted.catchSuccess =
+              resultMessageData.Outcome === "1";
+          } else if (
+            currentTurnAction.actionsTaken.handoffAttempted &&
+            currentTurnAction.actionsTaken.handoffAttempted.receiverId ===
+              stepMessageData.PlayerId
+          ) {
+            // This was a handoff
+            nextTurnAction.playerId =
+              currentTurnAction.actionsTaken.handoffAttempted.receiverId;
+            nextTurnAction.actionsTaken.catchAttempted = {};
+            nextTurnAction.actionsTaken.catchAttempted.catchSuccess =
+              resultMessageData.Outcome === "1";
+          } else {
+            // this happens sometimes but I'm not sure what it is yet
+          }
+        }
+
+        // We need to check if the player has moved to the space that contains the ball or the ball has moved to the player
+        // If so, this roll is a catch attempt
+        if (
+          !currentTurnAction.actionsTaken.passAttempted &&
+          !currentTurnAction.actionsTaken.handoffAttempted &&
+          previousTurnAction?.hasBall !== currentTurnAction.playerId &&
+          stepMessageData.CellTo.X === step.BoardState.Ball.Cell?.X &&
+          stepMessageData.CellTo.Y === step.BoardState.Ball.Cell?.Y
+        ) {
+          currentTurnAction.actionsTaken.pickupAttempted= {};
+          currentTurnAction.actionsTaken.pickupAttempted.pickupSuccess = resultMessageData.Outcome === "1";
+        }
         break;
       }
       case "ResultSkillUsage": {
@@ -448,7 +551,11 @@ export const processPlayerStep = (opts: {
         //   .ResultCasualtyRoll as ResultCasualtyRoll;
 
         // Add ResultCasualtyRoll data to the currentTurnAction
-        currentTurnAction.actionsTaken.injuryInflicted = "injuryInflicted";
+        currentTurnAction.actionsTaken.injuryInflicted = {
+          type: "injuryInflicted",
+          player: stepMessageData.PlayerId,
+        
+        };
 
         break;
       }
@@ -492,8 +599,13 @@ export const processPlayerStep = (opts: {
     turnActionEvent.eventResults.push(stepResult);
   });
 
+  // add the ballcarrier to the currentTurnAction
+  currentTurnAction.hasBall = hasBall;
+
   // Add the turnActionEvent to the currentTurnAction
   currentTurnAction.turnActionEvents.push(turnActionEvent);
+
+  // if (currentTurnAction.actionsTaken.passAttempted) debugger;
 
   return opts;
 };

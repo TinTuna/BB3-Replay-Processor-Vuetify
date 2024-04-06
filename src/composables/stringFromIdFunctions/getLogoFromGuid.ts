@@ -515,6 +515,166 @@ const logoList: { [key in LogoGuids]: LogoData } = {
     name: "Orc Shield",
     logoFileId: "Logo_Orc_11",
   },
+  "a508b6d8-f231-578d-b5ad-a77f897596b1": {
+    name: "Purple Eagle",
+    logoFileId: "Logo_Human_02",
+  },
+  "88c7eba8-db57-505c-8313-c6876a5581ca": {
+    name: "Crowned Death",
+    logoFileId: "Logo_Human_03",
+  },
+  "1b7e39f4-6606-59a8-967d-d60839d46409": {
+    name: "Roaring Inferno",
+    logoFileId: "Logo_Human_04",
+  },
+  "54522410-ce9c-5927-bddb-ce713e91dcb9": {
+    name: "Solar Wrath",
+    logoFileId: "Logo_Human_05",
+  },
+  "dbfea705-5f24-55a3-81ef-19e71980908c": {
+    name: "Purple Bull",
+    logoFileId: "Logo_Human_06",
+  },
+  "73341770-3e5d-5128-8424-5bb07843da88": {
+    name: "Leonine Shield",
+    logoFileId: "Logo_Human_07",
+  },
+  "3b1285a6-db55-5bf4-b3b7-9d7d5df92a63": {
+    name: "Death or Victory",
+    logoFileId: "Logo_Human_08",
+  },
+  "7ca793eb-2345-5820-ad2e-b8ab7d820ecf": {
+    name: "Ghal-Maraz",
+    logoFileId: "Logo_Human_09",
+  },
+  "f255dce9-6f98-561a-a46c-182b5ea7d018": {
+    name: "Trout",
+    logoFileId: "Logo_Human_10",
+  },
+  "b0985b2d-5b5d-5231-a1f2-c7828d7eaf77": {
+    name: "Sextant of Nuffle",
+    logoFileId: "Logo_Human_11",
+  },
+  "aac3afa8-2dea-5827-a7e0-7afef1a24a0e": {
+    name: "Cross of Carroburg",
+    logoFileId: "Logo_Human_12",
+  },
+  "9ffe0fe6-95a2-597d-9842-571e560a3002": {
+    name: "Imperatoria Draco",
+    logoFileId: "Logo_Human_13",
+  },
+  "25c0a3f2-3d51-5bf4-8ddc-e96959ba0b01": {
+    name: "Imperial Artillery",
+    logoFileId: "Logo_Human_14",
+  },
+  "24247713-a8d0-5ed9-bfa9-62340e56d803": {
+    name: "Augur-Knight",
+    logoFileId: "Logo_Human_15",
+  },
+  "025acb16-077d-5e5b-a9b4-5ecda9a1f088": {
+    name: "White-Lion",
+    logoFileId: "Logo_Human_16",
+  },
+  "137664d3-a361-5afa-8d26-46f9e75012a8": {
+    name: "Pirates of the Empire",
+    logoFileId: "Logo_Human_17",
+  },
+  "48b109a5-c7aa-5c8e-b63c-cf1ec19191d6": {
+    name: "Phoenix",
+    logoFileId: "Logo_Human_18",
+  },
+  "794fd14d-7396-5529-9178-627bbc041ee9": {
+    name: "Golden Cross",
+    logoFileId: "Logo_Human_19",
+  },
+  "85dc4379-26d7-5491-8313-75eadb73f241": {
+    name: "Runner",
+    logoFileId: "Logo_Human_20",
+  },
+  "0d5762aa-4ea4-5722-a258-1d0b82b63813": {
+    name: "Orc Bomb",
+    logoFileId: "Logo_Orc_13",
+  },
+  "3d03a94e-268a-54fc-bd65-4e3394b4b9d9": {
+    name: "Final Blow",
+    logoFileId: "Logo_Orc_14",
+  },
+  "fbec96ef-c5f5-5ed5-a6d3-913c690ff16d": {
+    name: "Hideous Orc",
+    logoFileId: "Logo_Orc_15",
+  },
+  "05d3f911-3700-53d8-ba54-70cffbe4ca70": {
+    name: "Helmeted Orc",
+    logoFileId: "Logo_Orc_16",
+  },
+  "4a448d34-a5a3-5dfd-840f-0d6a6caca9ea": {
+    name: "Rage",
+    logoFileId: "Logo_Orc_17",
+  },
+  "96e0d6e2-b501-50e8-8bc4-972cacebadbb": {
+    name: "Bloodthirsty Star",
+    logoFileId: "Logo_Orc_18",
+  },
+  "d365f4ae-65b1-5b03-9f74-f44de591c4ad": {
+    name: "Goblin Eclipse",
+    logoFileId: "Logo_Orc_19",
+  },
+  "ced42c12-eb2a-53ea-938e-fb7873273a3b": {
+    name: "Scarlet Minotaur",
+    logoFileId: "Logo_Orc_20",
+  },
+  "94331832-0e13-5cd5-8a41-29528d279f9b": {
+    name: "Mark of the Horned Rat",
+    logoFileId: "Logo_Skaven_02",
+  },
+  "704028c7-79da-5d2c-b031-bef8fce62ec3": {
+    name: "Rat Shaman",
+    logoFileId: "Logo_Skaven_03",
+  },
+  "9f5c22c5-1383-5da9-a221-f23c41b68dd1": {
+    name: "Bearer of Warpstone",
+    logoFileId: "Logo_Skaven_04",
+  },
+  "d91f6c16-0577-5b9e-8ea6-9760b9c25b5f": {
+    name: "Skaven Legion",
+    logoFileId: "Logo_Skaven_05",
+  },
+  "661f7ad2-ede6-5c69-be35-6ed4ba7ea53e": {
+    name: "Stormvermin",
+    logoFileId: "Logo_Skaven_06",
+  },
+  "da5c6441-c134-5ca4-92a0-d7ac346e4cea": {
+    name: "Children of Warp",
+    logoFileId: "Logo_Skaven_07",
+  },
+  "29fb643b-91b0-5cb4-995e-389b81f46684": {
+    name: "Rat-O-Mancer",
+    logoFileId: "Logo_Skaven_08",
+  },
+  "b5c1ecb0-98bf-5146-bc30-3cf376b2e650": {
+    name: "Eshin Dagger",
+    logoFileId: "Logo_Skaven_09",
+  },
+  "94231b64-427d-5586-8ec0-b8c9127246de": {
+    name: "Unity of the Clans",
+    logoFileId: "Logo_Skaven_10",
+  },
+  "18c137ca-ec87-5267-9e51-e276f37db8d5": {
+    name: "Trophy",
+    logoFileId: "Logo_Skaven_11",
+  },
+  "a5821fd3-e07a-5887-b60e-7bc0ae0a38bf": {
+    name: "Clan Moulder",
+    logoFileId: "Logo_Skaven_12",
+  },
+  "66910506-bc7f-54f8-9858-3842c4637076": {
+    name: "Ball and Warp",
+    logoFileId: "Logo_Skaven_13",
+  },
+  "2666ede4-f5ca-54c4-92eb-31f6872962cc": {
+    name: "Skaven Claw",
+    logoFileId: "Logo_Skaven_14",
+  },
 };
 
 export type LogoGuids =
@@ -598,4 +758,44 @@ export type LogoGuids =
   | "b81ff481-2297-553c-b437-4282d78db9c2"
   | "19542c1d-cbb9-5b64-bc6d-73ecc602ee04"
   | "23667032-8170-552d-a554-6763d5419721"
-  | "8e10d403-bcee-5bae-8baf-db6fbbdaca9f";
+  | "8e10d403-bcee-5bae-8baf-db6fbbdaca9f"
+  | "a508b6d8-f231-578d-b5ad-a77f897596b1"
+  | "88c7eba8-db57-505c-8313-c6876a5581ca"
+  | "1b7e39f4-6606-59a8-967d-d60839d46409"
+  | "54522410-ce9c-5927-bddb-ce713e91dcb9"
+  | "dbfea705-5f24-55a3-81ef-19e71980908c"
+  | "73341770-3e5d-5128-8424-5bb07843da88"
+  | "3b1285a6-db55-5bf4-b3b7-9d7d5df92a63"
+  | "7ca793eb-2345-5820-ad2e-b8ab7d820ecf"
+  | "f255dce9-6f98-561a-a46c-182b5ea7d018"
+  | "b0985b2d-5b5d-5231-a1f2-c7828d7eaf77"
+  | "aac3afa8-2dea-5827-a7e0-7afef1a24a0e"
+  | "9ffe0fe6-95a2-597d-9842-571e560a3002"
+  | "25c0a3f2-3d51-5bf4-8ddc-e96959ba0b01"
+  | "24247713-a8d0-5ed9-bfa9-62340e56d803"
+  | "025acb16-077d-5e5b-a9b4-5ecda9a1f088"
+  | "137664d3-a361-5afa-8d26-46f9e75012a8"
+  | "48b109a5-c7aa-5c8e-b63c-cf1ec19191d6"
+  | "794fd14d-7396-5529-9178-627bbc041ee9"
+  | "85dc4379-26d7-5491-8313-75eadb73f241"
+  | "0d5762aa-4ea4-5722-a258-1d0b82b63813"
+  | "3d03a94e-268a-54fc-bd65-4e3394b4b9d9"
+  | "fbec96ef-c5f5-5ed5-a6d3-913c690ff16d"
+  | "05d3f911-3700-53d8-ba54-70cffbe4ca70"
+  | "4a448d34-a5a3-5dfd-840f-0d6a6caca9ea"
+  | "96e0d6e2-b501-50e8-8bc4-972cacebadbb"
+  | "d365f4ae-65b1-5b03-9f74-f44de591c4ad"
+  | "ced42c12-eb2a-53ea-938e-fb7873273a3b"
+  | "94331832-0e13-5cd5-8a41-29528d279f9b"
+  | "704028c7-79da-5d2c-b031-bef8fce62ec3"
+  | "9f5c22c5-1383-5da9-a221-f23c41b68dd1"
+  | "d91f6c16-0577-5b9e-8ea6-9760b9c25b5f"
+  | "661f7ad2-ede6-5c69-be35-6ed4ba7ea53e"
+  | "da5c6441-c134-5ca4-92a0-d7ac346e4cea"
+  | "29fb643b-91b0-5cb4-995e-389b81f46684"
+  | "b5c1ecb0-98bf-5146-bc30-3cf376b2e650"
+  | "94231b64-427d-5586-8ec0-b8c9127246de"
+  | "18c137ca-ec87-5267-9e51-e276f37db8d5"
+  | "a5821fd3-e07a-5887-b60e-7bc0ae0a38bf"
+  | "66910506-bc7f-54f8-9858-3842c4637076"
+  | "2666ede4-f5ca-54c4-92eb-31f6872962cc";

@@ -227,6 +227,28 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
                 primaryIconColour: "blue"
             };
         }
+        if (value[0] === "foulAttempted") {
+            const foulObject = value[1] as Partial<TurnAction['actionsTaken']['foulAttempted']>
+            if(!foulObject) return {
+                icon: "mdi-alert",
+                value: '',
+                tooltip: `Unknown action: ${value[0]}`
+            };
+            return {
+                icon: "mdi-shoe-cleat",
+                value: '',
+                tooltip: `Foul Attempted on ${dataStore.getPlayerName(foulObject.fouledPlayer || '')}`,
+                primaryIconColour: `error`,
+            };
+        }
+        if (value[0] === "sentOff") {
+            return {
+                icon: "mdi-cards",
+                value: '',
+                tooltip: `Sent Off`,
+                primaryIconColour: "error"
+            };
+        }
         return {
             icon: "mdi-alert",
             value: '',

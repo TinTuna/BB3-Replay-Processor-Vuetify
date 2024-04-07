@@ -16,6 +16,8 @@ export type StringMessage = {
     | "ResultCasualtyRoll"
     | "ResultPlayerRemoval"
     | "ResultTeamRerollUsage"
-    
+    | "QuestionBribeUsage"
+    | "ResultPlayerSentOff";
+
   MessageData: string; // This is stringified XML
 };

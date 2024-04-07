@@ -92,6 +92,14 @@ export const processDamageStep = (opts: {
           ].armourRolls.armourRollsPassed += 1;
         }
 
+        if (currentTurn.foulAttempted) {
+          // this is a foul attempt
+          currentTurnAction.actionsTaken.foulAttempted = {
+            foulSuccess: resultMessageData.Outcome === "0",
+            fouledPlayer: stepMessageData.TargetId,
+          };
+        }
+
         break;
       }
       case "ResultInjuryRoll": {
@@ -123,16 +131,24 @@ export const processDamageStep = (opts: {
         ].injuryRolls.injuryRolls += 1;
         switch (resultMessageData.Outcome) {
           case "0": {
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].injuryRolls.injuryStunned += 1;
-            currentTurn.knockdown
-              ? (currentTurn.knockdown += 1)
-              : (currentTurn.knockdown = 1);
+            // Check if this is a self inflicted injury
+            if (stepMessageData.PlayerId === currentTurnAction.playerId) {
+              currentTurnAction.actionsTaken.knockdownSustained = {
+                type: "Stunned",
+                player: currentTurnAction.playerId,
+              };
+            } else {
+              matchData.playerData[
+                stepMessageData.PlayerId
+              ].injuryRolls.injuryStunned += 1;
+              currentTurn.knockdown
+                ? (currentTurn.knockdown += 1)
+                : (currentTurn.knockdown = 1);
               currentTurnAction.actionsTaken.knockdownInflicted = {
                 type: "Stunned",
                 player: stepMessageData.PlayerId,
               };
+            }
             break;
           }
           case "2": {
@@ -217,7 +233,6 @@ export const processDamageStep = (opts: {
           currentTurnAction.actionsTaken.injuryInflicted = {
             type: injuryType,
             player: resultMessageData.PlayerId,
-          
           };
           currentTurn.injury
             ? (currentTurn.injury += 1)

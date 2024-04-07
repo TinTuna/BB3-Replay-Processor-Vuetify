@@ -10,6 +10,8 @@ import { TurnAction } from "@/types/Match/TurnAction";
 import { ResultBlockOutcome } from "@/types/messageData/ResultBlockOutcome";
 import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
 import { ResultRoll } from "@/types/messageData/ResultRoll";
+import { ResultUseAction } from "@/types/messageData/ResultUseAction";
+import { ResultPlayerSentOff } from "@/types/messageData/ResultPlayerSentOff";
 
 export const processPlayerStep = (opts: {
   stepResult: Step;
@@ -121,8 +123,6 @@ export const processPlayerStep = (opts: {
     eventResults: [] as StepResult[],
   };
 
-  // console.log("stepMessageData.StepType", stepMessageData.StepType);
-
   // Log what type of step we are processing if necessary
   switch (stepMessageData.StepType) {
     case "0":
@@ -157,7 +157,6 @@ export const processPlayerStep = (opts: {
       currentTurnAction.actionsTaken.handoffAttempted = {};
       currentTurnAction.actionsTaken.handoffAttempted.receiverId =
         stepMessageData.TargetId;
-      // debugger
       break;
     case "6":
       // debugger
@@ -179,7 +178,6 @@ export const processPlayerStep = (opts: {
       currentTurnAction.actionsTaken.passAttempted = {};
       currentTurnAction.actionsTaken.passAttempted.receiverId =
         stepMessageData.TargetId;
-      // debugger
       break;
     default:
       // debugger
@@ -525,6 +523,7 @@ export const processPlayerStep = (opts: {
           currentTurnAction.actionsTaken.pickupAttempted.pickupSuccess =
             resultMessageData.Outcome === "1";
         }
+
         break;
       }
       case "ResultSkillUsage": {
@@ -586,7 +585,31 @@ export const processPlayerStep = (opts: {
         break;
       }
       case "ResultUseAction": {
-        //
+        const resultMessageData = xmlToJson(result.MessageData)
+          .ResultUseAction as ResultUseAction;
+
+        if (resultMessageData.Action === "6") {
+          // foul action
+          currentTurn.foulAttempted = true;
+        }
+
+        break;
+      }
+      case "QuestionBribeUsage": {
+        // const resultMessageData = xmlToJson(result.MessageData)
+        // .QuestionBribeUsage as QuestionBribeUsage;
+
+        break;
+      }
+      case "ResultPlayerSentOff": {
+        // This tells us a player was sent off and why
+
+        // const resultMessageData = xmlToJson(result.MessageData)
+        //   .ResultPlayerSentOff as ResultPlayerSentOff;
+
+        currentTurnAction.actionsTaken.sentOff = true;
+        currentTurn.sentOff = true;
+
         break;
       }
       case "ResultDoMove": {

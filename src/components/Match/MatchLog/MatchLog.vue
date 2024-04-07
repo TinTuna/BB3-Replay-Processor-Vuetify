@@ -13,7 +13,7 @@
                             </div>
                             Turn {{ logEntry.turn }} - {{ dataStore.getTeamName(logEntry.team) }}
                             <v-spacer />
-                            <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover || logEntry.injurySustained"
+                            <div v-if="logEntry.death || logEntry.injury || logEntry.touchdown || logEntry.turnover || logEntry.injurySustained || logEntry.sentOff"
                                 class="px-2 py-1 mr-5" style="background-color: white; border-radius: 3px;">
                                 <v-tooltip text="Death" location="bottom">
                                     <template v-slot:activator="{ props }">
@@ -49,6 +49,12 @@
                                     <template v-slot:activator="{ props }">
                                         <v-icon v-bind="props" v-if="logEntry.turnover"
                                             color="amber">mdi-alert-box</v-icon>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip text="Sending Off" location="bottom">
+                                    <template v-slot:activator="{ props }">
+                                        <v-icon v-bind="props" v-if="logEntry.sentOff"
+                                            color="error">mdi-cards</v-icon>
                                     </template>
                                 </v-tooltip>
                             </div>

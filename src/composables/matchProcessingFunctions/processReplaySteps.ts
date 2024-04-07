@@ -519,6 +519,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     }
 
   }
-
+  
   return matchData;
 };

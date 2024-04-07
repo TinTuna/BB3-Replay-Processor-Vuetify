@@ -13,4 +13,6 @@ export type Turn = {
   knockdownSustained?: number;
   death?: number;
   turnover?: boolean;
+  foulAttempted?: boolean;
+  sentOff?: boolean;
 };

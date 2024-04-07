@@ -43,5 +43,10 @@ export type TurnAction = {
     pickupAttempted?: {
       pickupSuccess?: Boolean;
     };
+    foulAttempted?: {
+      foulSuccess?: Boolean;
+      fouledPlayer?: PlayerId;
+    };
+    sentOff?: Boolean;
   };
 };

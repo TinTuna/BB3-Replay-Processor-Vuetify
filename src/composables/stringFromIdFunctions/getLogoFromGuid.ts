@@ -675,6 +675,198 @@ const logoList: { [key in LogoGuids]: LogoData } = {
     name: "Skaven Claw",
     logoFileId: "Logo_Skaven_14",
   },
+  "0fc2fdd5-7f86-5201-a0ef-bb8da208c4d2": {
+    name: "Clan Ritual of Victory",
+    logoFileId: "Logo_Skaven_15",
+  },
+  "216d0138-58dc-5e14-8cf5-721da0a6a8ac": {
+    name: "For Them the Bell Tolls",
+    logoFileId: "Logo_Skaven_16",
+  },
+  "9ba9169a-9beb-5d81-b570-b2599e40c58e": {
+    name: "The Rat and the Skull",
+    logoFileId: "Logo_Skaven_17",
+  },
+  "9149143f-f4e6-5fe9-91a3-eeb75b611f36": {
+    name: "Final Laceration",
+    logoFileId: "Logo_Skaven_18",
+  },
+  "1456c811-aac2-56d3-b4b7-795428a2bcc9": {
+    name: "Feast",
+    logoFileId: "Logo_Skaven_19",
+  },
+  "b94152b6-f522-5f86-a730-6a48525fc641": {
+    name: "No Man Allowed",
+    logoFileId: "Logo_Skaven_20",
+  },
+  "571da4e3-8354-5d3b-a384-1be9caa25e87": {
+    name: "Eye of Chaos",
+    logoFileId: "Logo_ChaosChosen_01",
+  },
+  "39336a02-0933-53fe-ac4c-b997b35f27ef": {
+    name: "Star of Chaos",
+    logoFileId: "Logo_ChaosChosen_02",
+  },
+  "86d8b9d5-557f-5f18-8fc4-bfd000681df3": {
+    name: "Eye of Nurgle",
+    logoFileId: "Logo_ChaosChosen_03",
+  },
+  "18250155-7276-50b0-bb7b-9378d17fa7a3": {
+    name: "Third Eye",
+    logoFileId: "Logo_ChaosChosen_04",
+  },
+  "b727a846-7939-5ebe-897a-47da23e54e11": {
+    name: "Star of Fatality",
+    logoFileId: "Logo_ChaosChosen_05",
+  },
+  "26fe2e41-7af4-50ef-9ecd-dca736337e54": {
+    name: "Howler",
+    logoFileId: "Logo_ChaosChosen_06",
+  },
+  "e0aa75a8-d407-58af-a40d-2615f164040e": {
+    name: "Kiss of Chaos",
+    logoFileId: "Logo_ChaosChosen_09",
+  },
+  "c792a55b-96d1-50a9-a0c9-099aad5db4a6": {
+    name: "Chosen of Khorne",
+    logoFileId: "Logo_ChaosChosen_10",
+  },
+  "9d129092-e499-529b-9dff-442d449ae4b0": {
+    name: "Champion of Chaos",
+    logoFileId: "Logo_ChaosChosen_11",
+  },
+  "999fe6f1-5eda-5775-925c-8ac9f0ae3b6a": {
+    name: "Wyvern",
+    logoFileId: "Logo_ChaosChosen_12",
+  },
+  "4a89ecbd-68d8-5a1e-87ee-bd979d2aaaef": {
+    name: "Star of Khorne",
+    logoFileId: "Logo_ChaosChosen_13",
+  },
+  "3a7d6725-b4f0-53c4-ae71-57ca46090594": {
+    name: "Game of the Horned Rat",
+    logoFileId: "Logo_ChaosChosen_14",
+  },
+  "e9061fca-ed2a-56b5-8b53-0fa0df15f6d2": {
+    name: "Maw of Chaos",
+    logoFileId: "Logo_ChaosChosen_15",
+  },
+  "1acd3685-8a3b-5f38-bce6-6dbba4a0378e": {
+    name: "Grandfathers Benevolent Gaze",
+    logoFileId: "Logo_ChaosChosen_16",
+  },
+  "4a3fddf1-7329-571d-9133-94b48612b74b": {
+    name: "Smile of Slaanesh",
+    logoFileId: "Logo_ChaosChosen_17",
+  },
+  "66c793ac-ac29-5f85-9e50-77f90f3794ee": {
+    name: "Beasts of Chaos",
+    logoFileId: "Logo_ChaosChosen_18",
+  },
+  "47d05d5e-f901-5ca9-8b25-89e01f5f5781": {
+    name: "Demonic Adornment",
+    logoFileId: "Logo_ChaosChosen_19",
+  },
+  "2a3823b2-38cf-5a7a-9ad5-3db9cc63934f": {
+    name: "Vampire Spirit",
+    logoFileId: "Logo_ChaosChosen_20",
+  },
+  "9f05efdd-ba59-5118-8275-17ffcc613046": {
+    name: "Zephyr Spirit",
+    logoFileId: "Logo_DarkElf_01",
+  },
+  "6ad054af-4eae-5b01-919b-48707e2e193a": {
+    name: "Gaunt Moon",
+    logoFileId: "Logo_DarkElf_02",
+  },
+  "f5f83de6-f96e-5de2-8f46-9fbd867141ea": {
+    name: "Eternal Guard",
+    logoFileId: "Logo_DarkElf_03",
+  },
+  "b1d4ef4b-343d-58dd-8f0d-9fa306ea154a": {
+    name: "Abyssal Lion",
+    logoFileId: "Logo_DarkElf_04",
+  },
+  "89ef2c7f-280f-5f33-9ff4-bd78087bdaca": {
+    name: "Raging Death",
+    logoFileId: "Logo_DarkElf_05",
+  },
+  "92983e0d-3e27-5b89-8c53-f5ea66751b07": {
+    name: "Fiery Heart",
+    logoFileId: "Logo_DarkElf_06",
+  },
+  "c10accbe-fdcf-5601-b3d6-8eb894372d61": {
+    name: "Dark Priest of Blood Bowl",
+    logoFileId: "Logo_DarkElf_07",
+  },
+  "94d560d3-75ac-5426-bc89-44c39420f0f2": {
+    name: "Lethal Dagger",
+    logoFileId: "Logo_DarkElf_08",
+  },
+  "bd4774e2-a85f-5212-997e-30de1e4e6f1e": {
+    name: "Elves of Blood",
+    logoFileId: "Logo_DarkElf_10",
+  },
+  "e279b9fb-af44-514f-a572-026c8344829e": {
+    name: "Dragon Shield",
+    logoFileId: "Logo_DarkElf_11",
+  },
+  "66e11d20-82de-50df-8e9f-8ff5eee2c393": {
+    name: "Champion Hydra",
+    logoFileId: "Logo_DarkElf_12",
+  },
+  "4886b4c8-bfcb-5a1a-bcfb-72a101a9f0b7": {
+    name: "Salamander of Ice",
+    logoFileId: "Logo_DarkElf_13",
+  },
+  "7b60626f-925f-5ca1-9d58-dab8236821cb": {
+    name: "Black Pegasus",
+    logoFileId: "Logo_DarkElf_14",
+  },
+  "6d3af68a-49a7-54f2-a1b0-dbd39de16236": {
+    name: "Succubus",
+    logoFileId: "Logo_DarkElf_15",
+  },
+  "c3011e1c-34f4-5eaa-972c-866fb78788c9": {
+    name: "Mask of Naggoroth",
+    logoFileId: "Logo_DarkElf_16",
+  },
+  "6a01bbc5-4a13-548d-be42-86c7519e01d7": {
+    name: "Dracolich",
+    logoFileId: "Logo_DarkElf_17",
+  },
+  "b190ddb3-60b2-53f8-846f-558bbbbcf369": {
+    name: "Scarlet Gauntlet",
+    logoFileId: "Logo_DarkElf_18",
+  },
+  "6ac10c1d-9feb-5068-8fb5-19012bdb3f6e": {
+    name: "Mark of the Serpent",
+    logoFileId: "Logo_DarkElf_19",
+  },
+  "af02bbbc-dc60-5764-a4b5-a8395e2f3c97": {
+    name: "Raiders of the Black Arks",
+    logoFileId: "Logo_DarkElf_20",
+  },
+  "08fe1bb3-678d-5dd2-9108-42807589b201": {
+    name: "Golden Hammerer",
+    logoFileId: "Logo_Dwarf_01",
+  },
+  "2d7008f9-dde1-5e2a-ab22-85de88f8713c": {
+    name: "Runic Ball",
+    logoFileId: "Logo_Dwarf_02",
+  },
+  "8a98cf73-defe-58fd-ae68-4bf918d55bad": {
+    name: "Cut of the Axe",
+    logoFileId: "Logo_Dwarf_03",
+  },
+  "63f3f9bb-250b-5820-abfe-365c98742b26": {
+    name: "Grudge Bearer",
+    logoFileId: "Logo_Dwarf_04",
+  },
+  "69b1e5c4-ade8-5cd7-83f2-586d542dd618": {
+    name: "Celestial hammer",
+    logoFileId: "Logo_Dwarf_05",
+  },
 };
 
 export type LogoGuids =
@@ -798,4 +990,52 @@ export type LogoGuids =
   | "18c137ca-ec87-5267-9e51-e276f37db8d5"
   | "a5821fd3-e07a-5887-b60e-7bc0ae0a38bf"
   | "66910506-bc7f-54f8-9858-3842c4637076"
-  | "2666ede4-f5ca-54c4-92eb-31f6872962cc";
+  | "2666ede4-f5ca-54c4-92eb-31f6872962cc"
+  | "0fc2fdd5-7f86-5201-a0ef-bb8da208c4d2"
+  | "216d0138-58dc-5e14-8cf5-721da0a6a8ac"
+  | "9ba9169a-9beb-5d81-b570-b2599e40c58e"
+  | "9149143f-f4e6-5fe9-91a3-eeb75b611f36"
+  | "1456c811-aac2-56d3-b4b7-795428a2bcc9"
+  | "b94152b6-f522-5f86-a730-6a48525fc641"
+  | "571da4e3-8354-5d3b-a384-1be9caa25e87"
+  | "39336a02-0933-53fe-ac4c-b997b35f27ef"
+  | "86d8b9d5-557f-5f18-8fc4-bfd000681df3"
+  | "18250155-7276-50b0-bb7b-9378d17fa7a3"
+  | "b727a846-7939-5ebe-897a-47da23e54e11"
+  | "26fe2e41-7af4-50ef-9ecd-dca736337e54"
+  | "e0aa75a8-d407-58af-a40d-2615f164040e"
+  | "c792a55b-96d1-50a9-a0c9-099aad5db4a6"
+  | "9d129092-e499-529b-9dff-442d449ae4b0"
+  | "999fe6f1-5eda-5775-925c-8ac9f0ae3b6a"
+  | "4a89ecbd-68d8-5a1e-87ee-bd979d2aaaef"
+  | "3a7d6725-b4f0-53c4-ae71-57ca46090594"
+  | "e9061fca-ed2a-56b5-8b53-0fa0df15f6d2"
+  | "1acd3685-8a3b-5f38-bce6-6dbba4a0378e"
+  | "4a3fddf1-7329-571d-9133-94b48612b74b"
+  | "66c793ac-ac29-5f85-9e50-77f90f3794ee"
+  | "47d05d5e-f901-5ca9-8b25-89e01f5f5781"
+  | "2a3823b2-38cf-5a7a-9ad5-3db9cc63934f"
+  | "9f05efdd-ba59-5118-8275-17ffcc613046"
+  | "6ad054af-4eae-5b01-919b-48707e2e193a"
+  | "f5f83de6-f96e-5de2-8f46-9fbd867141ea"
+  | "b1d4ef4b-343d-58dd-8f0d-9fa306ea154a"
+  | "89ef2c7f-280f-5f33-9ff4-bd78087bdaca"
+  | "92983e0d-3e27-5b89-8c53-f5ea66751b07"
+  | "c10accbe-fdcf-5601-b3d6-8eb894372d61"
+  | "94d560d3-75ac-5426-bc89-44c39420f0f2"
+  | "bd4774e2-a85f-5212-997e-30de1e4e6f1e"
+  | "e279b9fb-af44-514f-a572-026c8344829e"
+  | "66e11d20-82de-50df-8e9f-8ff5eee2c393"
+  | "4886b4c8-bfcb-5a1a-bcfb-72a101a9f0b7"
+  | "7b60626f-925f-5ca1-9d58-dab8236821cb"
+  | "6d3af68a-49a7-54f2-a1b0-dbd39de16236"
+  | "c3011e1c-34f4-5eaa-972c-866fb78788c9"
+  | "6a01bbc5-4a13-548d-be42-86c7519e01d7"
+  | "b190ddb3-60b2-53f8-846f-558bbbbcf369"
+  | "6ac10c1d-9feb-5068-8fb5-19012bdb3f6e"
+  | "af02bbbc-dc60-5764-a4b5-a8395e2f3c97"
+  | "08fe1bb3-678d-5dd2-9108-42807589b201"
+  | "2d7008f9-dde1-5e2a-ab22-85de88f8713c"
+  | "8a98cf73-defe-58fd-ae68-4bf918d55bad"
+  | "63f3f9bb-250b-5820-abfe-365c98742b26"
+  | "69b1e5c4-ade8-5cd7-83f2-586d542dd618"

@@ -58,7 +58,7 @@ import { processXML } from "@/composables/helperFns/processXML";
 import Wrapper from "@/components/Match/Wrapper.vue";
 import { decodeHtml } from "@/composables/helperFns/decodeHtml";
 
-const bbrFile = ref<File[]>();
+const bbrFile = ref<File>();
 
 const loading = ref(false);
 const loaded = ref(false);
@@ -92,7 +92,7 @@ const processReplayFile = async () => {
   loading.value = true;
   try {
     // Decode the file
-    const decoded = await decodeBase64File(bbrFile.value[0]);
+    const decoded = await decodeBase64File(bbrFile.value);
 
     // Unzip the file
     const unzipped = await unzipFile(decoded);

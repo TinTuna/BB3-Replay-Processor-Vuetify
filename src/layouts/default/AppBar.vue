@@ -24,7 +24,7 @@ import { ref } from "vue"
 const tab = ref(0);
 
 const items = [
-  { title: "Replay Processor", link: "/" },
+  { title: "Replay Processor", link: "/replay-processor" },
   { title: "Git Repository", link: "/git" }
 ];
 

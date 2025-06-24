@@ -497,19 +497,20 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "6") {
       // This is the post-match phase
 
-      if (step.EventMatchEnd) {
-        // This is the end of the match event
-        // If the MatchCompletionStatus is 1, the match was conceded
-        if (step.EventMatchEnd.MatchCompletionStatus === "1") {
-          // The match was conceded
-          // The GamersEndMatchStatus will tell us who conceded
-          step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach((gamerEndMatchStatus, i) => {
-            if (gamerEndMatchStatus.EndStatus) {
-              matchData.conceded = i.toString() as "0" | "1";
-            }
-          });
-        }
+      
+    }
 
+    if (step.EventMatchEnd) {
+      // This is the end of the match event
+      // If the MatchCompletionStatus is 1, the match was conceded
+      if (step.EventMatchEnd.MatchCompletionStatus === "1") {
+        // The match was conceded
+        // The GamersEndMatchStatus will tell us who conceded
+        step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach((gamerEndMatchStatus, i) => {
+          if (gamerEndMatchStatus.EndStatus) {
+            matchData.conceded = i.toString() as "0" | "1"
+          }
+        })
       }
     }
 

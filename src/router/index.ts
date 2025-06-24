@@ -17,11 +17,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "replay-processor" */ '@/views/ReplayProcessor.vue'),
       },
       {
-        path: '/replay-processor',
-        name: 'replay-processor',
-        component: () => import(/* webpackChunkName: "replay-processor" */ '@/views/ReplayProcessor.vue'),
-      },
-      {
         path: '/git',
         name: 'git',
         component: () => import(/* webpackChunkName: "git" */ '@/views/Git.vue'),

@@ -18,7 +18,7 @@
             <v-spacer></v-spacer>
             <v-label
               id="errorText"
-              v-if="!bbrFile?.length"
+              v-if="!bbrFile"
               class="font-weight-bold ma-1"
               style="color: rgb(156, 0, 0); display: none"
               >Select a file to load</v-label

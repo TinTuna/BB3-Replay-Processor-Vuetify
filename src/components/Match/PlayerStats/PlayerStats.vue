@@ -118,7 +118,7 @@ import { Ref, computed, ref } from "vue";
 import { Roster } from "@/types/BaseTags/Roster";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { useDataStore } from "@/store/dataStore";
-import { VDataTable } from "vuetify/lib/components/index.mjs";
+import { VDataTable } from "vuetify/lib/components";
 import { Skill } from "@/composables/stringFromIdFunctions/getSkillData";
 
 const dataStore = useDataStore();

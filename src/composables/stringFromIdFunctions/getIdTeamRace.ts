@@ -24,3 +24,6 @@ const idTeamRaces = {
   "1001": "Chaos Renegades",
   "1002": "Old World Alliance",
 };
+
+// Export known team race IDs for comparison
+export const knownTeamIds = new Set(Object.keys(idTeamRaces));

@@ -169,3 +169,6 @@ const IdPlayerTypes = {
     "1450": "Star Player",
     "1453": "Star Player"
 }
+
+// Export known player type IDs for comparison
+export const knownPlayerIds = new Set(Object.keys(IdPlayerTypes));

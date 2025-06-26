@@ -1,7 +1,7 @@
 export const getStarPlayerName = (starPlayerId: keyof typeof starPlayerNames): string | undefined => {
     if (starPlayerNames[starPlayerId]) return starPlayerNames[starPlayerId];
     console.warn(`Unknown StarPlayerId: ${starPlayerId}`);
-    return undefined;
+    return;
 }
 
 const starPlayerNames = {

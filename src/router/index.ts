@@ -6,11 +6,6 @@ const routes = [
     path: '/',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
-      // {
-      //   path: '',
-      //   name: 'processor',
-      //   component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
-      // },
       {
         path: '/',
         name: 'replay-processor',

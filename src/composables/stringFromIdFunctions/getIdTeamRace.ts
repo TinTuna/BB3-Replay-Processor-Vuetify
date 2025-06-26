@@ -1,12 +1,4 @@
-import { IdRace } from "@/types/IdTypes/IdRace";
-
-export const getIdTeamRace = (idTeamRace: IdRace): string => {
-  if (idTeamRaces[idTeamRace]) return idTeamRaces[idTeamRace];
-  console.warn(`Unknown idTeamRace: ${idTeamRace}`);
-  return `Unknown: ${idTeamRace}`;
-};
-
-const idTeamRaces = {
+export const idTeamRaces = {
   "1": "Human",
   "2": "Dwarf",
   "3": "Skaven",
@@ -23,6 +15,15 @@ const idTeamRaces = {
   "1000": "Black Orc",
   "1001": "Chaos Renegades",
   "1002": "Old World Alliance",
+} as const;
+
+// Derive the IdRace type from the keys of idTeamRaces
+export type IdRace = keyof typeof idTeamRaces;
+
+export const getIdTeamRace = (idTeamRace: IdRace): string | undefined => {
+  if (idTeamRaces[idTeamRace]) return idTeamRaces[idTeamRace];
+  console.warn(`Unknown idTeamRace: ${idTeamRace}`);
+  return;
 };
 
 // Export known team race IDs for comparison

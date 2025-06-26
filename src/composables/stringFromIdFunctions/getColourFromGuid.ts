@@ -10,7 +10,7 @@ export const getColourFromGuid = (guid: string): string => {
 		return colourData[guid].hex
 	}
 	console.warn(`Colour with guid ${guid} not found`)
-    return "#cccccc"
+  return "#cccccc"
 }
 
 const colourData: ColourData = {
@@ -101,7 +101,7 @@ const colourData: ColourData = {
 	"8b31d4b7-9722-5e2b-9509-4b43987be8bd": {
 		hex: "#705945",
 		name: "Stormvermin Fur"
-	},	
+	},
 	"eb169a75-d186-57b2-bf4d-17f76e7bed47": {
 		hex: "#8c4600",
 		name: "Skrag Brown"

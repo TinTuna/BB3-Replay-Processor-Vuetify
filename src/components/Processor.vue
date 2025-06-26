@@ -23,6 +23,15 @@
               style="color: rgb(156, 0, 0); display: none"
               >Select a file to load</v-label
             >
+            <v-alert
+              v-if="error"
+              type="error"
+              class="mt-2"
+              closable
+              @click:close="clearError"
+            >
+              {{ error }}
+            </v-alert>
           </v-card-text>
         </v-card>
         <div v-if="loading && !loaded">
@@ -52,20 +61,18 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { decodeBase64File } from "@/composables/helperFns/decodeBase64File";
-import { unzipFile } from "@/composables/helperFns/unzipFile";
-import { processXML } from "@/composables/helperFns/processXML";
 import Wrapper from "@/components/Match/Wrapper.vue";
-import { decodeHtml } from "@/composables/helperFns/decodeHtml";
+import { useBbrFileProcessor } from "@/composables/helperFns/processBbrFile";
+import { useXmlDownloader } from "@/composables/helperFns/downloadProcessedXml";
 
 const bbrFile = ref<File>();
-
-const loading = ref(false);
 const loaded = ref(false);
-
 const processedReplay = ref<Document>(
   new DOMParser().parseFromString("", "text/xml")
 );
+
+const { processFile, isLoading: loading, error } = useBbrFileProcessor();
+const { downloadProcessedXml } = useXmlDownloader();
 
 const processReplayFile = async () => {
   if (!bbrFile.value) {
@@ -89,53 +96,31 @@ const processReplayFile = async () => {
       );
     return;
   }
-  loading.value = true;
+
   try {
-    // Decode the file
-    const decoded = await decodeBase64File(bbrFile.value);
-
-    // Unzip the file
-    const unzipped = await unzipFile(decoded);
-
-    // Recursive base64 decode on the XML string
-    const processedXML = await processXML(unzipped);
+    const processedXML = await processFile(bbrFile.value);
     processedReplay.value = processedXML;
     loaded.value = true;
-    loading.value = false;
-
-    return processedXML;
   } catch (error) {
     console.error("Error processing file:", error);
-    loading.value = false;
-    throw error;
+    // Error is already handled by the composable
   }
 };
 
 const downloadProcessedReplayFile = () => {
   if (!processedReplay.value) return;
-  // Remove the IP addresses from the XML
-  const ipAddresses = processedReplay.value.querySelectorAll("IpAddress");
-  ipAddresses.forEach((ip) => ip.remove());
-  const serialisedtoString = new XMLSerializer().serializeToString(
-    processedReplay.value
-  );
-  const decodedHtml = decodeHtml(serialisedtoString);
-  const blob = new Blob([decodedHtml], {
-    type: "application/octet-stream",
-  });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "processed_replay.xml";
-  a.click();
-  window.URL.revokeObjectURL(url);
+  downloadProcessedXml(processedReplay.value);
+};
+
+const clearError = () => {
+  error.value = null;
 };
 
 const reset = () => {
   bbrFile.value = undefined;
-  loading.value = false;
   loaded.value = false;
   processedReplay.value = new DOMParser().parseFromString("", "text/xml");
+  clearError();
 };
 </script>
 

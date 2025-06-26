@@ -1,12 +1,4 @@
-import { PlayerIdType } from '@/types/IdTypes/PlayerIdTypes';
-
-export const getIdPlayerType = (IdPlayerType: PlayerIdType): string => {
-    if (IdPlayerTypes[IdPlayerType]) return IdPlayerTypes[IdPlayerType];
-    console.warn(`Unknown IdPlayerType: ${IdPlayerType}`);
-    return `Unknown Type ${IdPlayerType}`;
-}
-
-const IdPlayerTypes = {
+export const IdPlayerTypes = {
     // // Human
     "1": "Lineman",
     "2": "Catcher",
@@ -130,8 +122,6 @@ const IdPlayerTypes = {
     "1101": "Thrower",
     "1102": "Wardancer",
 
-
-
     // // Star Players
     "1112": "Star Player",
     "1113": "Star Player",
@@ -168,6 +158,15 @@ const IdPlayerTypes = {
     "1445": "Star Player",
     "1450": "Star Player",
     "1453": "Star Player"
+} as const;
+
+// Derive the PlayerIdType from the keys of IdPlayerTypes
+export type PlayerIdType = keyof typeof IdPlayerTypes;
+
+export const getIdPlayerType = (IdPlayerType: PlayerIdType): string | undefined => {
+    if (IdPlayerTypes[IdPlayerType]) return IdPlayerTypes[IdPlayerType];
+    console.warn(`Unknown IdPlayerType: ${IdPlayerType}`);
+    return;
 }
 
 // Export known player type IDs for comparison

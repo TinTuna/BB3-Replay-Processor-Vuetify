@@ -4,6 +4,7 @@ export const idTeamRaces = {
   "3": "Skaven",
   "4": "Orc",
   "5": "Lizardmen",
+  "6": "Goblin",
   "7": "Wood Elf",
   "8": "Chaos Chosen",
   "9": "Dark Elf",

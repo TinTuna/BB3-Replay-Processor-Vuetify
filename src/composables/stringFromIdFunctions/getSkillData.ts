@@ -1,62 +1,9 @@
-import { SkillId } from "@/types/IdTypes/SkillId";
-
-type SkillData = {
-  name: string;
-  description: string;
-  skillCategory: string;
-};
-
-export type Skill = {
-  name: string;
-  description: string;
-  icon: string;
-  skillCategory: string;
-  id: SkillId;
-};
-
-export const getSkillDataFromId = (skillId: SkillId): Skill => {
-  const skill = {
-    name: "Unknown Skill" + " " + skillId,
-    description: "Unknown Description",
-    icon: new URL(`@/assets/skills/unknown.jpg`, import.meta.url).href,
-    skillCategory: "Unknown Category",
-    id: skillId,
-  };
-  if (skillList[skillId]) {
-    skill.name = skillList[skillId].name;
-    skill.description = skillList[skillId].description;
-    skill.icon = new URL(`../../assets/skills/${skillId}.png`, import.meta.url).href;
-    skill.skillCategory = skillList[skillId].skillCategory;
-  }
-  return skill
-};
-
-const skillList: { [key in SkillId]: SkillData } = {
+export const skillList = {
   "1": {
     name: "Strip Ball",
     description:
       "When choosing pushed back on a Block action against a Player carrying the Ball, the latter falls into the destination Square and Bounce.",
     skillCategory: "General",
-  },
-  "2": {
-    name: "Unknown Skill" + " 2",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
-  "3": {
-    name: "Unknown Skill" + " 3",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
-  "4": {
-    name: "Unknown Skill" + " 4",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
-  "5": {
-    name: "Unknown Skill" + " 5",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "6": {
     name: "Catch",
@@ -73,11 +20,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     name: "Sprint",
     description: "This Player can attempt to Rush three times instead of two.",
     skillCategory: "Agility",
-  },
-  "9": {
-    name: "Unknown Skill" + " 9",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "10": {
     name: "Foul Appearance",
@@ -160,11 +102,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     description:
       "This Player is not Sent off on a natural double during an Armour Value test when he commits a Foul. Moreover, his activation does not end after a Foul, and he can continue to move.",
     skillCategory: "Agility",
-  },
-  "24": {
-    name: "Unknown Skill" + " 24",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "25": {
     name: "Chainsaw",
@@ -271,11 +208,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     description: "This Player cannot take possession of the Ball nor attempt any action that would lead him to take possession of the Ball.",
     skillCategory: "Trait Skill",
   },
-  "43": {
-    name: "Unknown Skill" + " 43",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
   "44": {
     name: "Loner (4+)",
     description:
@@ -289,20 +221,15 @@ const skillList: { [key in SkillId]: SkillData } = {
     skillCategory: "Passing",
   },
   "46": {
-    name: "Unknown Skill" + " 46",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
+    name: "No Hands",
+    description: "This Player cannot take possession of the Ball nor attempt any action that would lead him to take possession of the Ball.",
+    skillCategory: "Trait Skill",
   },
   "47": {
     name: "Pass",
     description:
       "This Player can Reroll a failed Passing Ability test on a Pass action.",
     skillCategory: "Passing",
-  },
-  "48": {
-    name: "Unknown Skill" + " 48",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "49": {
     name: "Prehensile Tail",
@@ -380,11 +307,6 @@ const skillList: { [key in SkillId]: SkillData } = {
       "This Player can Re-roll a Pick up test. Moreover, the Strip Ball Skill cannot be used against this Player.",
     skillCategory: "General",
   },
-  "62": {
-    name: "Unknown Skill" + " 62",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
   "63": {
     name: "Thick Skull",
     description:
@@ -395,16 +317,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     name: "Throw Team-Mate",
     description: "If this Player has an ST of 5 or more, he can attempt a Throw Team-Mate action on a Team-mate with the Right Stuff Skill.",
     skillCategory: "Trait Skill",
-  },
-  "65": {
-    name: "Unknown Skill" + " 65",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
-  "66": {
-    name: "Unknown Skill" + " 66",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "67": {
     name: "Unchanneled Fury",
@@ -435,16 +347,6 @@ const skillList: { [key in SkillId]: SkillData } = {
       "If this Player is the kicker of the Ball at Kick-off, you can choose to halve the deviation of the Ball by D6/2, rounding any fractions down.",
     skillCategory: "General",
   },
-  "72": {
-    name: "Unknown Skill" + " 72",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
-  "73": {
-    name: "Unknown Skill" + " 73",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
   "74": {
     name: "Big Hand",
     description:
@@ -472,11 +374,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     description: "Target an opponent who is Standing adjacent and who has not lost his Tackle Zone. This Player carries out an Agility test with -1 for each Player Marking him. If the test is successful, the opponent loses his Tackle Zone until his activation.",
     skillCategory: "Trait Skill",
   },
-  "79": {
-    name: "Unknown Skill" + " 79",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
   "80": {
     name: "Bombardier",
     description: "This Player can throw a bomb during his activation if he is already Standing and he has not yet moved. It does not use up the Pass Declaration for this Turn, and works like a Pass. The bomb explodes in the Square where it is if the throw fails, if it is not caught by a player or, on a roll of 4+, when it is caught. Any standing Players hit by the explosion are placed Prone. On a roll of 1-3, after it has been caught, the Player must throw the bomb.",
@@ -488,11 +385,6 @@ const skillList: { [key in SkillId]: SkillData } = {
       "A player with the Decay skill gets +1 on tests made on the Casualties table against them.",
     skillCategory: "Trait Skill",
   },
-  "82": {
-    name: "Unknown Skill" + " 82",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
-  },
   "83": {
     name: "Titchy",
     description: "+1 on Agility tests during a Dodge. However, if an opponent dodges into the Tackle Zone of this Player, it does not count towards Agility tests.",
@@ -502,11 +394,6 @@ const skillList: { [key in SkillId]: SkillData } = {
     name: "Animal Savagery",
     description: "After declaring an action, on a D6 result of 1-3 (with +2 if the declared action is a Blitz): an adjacent Team-mate is Knocked down. Only causes a Turnover if the victim was carrying the Ball. During an Armour Value test, the opposition Manager can use the Mighty Blow Skill if your Player has it. The Turn of the Player stops immediately if no Team-mate is adjacent. This Player loses his Tackle Zone until next activated.",
     skillCategory: "Trait Skill",
-  },
-  "85": {
-    name: "Unknown Skill" + " 85",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
   },
   "86": {
     name: "Animosity: All Team-Mates",
@@ -525,9 +412,9 @@ const skillList: { [key in SkillId]: SkillData } = {
     skillCategory: "Passing",
   },
   "89": {
-    name: "Unknown Skill" + " 89",
-    description: "Unknown Description",
-    skillCategory: "Unknown Category",
+    name: "Pogo Stick",
+    description: "This Player can perform a Pogo Stick action during his activation. This action imposes a special Move on the Player, forbidding him to carry or pick up the Ball. If this player enters a Square occupied by any other Standing Player, he must resolve a Block action. This Skill may still be used if the Player is Prone or has lost their Tackle Zone.",
+    skillCategory: "Trait Skill",
   },
   "90": {
     name: "Defensive",
@@ -644,6 +531,11 @@ const skillList: { [key in SkillId]: SkillData } = {
       "At the start of a Drive, after the Kick-off, D3 Players with this Trait can be moved from the dugout onto the Pitch. The maximum number of players that can be moved corresponds to the number of players with this trait already on the pitch (the limit of 11 Players can be exceeded). They cannot be placed on the Line of Scrimmage or in a Wide Zone.",
     skillCategory: "Trait Skill",
   },
+  "1017": {
+    name: "Swoop",
+    description: "This Player can perform a Swoop action during his activation. This action imposes a special Move on the Player, forbidding him to carry or pick up the Ball. If this player enters a Square occupied by any other Standing Player, he must resolve a Block action. This Skill may still be used if the Player is Prone or has lost their Tackle Zone.",
+    skillCategory: "Trait Skill",
+  },
   "1020": {
     name: "Plague Ridden",
     description:
@@ -660,4 +552,39 @@ const skillList: { [key in SkillId]: SkillData } = {
     description: "If this Player wants to use a Team re-roll, roll a D6. If the result is equal to or greater than 5, this Player plays normally. On any other result, the first result is kept and the Team re-roll is lost. This Trait may still be used if the Player is Prone or has lost their Tackle Zone.",
     skillCategory: "Trait Skill",
   },
+} as const;
+
+export type SkillId = keyof typeof skillList;
+
+type SkillData = {
+  name: string;
+  description: string;
+  skillCategory: string;
 };
+
+export type Skill = {
+  name: string;
+  description: string;
+  icon: string;
+  skillCategory: string;
+  id: SkillId;
+};
+
+export const getSkillDataFromId = (skillId: SkillId): Skill => {
+  const skill = {
+    name: "Unknown Skill" + " " + skillId,
+    description: "Unknown Description",
+    icon: new URL(`@/assets/skills/unknown.jpg`, import.meta.url).href,
+    skillCategory: "Unknown Category",
+    id: skillId,
+  };
+  if (skillList[skillId]) {
+    skill.name = skillList[skillId].name;
+    skill.description = skillList[skillId].description;
+    skill.icon = new URL(`../../assets/skills/${skillId}.png`, import.meta.url).href;
+    skill.skillCategory = skillList[skillId].skillCategory;
+  }
+  return skill
+};
+
+export const knownSkillIds = new Set(Object.keys(skillList));

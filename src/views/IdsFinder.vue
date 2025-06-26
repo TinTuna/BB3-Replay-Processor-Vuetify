@@ -59,6 +59,20 @@
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
+                <h3 class="text-h6 font-weight-bold mb-2">Unseen Skills</h3>
+                <v-alert v-if="results.unseenSkills.length === 0" type="success">No unseen skills found!</v-alert>
+                <v-list v-else>
+                  <v-list-item v-for="player in results.unseenSkills" :key="player.playerName">
+                    <v-list-item-title>
+                      <strong>{{ player.playerName }}</strong>
+                      <ul>
+                        <li v-for="skill in player.skills" :key="skill">
+                          Skill ID: {{ skill }}
+                        </li>
+                      </ul>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
               </div>
             </div>
           </v-card-text>
@@ -73,11 +87,16 @@ import { ref } from 'vue';
 import { useBbrFileProcessor } from '@/composables/helperFns/processBbrFile';
 import { getIdTeamRace, knownTeamIds } from '@/composables/stringFromIdFunctions/getIdTeamRace';
 import { getIdPlayerType, knownPlayerIds } from '@/composables/stringFromIdFunctions/getIdPlayerType';
+import { knownSkillIds } from '@/composables/stringFromIdFunctions/getSkillData';
 import type { IdRace } from '@/types/IdTypes/IdRace';
 import type { PlayerIdType } from '@/types/IdTypes/PlayerIdTypes';
 
 const replayFile = ref<File | null>(null);
-const results = ref<{ unseenTeamIds: { id: string; name: string }[]; unseenPlayerIds: { id: string; name: string }[] } | null>(null);
+const results = ref<{
+  unseenTeamIds: { id: string; name: string }[];
+  unseenPlayerIds: { id: string; name: string }[];
+  unseenSkills: { playerName: string; skills: string[] }[];
+} | null>(null);
 
 const { processFile, isLoading, error } = useBbrFileProcessor();
 
@@ -90,33 +109,50 @@ async function analyzeReplay() {
     // Use the new composable to process the BBR file
     const xmlDoc = await processFile(replayFile.value);
 
+    console.log(xmlDoc);
+
     // Extract IDs
     const foundTeamIds = new Set<{ id: string; name: string }>();
     const foundPlayerIds = new Set<{ id: string; name: string }>();
-
-    console.log(xmlDoc);
+    const playerSkillMap = new Map<string, { playerName: string; skills: string[] }>();
 
     // Find all Roster
     xmlDoc.querySelectorAll('Roster').forEach(el => {
       const teamRaceId = el.querySelector('Team > IdRace')?.textContent?.trim();
       const name = el.querySelector(':scope > Name')?.textContent?.trim();
-      console.log(teamRaceId, name);
       if (teamRaceId && name) foundTeamIds.add({ id: teamRaceId, name });
 
       const players = el.querySelectorAll('PlayerData');
       players.forEach(player => {
         const id = player.querySelector('IdPlayerTypes')?.textContent?.trim();
-        const name = player.querySelector(':scope > Name')?.textContent?.trim();
+        const name = player.querySelector(':scope > Name')?.textContent?.trim() || '(unknown)';
         if (id && name) foundPlayerIds.add({ id, name });
+
+        let skills: string[] = [];
+        player.querySelectorAll('InnateSkillsItem').forEach(skillEl => {
+          const skillId = skillEl.textContent?.trim();
+          if (skillId && !knownSkillIds.has(skillId)) {
+            skills.push(skillId);
+          }
+        });
+        player.querySelectorAll('AcquiredSkillsItem').forEach(skillEl => {
+          const skillId = skillEl.textContent?.trim();
+          if (skillId && !knownSkillIds.has(skillId)) {
+            skills.push(skillId);
+          }
+        });
+        if (skills.length > 0) {
+          playerSkillMap.set(name, { playerName: name, skills });
+        }
       });
     });
 
-    // Compare to known
+    const unseenSkills = Array.from(playerSkillMap.values());
     const unseenTeamIds = Array.from(foundTeamIds).filter(id => id && !knownTeamIds.has(id.id as IdRace));
     const unseenPlayerIds = Array.from(foundPlayerIds).filter(id => id && !knownPlayerIds.has(id.id as PlayerIdType));
-    results.value = { unseenTeamIds, unseenPlayerIds };
+    results.value = { unseenTeamIds, unseenPlayerIds, unseenSkills };
   } catch (e) {
-    results.value = { unseenTeamIds: [], unseenPlayerIds: [] };
+    results.value = { unseenTeamIds: [], unseenPlayerIds: [], unseenSkills: [] };
     // Error is already handled by the composable
   }
 }

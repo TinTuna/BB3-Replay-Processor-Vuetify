@@ -14,6 +14,18 @@ export const IdPlayerTypes = {
     "9": "Troll Slayer",
     "10": "Deathroller",
 
+    // // Amazon
+    "11": "Eagle Warrior Linewoman",
+    "12": "Python Warrior Thrower",
+    "13": "Piranha Warrior Blitzer",
+    "14": "Jaguar Warrior Blocker",
+
+    // // Khorne
+    "15": "Bloodborn Marauder Lineman",
+    "16": "Khorngor",
+    "17": "Bloodseeker",
+    "18": "Bloodspawner",
+
     // // Orc
     "21": "Lineman",
     "22": "Goblin",
@@ -22,6 +34,16 @@ export const IdPlayerTypes = {
     "25": "Blitzer",
     "26": "Untrained Troll",
 
+    // // Goblin
+    "30": "Goblin Lineman",
+    "31": "Looney",
+    "44": "Trained Troll",
+    "45": "Pogoer",
+    "46": "Fanatic",
+    "107": "Bomma",
+    "1015": "Doom Diver",
+    "1016": "'Ooligan'",
+
     // // Chaos Chosen
     "32": "Beastman Lineman",
     "33": "Chosen Blocker",
@@ -29,12 +51,26 @@ export const IdPlayerTypes = {
     "1103": "Chaos Troll",
     "1104": "Chaos Ogre",
 
+    // // Norse
+    "35": "Norse Raider Lineman",
+    "36": "Norse Berserker",
+    "37": "Beer Boar",
+    "38": "Valkyrie",
+    "39": "Ulfwerener",
+    "40": "Yhetee",
+
     // // Dark Elf
     "47": "Lineman",
     "48": "Runner",
     "49": "Assassin",
     "50": "Blitzer",
     "51": "Witch Elf",
+
+    // // Halflings
+    "60": "Halfling Hopeful Lineman",
+    "61": "Altern Forest Treeman",
+    "1017": "Halfling Catcher",
+    "1018": "Halfling Hefty",
 
     // // Elven Union
     "73": "Thrower",
@@ -87,6 +123,13 @@ export const IdPlayerTypes = {
     "1000": "Black Orc",
     "1001": "Goblin Lineman",
     "1002": "Trained Troll",
+
+    // // Nercomantic Horror
+    "1045": "Flesh Golem",
+    "1046": "Ghoul Runner",
+    "1047": "Warewolf",
+    "1048": "Wraith",
+    "1049": "Zombie Lineman",
 
     // // Skaven
     "1078": "Rat Ogre",

@@ -5,6 +5,16 @@ export const skillList = {
       "When choosing pushed back on a Block action against a Player carrying the Ball, the latter falls into the destination Square and Bounce.",
     skillCategory: "General",
   },
+  "2": {
+    name: "Hit and Run",
+    description: "After performing a Block action, this player, if still standing, may immediately move one free square ignoring any Tackle Zone. After this free move, they must not mark or be marked by any opposition player.",
+    skillCategory: "Passing",
+  },
+  "5": {
+    name: "Drunkard",
+    description: "This Player suffers a permanent -1 penalty when attempting to Rush.",
+    skillCategory: "Trait Skill",
+  },
   "6": {
     name: "Catch",
     description: "This Player can Re-roll all Catch tests.",
@@ -20,6 +30,11 @@ export const skillList = {
     name: "Sprint",
     description: "This Player can attempt to Rush three times instead of two.",
     skillCategory: "Agility",
+  },
+  "9": {
+    name: "Pick Me Up",
+    description: "At the end of the opposition's Team turn, roll a D6 for each Prone (not Stunned) team-mate within three squares of a Standing Player with this Trait. On a 5+, the Prone Player may immediately stand up.",
+    skillCategory: "Trait Skill",
   },
   "10": {
     name: "Foul Appearance",

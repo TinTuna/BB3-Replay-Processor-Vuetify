@@ -168,26 +168,13 @@ export const processDamageStep = (opts: {
         break;
       }
       case "ResultCasualtyRoll": {
-        // this doens thappen very frequently, needs testing what it tells us
-
-        // const resultMessageData = xmlToJson(result.MessageData)
-        //   .ResultCasualtyRoll as ResultCasualtyRoll;
-
-        // Add ResultCasualtyRoll data to the currentTurnAction
-        // currentTurn.injury = true;
-        // currentTurnAction.actionsTaken.injuryInflicted = "ResultCasualtyRoll";
-
-        // console.log(
-        //   "Injury inflicted",
-        //   currentTurnAction.actionsTaken.injuryInflicted
-        // );
-
+        // This doesn't happen very frequently, needs testing what it tells us
+        // TODO: Process casualty roll
+        // TODO: Track casualty roll
         break;
       }
       case "ResultPlayerRemoval": {
         // This tells us who was removed from the pitch and why
-
-        // // Not yet used so commenting to save computation
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
@@ -251,11 +238,8 @@ export const processDamageStep = (opts: {
       }
       case "ResultTeamRerollUsage": {
         // This tells us a reroll was used and by which _player_ (not by which team)
-
-        // // Not yet used so commenting to save computation
-        // const resultMessageData = xmlToJson(message.MessageData)
-        //   .ResultTeamRerollUsage as ResultTeamRerollUsage;
-
+        // TODO: Process reroll usage
+        // TODO: Track reroll usage
         break;
       }
       default: {

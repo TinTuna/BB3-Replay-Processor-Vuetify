@@ -36,13 +36,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   };
 
   // in the match data, generate each player and their actions
-  replaySteps[0].BoardState.ListTeams.TeamState.forEach((team) => {
+  replaySteps[0].BoardState.ListTeams.TeamState.forEach((team, teamIndex) => {
+    const teamId = teamIndex.toString();
     team.ListPitchPlayers.PlayerState.forEach((player) => {
-      matchData = addBasePlayerData(
-        matchData,
-        replaySteps[0].BoardState.ListTeams.TeamState.indexOf(team).toString(),
-        player.Id as PlayerId
-      );
+      matchData = addBasePlayerData(matchData, teamId, player.Id as PlayerId);
     });
   });
 
@@ -337,7 +334,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           outerLoop: for (const team of step.BoardState.ListTeams.TeamState) {
             for (const player of team.ListPitchPlayers.PlayerState) {
               if (player.Id === currentBallHolder) {
-                if ((player.Cell?.X || "0") === ballX && (player.Cell?.Y || "0") === ballY) {
+                if (
+                  (player.Cell?.X || "0") === ballX &&
+                  (player.Cell?.Y || "0") === ballY
+                ) {
                   needsRecalc = false;
                 }
                 break outerLoop;
@@ -351,7 +351,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           currentBallHolder = undefined;
           for (const team of step.BoardState.ListTeams.TeamState) {
             for (const player of team.ListPitchPlayers.PlayerState) {
-              if ((player.Cell?.X || "0") === ballX && (player.Cell?.Y || "0") === ballY) {
+              if (
+                (player.Cell?.X || "0") === ballX &&
+                (player.Cell?.Y || "0") === ballY
+              ) {
                 currentBallHolder = player.Id as PlayerId;
                 break;
               }
@@ -382,8 +385,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
               stepResult.Results.StringMessage.forEach((result) => {
                 if (result.Name === "ResultUseAction") {
                   // This is a new player action and we need to create a new turnAction
-                  const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
-                    .PlayerStep as PlayerStep;
+                  const stepMessageData = xmlToJsonMemoized(
+                    stepResult.Step.MessageData
+                  ).PlayerStep as PlayerStep;
 
                   if (currentTurnAction) {
                     // if one exists already, log it

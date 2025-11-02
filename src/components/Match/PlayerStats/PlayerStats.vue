@@ -30,7 +30,7 @@
               </v-sheet>
             </v-col>
             <v-col cols="12" md="6">
-              <v-card elevation="2">
+              <v-card elevation="2" v-if="playerData">
                 <v-card-title class="text-h4">
                   {{ playerName }}<br />
                   <v-icon
@@ -189,8 +189,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref } from "vue";
-import { Roster } from "@/types/BaseTags/Roster";
+import { Ref, computed, ref, watch } from "vue";
+// import { Roster } from "@/types/BaseTags/Roster";
 import { getIdPlayerType } from "@/composables/stringFromIdFunctions/getIdPlayerType";
 import { useDataStore } from "@/store/dataStore";
 import {
@@ -199,6 +199,7 @@ import {
 } from "@/composables/stringFromIdFunctions/getSkillData";
 import { Player } from "@/types/Teams/Player";
 import { Characteristic } from "@/types/Teams/Characteristic";
+import { getStatName } from "@/composables/stringFromIdFunctions/getStatName";
 
 const dataStore = useDataStore();
 
@@ -208,9 +209,13 @@ const props = defineProps({
 
 const team = ref<number>(parseInt(props.team));
 
-const roster = ref<Roster>(dataStore.rosters?.TeamRoster[team.value] as Roster);
+const roster = computed(() => {
+  return dataStore.rosters?.TeamRoster[team.value];
+});
 
 const listPlayers = computed(() => {
+  if (!roster.value?.Players?.PlayerData) return [];
+
   return roster.value.Players.PlayerData.map((player: Player) => {
     return {
       id: player.Id,
@@ -219,15 +224,29 @@ const listPlayers = computed(() => {
   });
 });
 
-const selectedPlayer = ref(listPlayers.value[0]);
+const selectedPlayer = ref(listPlayers.value[0] || { id: "", name: "" });
+
+// Watch for when players list becomes available
+watch(
+  listPlayers,
+  (newPlayers) => {
+    if (newPlayers.length > 0 && !selectedPlayer.value.id) {
+      selectedPlayer.value = newPlayers[0];
+    }
+  },
+  { immediate: true }
+);
 
 const playerMatchData = computed(() => {
+  if (!selectedPlayer.value?.id) return null;
   return dataStore.matchData?.playerData?.[selectedPlayer.value.id];
 });
 const playerName = computed(() => {
+  if (!selectedPlayer.value?.id) return "";
   return dataStore.getPlayerName(selectedPlayer.value.id);
 });
 const playerData = computed(() => {
+  if (!selectedPlayer.value?.id) return null;
   return dataStore.getPlayerData(selectedPlayer.value.id) as Player;
 });
 
@@ -239,9 +258,12 @@ type LocalCharacteristicType = {
 };
 
 const characteristics: Ref<LocalCharacteristicType[]> = computed(() => {
+  if (!playerData.value?.Characteristics?.PlayerCharacteristic) return [];
+
   // Sort characteristics by order of characteristic.Characteristic
-  const characteristics = (playerData.value as Player).Characteristics
-    .PlayerCharacteristic;
+  const characteristics = [
+    ...playerData.value.Characteristics.PlayerCharacteristic,
+  ];
   characteristics.sort((a: Characteristic, b: Characteristic) => {
     return parseInt(a.Characteristic) - parseInt(b.Characteristic);
   });
@@ -283,43 +305,67 @@ const characteristics: Ref<LocalCharacteristicType[]> = computed(() => {
       icon,
     } as LocalCharacteristicType;
   });
-  baseChars.push({
-    name: "Value",
-    value: parseInt(playerData.value.Value).toLocaleString(),
-    tooltip:
-      "Value: " + parseInt(playerData.value.Value).toLocaleString() + "gp",
-    icon: "mdi-cash-multiple",
-  });
+
+  if (playerData.value?.Value) {
+    baseChars.push({
+      name: "Value",
+      value: parseInt(playerData.value.Value).toLocaleString(),
+      tooltip:
+        "Value: " + parseInt(playerData.value.Value).toLocaleString() + "gp",
+      icon: "mdi-cash-multiple",
+    });
+  }
+
   return baseChars;
 });
 
 const playerStats = computed(() => {
-  const stats = [];
+  const stats: Array<{ stat: string; value: string; source: string }> = [];
+
+  if (!selectedPlayer.value?.id) return stats;
+
+  // Get match data stats (detailed stats from replay processing)
   if (playerMatchData.value) {
     for (const [key, value] of Object.entries(playerMatchData.value)) {
+      // Skip internal IDs
+      if (key === "playerId" || key === "teamId") continue;
+
       // check if value is an object with sub-values
-      if (typeof value === "object") {
+      if (typeof value === "object" && value !== null) {
         for (const [subKey, subValue] of Object.entries(
           value as Record<string, unknown>
         )) {
           stats.push({
-            stat: `${key} ${subKey}`,
-            value: subValue || "-",
-            team: "-",
-            percent: "-",
+            stat: `${key} - ${subKey}`,
+            value:
+              subValue !== undefined && subValue !== null
+                ? subValue.toString()
+                : "0",
+            source: "match",
           });
         }
       } else {
         stats.push({
           stat: key,
-          value: value || "-",
-          team: "-",
-          percent: "-",
+          value: value !== undefined && value !== null ? value.toString() : "0",
+          source: "match",
         });
       }
     }
   }
-  return stats;
+
+  // Get end game stats (aggregated stats from game result)
+  const endGameStats = dataStore.getPlayerStats(selectedPlayer.value.id);
+  endGameStats.forEach((stat) => {
+    const statInfo = getStatName(stat.StatId);
+    stats.push({
+      stat: statInfo.name,
+      value: stat.Value,
+      source: "endgame",
+    });
+  });
+
+  return stats.sort((a, b) => a.stat.localeCompare(b.stat));
 });
 
 const innateSkills = computed(() => {
@@ -365,26 +411,22 @@ const openSkillDialog = (skill: Skill) => {
   selectedSkill.value = skill;
 };
 
-type HeaderType = {
-  title: string;
-  value: string;
-  align: string;
-  width?: string;
-  sortable?: boolean;
-};
-
 const headers = [
   {
     title: "Stat",
     value: "stat",
-    align: "center",
-    width: "50%",
+    align: "start" as const,
+    width: "60%",
     sortable: true,
   },
-  { title: "Value", value: "value", align: "center", sortable: true },
-  { title: "Team Total", value: "team", align: "center", sortable: true },
-  { title: "% of Team", value: "percent", align: "center", sortable: true },
-] as HeaderType[];
+  { title: "Value", value: "value", align: "center" as const, sortable: true },
+  {
+    title: "Source",
+    value: "source",
+    align: "center" as const,
+    sortable: true,
+  },
+];
 </script>
 
 <style scoped></style>

@@ -42,7 +42,6 @@ export const processPlayerStep = (opts: {
     return opts;
   }
 
-  // OPTIMIZATION: Use centralized player initialization instead of duplicating code
   if (!matchData.playerData[stepMessageData.PlayerId]) {
     // A star player or mercenary that wasn't initialized at the start
     addBasePlayerData(

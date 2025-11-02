@@ -60,6 +60,26 @@ export type MatchData = {
       starPlayers?: Player[];
     };
   };
+  teamStats: {
+    "0": {
+      blocksAttempted: number;
+      yardsMovedWithBall: number;
+      passesAttempted: number;
+      passesCompleted: number;
+      casualties: number;
+      injuries: number;
+      KOs: number;
+    };
+    "1": {
+      blocksAttempted: number;
+      yardsMovedWithBall: number;
+      passesAttempted: number;
+      passesCompleted: number;
+      casualties: number;
+      injuries: number;
+      KOs: number;
+    };
+  };
   playerData: {
     [key: string]: {
       playerId: PlayerId;

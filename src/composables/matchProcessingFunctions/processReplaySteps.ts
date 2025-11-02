@@ -18,7 +18,6 @@ import { addBasePlayerData } from "./addBasePlayerData";
 import { getStarPlayerName } from "../stringFromIdFunctions/getStarPlayerName";
 
 export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
-  // OPTIMIZATION: Pre-process array normalization once at the start
   // This eliminates runtime array checks throughout processing
   normalizeReplaySteps(replaySteps);
 
@@ -32,6 +31,26 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     ballPossession: {
       homeTeam: 0,
       awayTeam: 0,
+    },
+    teamStats: {
+      "0": {
+        blocksAttempted: 0,
+        yardsMovedWithBall: 0,
+        passesAttempted: 0,
+        passesCompleted: 0,
+        casualties: 0,
+        injuries: 0,
+        KOs: 0,
+      },
+      "1": {
+        blocksAttempted: 0,
+        yardsMovedWithBall: 0,
+        passesAttempted: 0,
+        passesCompleted: 0,
+        casualties: 0,
+        injuries: 0,
+        KOs: 0,
+      },
     },
   };
 
@@ -65,7 +84,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   let inducementTurnData: EventNewInducementsTurn | undefined;
   let eventInducementsData: any | undefined;
 
-  // OPTIMIZATION: Track ball possession as state instead of recalculating every step
   let currentBallHolder: PlayerId | undefined;
 
   // Itterate over the replay steps and process them
@@ -86,8 +104,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
     if (gamePhase === "0") {
       // // This is the pre-match Inducement phase
-
-      console.log(step);
 
       // If the step has EventNewInducementsTurn, we need to set the current inducement turn data for the current team for use later
       if (step.EventNewInducementsTurn) {
@@ -320,7 +336,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "5") {
       // Game phase 5 general match play, it is the most common and complex phase
 
-      // OPTIMIZATION: Update ball possession state efficiently
       // Only recalculate if the ball state has changed
       if (step.BoardState.Ball.IsHeld === "1") {
         // Ball is held - find who has it (only if not already tracked)
@@ -538,6 +553,53 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       gamePhase = step.EventNewGamePhase.Phase;
     }
   }
+
+  // Aggregate team statistics from player data
+  // Reset stats before summing (in case we're re-processing)
+  matchData.teamStats["0"] = {
+    blocksAttempted: 0,
+    yardsMovedWithBall: 0,
+    passesAttempted: 0,
+    passesCompleted: 0,
+    casualties: 0,
+    injuries: 0,
+    KOs: 0,
+  };
+  matchData.teamStats["1"] = {
+    blocksAttempted: 0,
+    yardsMovedWithBall: 0,
+    passesAttempted: 0,
+    passesCompleted: 0,
+    casualties: 0,
+    injuries: 0,
+    KOs: 0,
+  };
+
+  // Sum up player stats for each team
+  Object.values(matchData.playerData).forEach((playerStats) => {
+    const teamId = playerStats.teamId as "0" | "1";
+    if (teamId === "0" || teamId === "1") {
+      matchData.teamStats[teamId].blocksAttempted +=
+        playerStats.blocksAttempted;
+      matchData.teamStats[teamId].yardsMovedWithBall +=
+        playerStats.yardsMovedWithBall;
+      matchData.teamStats[teamId].passesAttempted +=
+        playerStats.passesAttempted.handoff +
+        playerStats.passesAttempted.short +
+        playerStats.passesAttempted.long +
+        playerStats.passesAttempted.longBomb;
+      matchData.teamStats[teamId].passesCompleted +=
+        playerStats.passesCompleted.handoff +
+        playerStats.passesCompleted.short +
+        playerStats.passesCompleted.long +
+        playerStats.passesCompleted.longBomb;
+      matchData.teamStats[teamId].casualties +=
+        playerStats.injuryRolls.injuryCasualty;
+      matchData.teamStats[teamId].injuries +=
+        playerStats.injuryRolls.injuryStunned;
+      matchData.teamStats[teamId].KOs += playerStats.injuryRolls.injuryKO;
+    }
+  });
 
   return matchData;
 };

@@ -128,7 +128,7 @@ async function analyzeReplay() {
         const name = player.querySelector(':scope > Name')?.textContent?.trim() || '(unknown)';
         if (id && name) foundPlayerIds.add({ id, name });
 
-        let skills: string[] = [];
+        const skills: string[] = [];
         player.querySelectorAll('InnateSkillsItem').forEach(skillEl => {
           const skillId = skillEl.textContent?.trim();
           if (skillId && !knownSkillIds.has(skillId)) {

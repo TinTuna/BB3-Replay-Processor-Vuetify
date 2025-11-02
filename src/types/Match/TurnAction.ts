@@ -29,24 +29,24 @@ export type TurnAction = {
     touchdownScored?: boolean;
     passAttempted?: {
       passType?: |'quick' | 'short' | 'long' | 'bomb';
-      passSuccess?: Boolean;
+      passSuccess?: boolean;
       passDistance?: number;
       receiverId?: PlayerId;
     };
     handoffAttempted?: {
-      handoffSuccess?: Boolean;
+      handoffSuccess?: boolean;
       receiverId?: PlayerId;
     };
     catchAttempted?: {
-      catchSuccess?: Boolean;
+      catchSuccess?: boolean;
     };
     pickupAttempted?: {
-      pickupSuccess?: Boolean;
+      pickupSuccess?: boolean;
     };
     foulAttempted?: {
-      foulSuccess?: Boolean;
+      foulSuccess?: boolean;
       fouledPlayer?: PlayerId;
     };
-    sentOff?: Boolean;
+    sentOff?: boolean;
   };
 };

@@ -17,8 +17,8 @@ export const processDieRoll = (opts: {
       processBlockDieRoll(opts.dieRoll, opts.playerId, opts.matchData);
       break;
     case "4":
-      // its a 2d6 roll (values 2-12, used for injury table, prayers, etc)
-      process2D6Roll(opts.dieRoll, opts.playerId, opts.matchData);
+      // its a 1d12 roll (values 1-12, used for injury table, prayers, etc)
+      process1D12Roll(opts.dieRoll, opts.playerId, opts.matchData);
       break;
     default:
       break;
@@ -103,14 +103,62 @@ const processBlockDieRoll = (
   }
 };
 
-const process2D6Roll = (
+const process1D12Roll = (
   dieRoll: Die,
   playerId: PlayerId,
   matchData: MatchData
 ) => {
-  // 2d6 rolls produce values from 2-12 (or potentially higher for prayers)
-  // These are typically used for injury rolls, prayers, etc.
-  // Currently we don't have a specific storage structure for these individual values
-  // They are tracked as part of the specific roll type (armourRolls, injuryRolls, etc.)
-  // So for now, this is a placeholder for future expansion
+  switch (dieRoll.Value) {
+    case "1": {
+      matchData.playerData[playerId].dTwelveRolls.one += 1;
+      break;
+    }
+    case "2": {
+      matchData.playerData[playerId].dTwelveRolls.two += 1;
+      break;
+    }
+    case "3": {
+      matchData.playerData[playerId].dTwelveRolls.three += 1;
+      break;
+    }
+    case "4": {
+      matchData.playerData[playerId].dTwelveRolls.four += 1;
+      break;
+    }
+    case "5": {
+      matchData.playerData[playerId].dTwelveRolls.five += 1;
+      break;
+    }
+    case "6": {
+      matchData.playerData[playerId].dTwelveRolls.six += 1;
+      break;
+    }
+    case "7": {
+      matchData.playerData[playerId].dTwelveRolls.seven += 1;
+      break;
+    }
+    case "8": {
+      matchData.playerData[playerId].dTwelveRolls.eight += 1;
+      break;
+    }
+    case "9": {
+      matchData.playerData[playerId].dTwelveRolls.nine += 1;
+      break;
+    }
+    case "10": {
+      matchData.playerData[playerId].dTwelveRolls.ten += 1;
+      break;
+    }
+    case "11": {
+      matchData.playerData[playerId].dTwelveRolls.eleven += 1;
+      break;
+    }
+    case "12": {
+      matchData.playerData[playerId].dTwelveRolls.twelve += 1;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
 };

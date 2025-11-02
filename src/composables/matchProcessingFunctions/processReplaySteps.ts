@@ -618,10 +618,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         playerStats.passesCompleted.long +
         playerStats.passesCompleted.longBomb;
       matchData.teamStats[teamId].casualties +=
-        playerStats.injuryRolls.injuryCasualty;
+        playerStats.injuryRollsSustained.injuryCasualty;
       matchData.teamStats[teamId].injuries +=
-        playerStats.injuryRolls.injuryStunned;
-      matchData.teamStats[teamId].KOs += playerStats.injuryRolls.injuryKO;
+        playerStats.injuryRollsSustained.injuryStunned;
+      matchData.teamStats[teamId].KOs += playerStats.injuryRollsSustained.injuryKO;
     }
   });
 

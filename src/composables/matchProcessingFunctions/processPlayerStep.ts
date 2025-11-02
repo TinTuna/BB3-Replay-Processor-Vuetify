@@ -284,6 +284,23 @@ export const processPlayerStep = (opts: {
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultRoll as ResultRoll;
 
+        // Process the dice rolled
+        if (Array.isArray(resultMessageData.Dice.Die)) {
+          resultMessageData.Dice.Die.forEach((die) => {
+            processDieRoll({
+              dieRoll: die,
+              playerId: stepMessageData.PlayerId,
+              matchData,
+            });
+          });
+        } else {
+          processDieRoll({
+            dieRoll: resultMessageData.Dice.Die,
+            playerId: stepMessageData.PlayerId,
+            matchData,
+          });
+        }
+
         // if this is a pass roll, we can add some data to the playerData
         if (stepMessageData.StepType === "11") {
           if (!currentTurnAction.actionsTaken.passAttempted) {
@@ -348,18 +365,20 @@ export const processPlayerStep = (opts: {
       case "ResultInjuryRoll": {
         // This tells the roll and result of an injury roll (Armour Break), and which player was potentially injured
         // if successful, a ResultCasualtyRoll will follow
-        // TODO: Process injury roll
-        // TODO: Track injury roll
+        // NOTE: ResultInjuryRoll is processed in processDamageStep.ts (DamageStep is specifically for injuries)
+        // This case exists here for documentation but should not process the injury to avoid double-counting
         break;
       }
       case "ResultCasualtyRoll": {
         // This is called when an armour break is successful and the injury roll is made
         // on a roll of 8-12, a ResultPlayerRemoval will follow
+        // NOTE: ResultCasualtyRoll is processed in processDamageStep.ts (DamageStep is specifically for damage/injuries)
+        // This case exists here for documentation but should not process to avoid double-counting
+
         currentTurnAction.actionsTaken.injuryInflicted = {
           type: "injuryInflicted",
-          player: stepMessageData.PlayerId,
+          player: stepMessageData.TargetId, // The victim who received the injury
         };
-        // TODO: Track casualty roll ?
         break;
       }
       case "ResultPlayerRemoval": {

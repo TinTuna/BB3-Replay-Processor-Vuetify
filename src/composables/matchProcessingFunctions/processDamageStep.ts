@@ -8,7 +8,12 @@ import { TurnAction } from "@/types/Match/TurnAction";
 import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
 import { DamageStep } from "@/types/messageData/DamageStep";
 import { ResultInjuryRoll } from "@/types/messageData/ResultInjuryRoll";
+import { ResultCasualtyRoll } from "@/types/messageData/ResultCasualtyRoll";
 import { ResultRoll } from "@/types/messageData/ResultRoll";
+import { ResultApothecary } from "@/types/messageData/ResultApothecary";
+import { ResultGainSpp } from "@/types/messageData/ResultGainSpp";
+import { QuestionApothecaryCasualtyUsage } from "@/types/messageData/QuestionApothecaryCasualtyUsage";
+import { PlayerId } from "@/types/IdTypes/PlayerId";
 import { processDieRoll } from "../helperFns/processDieRoll";
 
 export const processDamageStep = (opts: {
@@ -60,36 +65,33 @@ export const processDamageStep = (opts: {
         // resultMessageData.Dice[] are the dice rolled
         // resultMessageData.Outcome is the result of the roll
 
+        // In DamageStep, TargetId is the victim whose armour is being rolled
+        const victimId = stepMessageData.TargetId as PlayerId;
+
         // add d6 roll data to the playerData
         // check if Dice.Die is an array or a single object
         if (Array.isArray(resultMessageData.Dice.Die)) {
           resultMessageData.Dice.Die.forEach((die) => {
             processDieRoll({
               dieRoll: die,
-              playerId: stepMessageData.PlayerId,
+              playerId: victimId,
               matchData,
             });
           });
         } else {
           processDieRoll({
             dieRoll: resultMessageData.Dice.Die,
-            playerId: stepMessageData.PlayerId,
+            playerId: victimId,
             matchData,
           });
         }
 
-        // add injury roll data to the playerData
-        matchData.playerData[
-          stepMessageData.PlayerId
-        ].armourRolls.armourRolls += 1;
+        // add armour roll data to the playerData (victim's armour)
+        matchData.playerData[victimId].armourRolls.armourRolls += 1;
         if (resultMessageData.Outcome === "1") {
-          matchData.playerData[
-            stepMessageData.PlayerId
-          ].armourRolls.armourRollsFailed += 1;
+          matchData.playerData[victimId].armourRolls.armourRollsFailed += 1;
         } else {
-          matchData.playerData[
-            stepMessageData.PlayerId
-          ].armourRolls.armourRollsPassed += 1;
+          matchData.playerData[victimId].armourRolls.armourRollsPassed += 1;
         }
 
         if (currentTurn.foulAttempted) {
@@ -109,58 +111,143 @@ export const processDamageStep = (opts: {
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultInjuryRoll as ResultInjuryRoll;
 
+        // add injury roll data to the playerData
+        // stepMessageData.TargetId is the victim
+        // currentTurnAction.playerId is the attacker
+        const victimId = stepMessageData.TargetId as PlayerId;
+        const attackerId = currentTurnAction.playerId as PlayerId;
+
+        // Process injury roll dice for the victim
         if (Array.isArray(resultMessageData.Dice.Die)) {
           resultMessageData.Dice.Die.forEach((die) => {
             processDieRoll({
               dieRoll: die,
-              playerId: stepMessageData.PlayerId,
+              playerId: victimId,
               matchData,
             });
           });
         } else {
           processDieRoll({
             dieRoll: resultMessageData.Dice.Die,
-            playerId: stepMessageData.PlayerId,
+            playerId: victimId,
             matchData,
           });
         }
 
-        // add injury roll data to the playerData
-        matchData.playerData[
-          stepMessageData.PlayerId
-        ].injuryRolls.injuryRolls += 1;
+        // Track sustained injury for victim
+        matchData.playerData[victimId].injuryRollsSustained.injuryRolls += 1;
+
         switch (resultMessageData.Outcome) {
           case "0": {
+            // Stunned
+            matchData.playerData[
+              victimId
+            ].injuryRollsSustained.injuryStunned += 1;
+
             // Check if this is a self inflicted injury
-            if (stepMessageData.PlayerId === currentTurnAction.playerId) {
+            if (victimId === attackerId) {
               currentTurnAction.actionsTaken.knockdownSustained = {
                 type: "Stunned",
-                player: currentTurnAction.playerId,
+                player: attackerId,
               };
             } else {
-              matchData.playerData[
-                stepMessageData.PlayerId
-              ].injuryRolls.injuryStunned += 1;
+              // Track inflicted injury for attacker
+              if (attackerId && matchData.playerData[attackerId]) {
+                matchData.playerData[
+                  attackerId
+                ].injuryRollsInflicted.injuryRolls += 1;
+                matchData.playerData[
+                  attackerId
+                ].injuryRollsInflicted.injuryStunned += 1;
+              }
+
               currentTurn.knockdown
                 ? (currentTurn.knockdown += 1)
                 : (currentTurn.knockdown = 1);
               currentTurnAction.actionsTaken.knockdownInflicted = {
                 type: "Stunned",
-                player: stepMessageData.PlayerId,
+                player: victimId,
               };
             }
             break;
           }
+          case "1": {
+            // unknown outcome (case 1) (what is less than KO?)
+            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 1)");
+            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
+            console.log("[DAMAGE STEP] Victim:", victimId);
+            console.log("[DAMAGE STEP] Attacker:", attackerId);
+            console.log("[DAMAGE STEP] Step:", step);
+            console.log("[DAMAGE STEP] Step Result:", stepResult);
+            break;
+          }
           case "2": {
+            // KO
+            matchData.playerData[victimId].injuryRollsSustained.injuryKO += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryKO += 1;
+            }
+            break;
+          }
+          case "3": {
+            // unknown outcome (case 3) (it must be a casualty of some sort because it results in a ResultPlayerRemoval)
+            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 3)");
+            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
+            console.log("[DAMAGE STEP] Victim:", victimId);
+            console.log("[DAMAGE STEP] Attacker:", attackerId);
+            console.log("[DAMAGE STEP] Step:", step);
+            console.log("[DAMAGE STEP] Step Result:", stepResult);
+
+            // do the same as case 4
             matchData.playerData[
-              stepMessageData.PlayerId
-            ].injuryRolls.injuryKO += 1;
+              victimId
+            ].injuryRollsSustained.injuryCasualty += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryCasualty += 1;
+            }
             break;
           }
           case "4": {
+            // Casualty (case 4)
             matchData.playerData[
-              stepMessageData.PlayerId
-            ].injuryRolls.injuryCasualty += 1;
+              victimId
+            ].injuryRollsSustained.injuryCasualty += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryCasualty += 1;
+            }
             break;
           }
         }
@@ -169,8 +256,63 @@ export const processDamageStep = (opts: {
       }
       case "ResultCasualtyRoll": {
         // This doesn't happen very frequently, needs testing what it tells us
-        // TODO: Process casualty roll
-        // TODO: Track casualty roll
+
+        const casualtyRollData = xmlToJsonMemoized(result.MessageData)
+          .ResultCasualtyRoll as ResultCasualtyRoll;
+
+        // In DamageStep, TargetId is the victim receiving the casualty roll
+        // currentTurnAction.playerId is the attacker
+        const victimId = stepMessageData.TargetId as PlayerId;
+
+        // Process the casualty dice (2d6 roll)
+        // Note: casualty roll uses lowercase 'dice.die' not 'Dice.Die'
+        if (casualtyRollData.dice?.die) {
+          casualtyRollData.dice.die.forEach((die) => {
+            processDieRoll({
+              dieRoll: die,
+              playerId: victimId,
+              matchData,
+            });
+          });
+        }
+        break;
+      }
+      case "QuestionApothecaryCasualtyUsage": {
+        // This is asked when a casualty occurs and the team has an apothecary available
+        // It contains the casualty roll data in RollInfos
+        // If this question appears, ResultInjuryRoll is skipped
+        // The casualty roll outcome determines what injury the player will get
+        // After this question, ResultApothecary will appear with the final status
+
+        const questionData = xmlToJsonMemoized(result.MessageData)
+          .QuestionApothecaryCasualtyUsage as QuestionApothecaryCasualtyUsage;
+
+        // In DamageStep, TargetId is the victim receiving the casualty roll
+        const victimId = stepMessageData.TargetId as PlayerId;
+
+        // Process the casualty dice from RollInfos (2d6 roll)
+        // This is the casualty roll that determines the injury severity
+        if (Array.isArray(questionData.RollInfos.Dice.Die)) {
+          questionData.RollInfos.Dice.Die.forEach((die) => {
+            processDieRoll({
+              dieRoll: die,
+              playerId: victimId,
+              matchData,
+            });
+          });
+        } else {
+          processDieRoll({
+            dieRoll: questionData.RollInfos.Dice.Die,
+            playerId: victimId,
+            matchData,
+          });
+        }
+
+        // TODO: Track the casualty roll outcome as ResultPlayerRemoval is not called :(
+
+        // Note: The actual injury tracking will be handled by ResultApothecary
+        // which appears after the player decides whether to use the apothecary
+
         break;
       }
       case "ResultPlayerRemoval": {
@@ -184,6 +326,16 @@ export const processDamageStep = (opts: {
         switch (resultMessageData.Status) {
           case "0": {
             injuryType = "Stunned - Pushed Out of Bounds";
+            break;
+          }
+          case "1": {
+            injuryType = "Unknown ResultPlayerRemoval (case 1)";
+            console.log("[DAMAGE STEP] Unknown outcome (case 1)");
+            break;
+          }
+          case "2": {
+            injuryType = "Unknown ResultPlayerRemoval (case 2)";
+            console.log("[DAMAGE STEP] Unknown outcome (case 2)");
             break;
           }
           case "3": {
@@ -240,6 +392,170 @@ export const processDamageStep = (opts: {
         // This tells us a reroll was used and by which _player_ (not by which team)
         // TODO: Process reroll usage
         // TODO: Track reroll usage
+        break;
+      }
+      case "ResultApothecary": {
+        // This tells us about apothecary usage after an injury
+
+        // TODO: Work out why for the ResultInjuryRoll the values 0-5 are slightly different to the ResultPlayerRemoval values 0-5
+
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultApothecary as ResultApothecary;
+
+        // add injury roll data to the playerData
+        // stepMessageData.TargetId is the victim
+        // currentTurnAction.playerId is the attacker
+        const victimId = stepMessageData.TargetId as PlayerId;
+        const attackerId = currentTurnAction.playerId as PlayerId;
+
+        // If the Apothecary is questioned, even if not used, ResultInjuryRoll is skipped. So we need to track the data in the same way as ResultInjuryRoll.
+        // This is the same for ResultCasualtyRoll.
+        if (resultMessageData.ApothecaryUsed === "0") {
+          // Apothecary was not used
+        } else if (resultMessageData.ApothecaryUsed === "1") {
+          // Apothecary was used
+          matchData.teamStats[victimId.teamId].apothecaryUsed += 1;
+        }
+
+        switch (resultMessageData.PlayerStatus) {
+          case "0": {
+            // Stunned
+            matchData.playerData[
+              victimId
+            ].injuryRollsSustained.injuryStunned += 1;
+
+            // Check if this is a self inflicted injury
+            if (victimId === attackerId) {
+              currentTurnAction.actionsTaken.knockdownSustained = {
+                type: "Stunned",
+                player: attackerId,
+              };
+            } else {
+              // Track inflicted injury for attacker
+              if (attackerId && matchData.playerData[attackerId]) {
+                matchData.playerData[
+                  attackerId
+                ].injuryRollsInflicted.injuryRolls += 1;
+                matchData.playerData[
+                  attackerId
+                ].injuryRollsInflicted.injuryStunned += 1;
+              }
+
+              currentTurn.knockdown
+                ? (currentTurn.knockdown += 1)
+                : (currentTurn.knockdown = 1);
+              currentTurnAction.actionsTaken.knockdownInflicted = {
+                type: "Stunned",
+                player: victimId,
+              };
+            }
+            break;
+          }
+          case "1": {
+            // unknown outcome (case 1) (what is less than KO?)
+            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 1)");
+            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
+            console.log("[DAMAGE STEP] Victim:", victimId);
+            console.log("[DAMAGE STEP] Attacker:", attackerId);
+            console.log("[DAMAGE STEP] Step:", step);
+            console.log("[DAMAGE STEP] Step Result:", stepResult);
+            break;
+          }
+          case "2": {
+            // KO
+            matchData.playerData[victimId].injuryRollsSustained.injuryKO += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryKO += 1;
+            }
+            break;
+          }
+          case "3": {
+            // unknown outcome (case 3) (it must be a casualty of some sort because it results in a ResultPlayerRemoval)
+            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 3)");
+            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
+            console.log("[DAMAGE STEP] Victim:", victimId);
+            console.log("[DAMAGE STEP] Attacker:", attackerId);
+            console.log("[DAMAGE STEP] Step:", step);
+            console.log("[DAMAGE STEP] Step Result:", stepResult);
+
+            // do the same as case 4
+            matchData.playerData[
+              victimId
+            ].injuryRollsSustained.injuryCasualty += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryCasualty += 1;
+            }
+            break;
+          }
+          case "4": {
+            // Casualty (case 4)
+            matchData.playerData[
+              victimId
+            ].injuryRollsSustained.injuryCasualty += 1;
+
+            // Track inflicted injury for attacker (if not self-inflicted)
+            if (
+              attackerId &&
+              attackerId !== victimId &&
+              matchData.playerData[attackerId]
+            ) {
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryRolls += 1;
+              matchData.playerData[
+                attackerId
+              ].injuryRollsInflicted.injuryCasualty += 1;
+            }
+            break;
+          }
+
+          default: {
+            // Unknown
+            break;
+          }
+        }
+
+        // TODO: Track apothecary usage if needed
+        // For now, we just log it to understand the structure
+        if (resultMessageData.ApothecaryUsed === "1") {
+          // Apothecary was used - might want to track this
+        }
+
+        break;
+      }
+      case "ResultGainSpp": {
+        // This tells us that a player gained SPP (usually from inflicting a casualty)
+        // PlayerId: The player who gained SPP (likely the attacker)
+        // SppGained: The amount of SPP gained
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultGainSpp as ResultGainSpp;
+
+        // TODO: Track SPP gained if needed
+        // SPP is typically tracked at the end of match processing, not during step processing
+        // but we could log it or add it to a tracking structure if needed
+
         break;
       }
       default: {

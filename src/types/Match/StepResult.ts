@@ -15,7 +15,10 @@ export type StepResult = {
     | "ResultInjuryRoll"
     | "ResultCasualtyRoll"
     | "ResultPlayerRemoval"
-    | "ResultTeamRerollUsage";
+    | "ResultTeamRerollUsage"
+    | "ResultApothecary"
+    | "ResultGainSpp"
+    | "QuestionApothecaryCasualtyUsage";
   messageData: string; // This is stringified XML
   actionString: string;
 };

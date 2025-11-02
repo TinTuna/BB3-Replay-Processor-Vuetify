@@ -70,6 +70,7 @@ export type MatchData = {
       injuries: number;
       KOs: number;
       kills: number;
+      apothecaryUsed: number;
     };
     "1": {
       blocksAttempted: number;
@@ -80,6 +81,7 @@ export type MatchData = {
       injuries: number;
       KOs: number;
       kills: number;
+      apothecaryUsed: number;
     };
   };
   playerData: {
@@ -136,12 +138,32 @@ export type MatchData = {
         five: number;
         six: number;
       };
+      dTwelveRolls: {
+        one: number;
+        two: number;
+        three: number;
+        four: number;
+        five: number;
+        six: number;
+        seven: number;
+        eight: number;
+        nine: number;
+        ten: number;
+        eleven: number;
+        twelve: number;
+      };
       armourRolls: {
         armourRolls: number;
         armourRollsPassed: number;
         armourRollsFailed: number;
       };
-      injuryRolls: {
+      injuryRollsSustained: {
+        injuryRolls: number;
+        injuryStunned: number;
+        injuryKO: number;
+        injuryCasualty: number;
+      };
+      injuryRollsInflicted: {
         injuryRolls: number;
         injuryStunned: number;
         injuryKO: number;

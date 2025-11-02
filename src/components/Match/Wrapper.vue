@@ -4,7 +4,7 @@
       <v-card>
         <v-tabs v-model="tab" bg-color="primary">
           <v-tab value="overview">Overview</v-tab>
-          <!-- <v-tab value="match">Match Events</v-tab> -->
+          <v-tab value="match">Match Events</v-tab>
           <v-tab value="teamstats">Team Stats</v-tab>
           <v-tab value="playerstats">Player Stats</v-tab>
           <v-tab value="dicestats">Dice Stats</v-tab>

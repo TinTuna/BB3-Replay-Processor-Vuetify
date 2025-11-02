@@ -1,6 +1,7 @@
 import { ReplayStep } from "@/types/BaseTags/ReplayStep";
 import { MatchData } from "@/types/MatchData";
-import { xmlToJson } from "../helperFns/xmlToJson";
+import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
+import { normalizeReplaySteps } from "../helperFns/normalizeReplaySteps";
 import { PlayerStep } from "@/types/messageData/PlayerStep";
 import { PlayerId } from "@/types/IdTypes/PlayerId";
 import { Turn } from "@/types/Match/Turn";
@@ -15,36 +16,11 @@ import { Inducement } from "@/types/Inducements/Inducement";
 import { Player } from "@/types/Teams/Player";
 import { addBasePlayerData } from "./addBasePlayerData";
 import { getStarPlayerName } from "../stringFromIdFunctions/getStarPlayerName";
-// import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
-// import { ResultRoll } from "@/types/messageData/ResultRoll";
 
 export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
-  // before anything else, we need to make sure all StepResult and StringMessage are arrays
-  // this also needs to take into account that EventExecuteSequence can be an array of sequences
-  replaySteps.forEach((step) => {
-    if (step.EventExecuteSequence) {
-      if (!Array.isArray(step.EventExecuteSequence)) {
-        step.EventExecuteSequence = [step.EventExecuteSequence];
-      }
-    }
-  });
-
-  replaySteps.forEach((step) => {
-    if (step.EventExecuteSequence) {
-      step.EventExecuteSequence.forEach((sequence) => {
-        if (sequence.Sequence.StepResult) {
-          if (!Array.isArray(sequence.Sequence.StepResult)) {
-            sequence.Sequence.StepResult = [sequence.Sequence.StepResult];
-          }
-          sequence.Sequence.StepResult.forEach((result) => {
-            if (!Array.isArray(result.Results.StringMessage)) {
-              result.Results.StringMessage = [result.Results.StringMessage];
-            }
-          });
-        }
-      });
-    }
-  });
+  // OPTIMIZATION: Pre-process array normalization once at the start
+  // This eliminates runtime array checks throughout processing
+  normalizeReplaySteps(replaySteps);
 
   let matchData: MatchData = {
     matchLog: [] as Turn[],
@@ -91,6 +67,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
   let inducementTurnData: EventNewInducementsTurn | undefined;
   let eventInducementsData: any | undefined;
+
+  // OPTIMIZATION: Track ball possession as state instead of recalculating every step
+  let currentBallHolder: PlayerId | undefined;
 
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
@@ -311,7 +290,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
           sequence.Sequence.StepResult.forEach((result) => {
             if (result.Step.Name === "Step") {
-              const stepMessageData = xmlToJson(result.Step.MessageData)
+              const stepMessageData = xmlToJsonMemoized(result.Step.MessageData)
                 .Step as Step;
 
               if (!stepMessageData) {
@@ -344,21 +323,48 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "5") {
       // Game phase 5 general match play, it is the most common and complex phase
 
-      // Work out who, if anyone, has the ball
-      let hasBall: PlayerId | undefined;
+      // OPTIMIZATION: Update ball possession state efficiently
+      // Only recalculate if the ball state has changed
       if (step.BoardState.Ball.IsHeld === "1") {
-        step.BoardState.ListTeams.TeamState.forEach((team) => {
-          team.ListPitchPlayers.PlayerState.forEach((player) => {
-            if (
-              (player.Cell?.X || "0") ===
-                (step.BoardState.Ball.Cell?.X || "0") &&
-              (player.Cell?.Y || "0") === (step.BoardState.Ball.Cell?.Y || "0")
-            ) {
-              hasBall = player.Id as PlayerId;
+        // Ball is held - find who has it (only if not already tracked)
+        const ballX = step.BoardState.Ball.Cell?.X || "0";
+        const ballY = step.BoardState.Ball.Cell?.Y || "0";
+
+        // Quick check: verify current holder still has the ball
+        let needsRecalc = true;
+        if (currentBallHolder) {
+          // Find the current holder's position
+          outerLoop: for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if (player.Id === currentBallHolder) {
+                if ((player.Cell?.X || "0") === ballX && (player.Cell?.Y || "0") === ballY) {
+                  needsRecalc = false;
+                }
+                break outerLoop;
+              }
             }
-          });
-        });
+          }
+        }
+
+        // Only recalculate if needed
+        if (needsRecalc) {
+          currentBallHolder = undefined;
+          for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if ((player.Cell?.X || "0") === ballX && (player.Cell?.Y || "0") === ballY) {
+                currentBallHolder = player.Id as PlayerId;
+                break;
+              }
+            }
+            if (currentBallHolder) break;
+          }
+        }
+      } else {
+        // Ball is not held
+        currentBallHolder = undefined;
       }
+
+      const hasBall = currentBallHolder;
 
       // If EventExecuteSequence then it's a player or board action
       if (step.EventExecuteSequence) {
@@ -376,7 +382,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
               stepResult.Results.StringMessage.forEach((result) => {
                 if (result.Name === "ResultUseAction") {
                   // This is a new player action and we need to create a new turnAction
-                  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
+                  const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
                     .PlayerStep as PlayerStep;
 
                   if (currentTurnAction) {

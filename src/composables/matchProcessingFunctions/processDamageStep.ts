@@ -1,5 +1,5 @@
 import { Step } from "@/types/Match/Step";
-import { xmlToJson } from "../helperFns/xmlToJson";
+import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
 import { ReplayStep } from "@/types/BaseTags/ReplayStep";
 import { MatchData } from "@/types/MatchData";
 import { Turn } from "@/types/Match/Turn";
@@ -21,7 +21,7 @@ export const processDamageStep = (opts: {
   hasBall: string | undefined;
 }) => {
   const { stepResult, step, matchData, currentTurn, currentTurnAction } = opts;
-  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
+  const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
     .DamageStep as DamageStep;
 
   if (!stepMessageData) {
@@ -53,7 +53,7 @@ export const processDamageStep = (opts: {
         // it has data such as the type of roll, the value rolled and the target value
         // it also tells us if the roll was a success or a failure
 
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultRoll as ResultRoll;
 
         // resultMessageData.Difficulty is the modified target number
@@ -106,7 +106,7 @@ export const processDamageStep = (opts: {
         // This tells the roll and result of an injury roll (Armour Break), and which player was potentially injured
         // if successful, a ResultCasualtyRoll will follow
 
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultInjuryRoll as ResultInjuryRoll;
 
         if (Array.isArray(resultMessageData.Dice.Die)) {
@@ -188,7 +188,7 @@ export const processDamageStep = (opts: {
         // This tells us who was removed from the pitch and why
 
         // // Not yet used so commenting to save computation
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
         // Add ResultPlayerRemoval data to the currentTurnAction

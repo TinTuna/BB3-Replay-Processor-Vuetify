@@ -1,5 +1,5 @@
 import { Step } from "@/types/Match/Step";
-import { xmlToJson } from "../helperFns/xmlToJson";
+import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
 import { ReplayStep } from "@/types/BaseTags/ReplayStep";
 import { MatchData } from "@/types/MatchData";
 import { PlayerId } from "@/types/IdTypes/PlayerId";
@@ -27,7 +27,7 @@ export const processStep = (opts: {
     currentTurnAction,
     hasBall,
   } = opts;
-  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
+  const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
     .Step as StepStep;
 
   return opts;

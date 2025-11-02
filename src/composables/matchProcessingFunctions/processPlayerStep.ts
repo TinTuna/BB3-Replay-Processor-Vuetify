@@ -1,5 +1,5 @@
 import { Step } from "@/types/Match/Step";
-import { xmlToJson } from "../helperFns/xmlToJson";
+import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
 import { PlayerStep } from "@/types/messageData/PlayerStep";
 import { ReplayStep } from "@/types/BaseTags/ReplayStep";
 import { MatchData } from "@/types/MatchData";
@@ -33,7 +33,7 @@ export const processPlayerStep = (opts: {
     nextTurnAction,
     hasBall,
   } = opts;
-  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
+  const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
     .PlayerStep as PlayerStep;
 
   if (!stepMessageData) {
@@ -403,7 +403,7 @@ export const processPlayerStep = (opts: {
         // ResultBlockOutcome is an overview of the block action.
         // For the moment we will use this section to count blocks and block outcomes
 
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultBlockOutcome as ResultBlockOutcome;
 
         // Add the output type to the players data
@@ -468,7 +468,7 @@ export const processPlayerStep = (opts: {
         // it has data such as the type of roll, the value rolled and the target value
         // it also tells us if the roll was a success or a failure
 
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultRoll as ResultRoll;
 
         // if this is a pass roll, we can add some data to the playerData
@@ -565,7 +565,7 @@ export const processPlayerStep = (opts: {
         // This tells us who was removed from the pitch and why
 
         // // Not yet used so commenting to save computation
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultPlayerRemoval as ResultPlayerRemoval;
 
         // add roll data to the matchData
@@ -585,7 +585,7 @@ export const processPlayerStep = (opts: {
         break;
       }
       case "ResultUseAction": {
-        const resultMessageData = xmlToJson(result.MessageData)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultUseAction as ResultUseAction;
 
         if (resultMessageData.Action === "6") {

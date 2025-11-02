@@ -111,10 +111,10 @@ const competitionLogo = computed(() => {
 });
 
 const homeTeamTouchdownsScored = computed(() => {
-  return dataStore.getTeamDataByDataId("0", "18");
+  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.TouchdownsBeforeConcede || "0";
 });
 const awayTeamTouchdownsScored = computed(() => {
-  return dataStore.getTeamDataByDataId("1", "18");
+  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.TouchdownsBeforeConcede || "0";
 });
 
 const homeTeamScore = computed(() => {

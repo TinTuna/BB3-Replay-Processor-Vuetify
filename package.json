@@ -10,7 +10,8 @@
     "version:patch": "grunt version:patch",
     "version:minor": "grunt version:minor",
     "version:major": "grunt version:major",
-    "version:prerelease": "grunt version:prerelease"
+    "version:prerelease": "grunt version:prerelease",
+    "changelog": "grunt changelog"
   },
   "dependencies": {
     "@mdi/font": "7.4.47",
@@ -40,6 +41,7 @@
     "eslint-plugin-vue": "^10.5.1",
     "grunt": "^1.6.1",
     "grunt-bump": "^0.8.0",
+    "grunt-exec": "^3.0.0",
     "sass": "^1.93.3",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",

@@ -1,93 +1,168 @@
-module.exports = function(grunt) {
-  const fs = require('fs');
-  const { execSync } = require('child_process');
+module.exports = function (grunt) {
+  const fs = require("fs");
+  const { execSync } = require("child_process");
 
   grunt.initConfig({
     bump: {
       options: {
-        files: ['package.json'],
+        files: ["package.json"],
         updateConfigs: [],
         commit: false,
-        commitMessage: 'Release v%VERSION%',
-        commitFiles: ['package.json', 'src/layouts/default/Default.vue', 'CHANGELOG.md'],
+        commitMessage: "Release v%VERSION%",
+        commitFiles: [
+          "package.json",
+          "src/layouts/default/Default.vue",
+          "CHANGELOG.md",
+        ],
         createTag: false,
-        tagName: 'v%VERSION%',
-        tagMessage: 'Version %VERSION%',
+        tagName: "v%VERSION%",
+        tagMessage: "Version %VERSION%",
         push: false,
-        pushTo: 'origin',
-        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        pushTo: "origin",
+        gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d",
         globalReplace: false,
         prereleaseName: false,
-        metadata: '',
-        regExp: false
-      }
+        metadata: "",
+        regExp: false,
+      },
     },
-    exec: {
-      generateChangelog: {
-        cmd: function() {
-          // Get the current version from package.json
-          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          const currentVersion = packageJson.version;
-          
-          // Get git log since last tag, or all commits if no tags
-          let gitLog = '';
-          try {
-            // Try to get commits since last tag
-            const lastTag = execSync('git describe --tags --abbrev=0 2>&1', { encoding: 'utf8', stdio: 'pipe' }).trim();
-            if (lastTag && !lastTag.startsWith('fatal:')) {
-              gitLog = execSync(`git log ${lastTag}..HEAD --pretty=format:"- %s (%h)" --date=short`, { encoding: 'utf8' });
-            } else {
-              // If no tags exist, get all commits
-              gitLog = execSync('git log --pretty=format:"- %s (%h)" --date=short', { encoding: 'utf8' });
-            }
-          } catch (e) {
-            // If no tags exist, get all commits
-            try {
-              gitLog = execSync('git log --pretty=format:"- %s (%h)" --date=short', { encoding: 'utf8' });
-            } catch (err) {
-              gitLog = '- Initial release';
-            }
-          }
-          
-          // Filter out empty lines and ensure we have content
-          const commits = gitLog.split('\n').filter(line => line.trim());
-          if (commits.length === 0) {
-            commits.push('- No commits found');
-          }
-          
-          // Get the date
-          const date = new Date().toISOString().split('T')[0];
-          
-          // Read existing changelog if it exists
-          let existingChangelog = '';
-          if (fs.existsSync('CHANGELOG.md')) {
-            existingChangelog = fs.readFileSync('CHANGELOG.md', 'utf8');
-          }
-          
-          // Create new changelog entry
-          const newEntry = `## [${currentVersion}] - ${date}\n\n${commits.join('\n')}\n\n`;
-          
-          // Prepend new entry to existing changelog
-          const changelogContent = existingChangelog 
-            ? newEntry + '---\n\n' + existingChangelog
-            : newEntry;
-          
-          // Write changelog
-          fs.writeFileSync('CHANGELOG.md', changelogContent);
-          
-          return `Changelog generated for version ${currentVersion}`;
-        }
-      }
-    }
   });
 
-  grunt.loadNpmTasks('grunt-bump');
-  grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks("grunt-bump");
 
-  grunt.registerTask('changelog', ['exec:generateChangelog']);
-  
-  grunt.registerTask('version:patch', ['bump:patch', 'exec:generateChangelog']);
-  grunt.registerTask('version:minor', ['bump:minor', 'exec:generateChangelog']);
-  grunt.registerTask('version:major', ['bump:major', 'exec:generateChangelog']);
-  grunt.registerTask('version:prerelease', ['bump:prerelease', 'exec:generateChangelog']);
+  // Custom task to generate changelog
+  grunt.registerTask("generateChangelog", function () {
+    // Get the current version from package.json
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+    const currentVersion = packageJson.version;
+
+    // Get the date
+    const date = new Date().toISOString().split("T")[0];
+
+    // Read existing changelog if it exists
+    let existingChangelog = "";
+    let lastVersion = null;
+    if (fs.existsSync("CHANGELOG.md")) {
+      existingChangelog = fs.readFileSync("CHANGELOG.md", "utf8");
+      // Check if this version already exists in changelog
+      if (existingChangelog.includes(`## [${currentVersion}]`)) {
+        grunt.log.warn(
+          `Version ${currentVersion} already exists in CHANGELOG.md. Skipping generation.`
+        );
+        return;
+      }
+
+      // Extract the last version from the changelog
+      const versionMatch = existingChangelog.match(/## \[([^\]]+)\]/);
+      if (versionMatch) {
+        lastVersion = versionMatch[1];
+      }
+    }
+
+    // Get git log since last version tag, or all commits if no previous version
+    let gitLog = "";
+    let sinceTag = null;
+
+    // Try to find a tag for the last version
+    if (lastVersion) {
+      try {
+        // Try common tag formats: v0.0.22, 0.0.22
+        const possibleTags = [`v${lastVersion}`, lastVersion];
+        for (const tag of possibleTags) {
+          try {
+            const tagCheck = execSync(`git rev-parse ${tag} 2>&1`, {
+              encoding: "utf8",
+              stdio: "pipe",
+            }).trim();
+            if (tagCheck && !tagCheck.startsWith("fatal:")) {
+              sinceTag = tag;
+              break;
+            }
+          } catch (e) {
+            // Tag doesn't exist, try next format
+          }
+        }
+      } catch (e) {
+        // No tag found for last version
+      }
+    }
+
+    // If no specific version tag found, try the most recent tag overall
+    if (!sinceTag) {
+      try {
+        const lastTag = execSync("git describe --tags --abbrev=0 2>&1", {
+          encoding: "utf8",
+          stdio: "pipe",
+        }).trim();
+        if (lastTag && !lastTag.startsWith("fatal:")) {
+          sinceTag = lastTag;
+        }
+      } catch (e) {
+        // No tags exist at all
+      }
+    }
+
+    // Get commits since the tag (or all commits if no tag)
+    try {
+      if (sinceTag) {
+        gitLog = execSync(
+          `git log ${sinceTag}..HEAD --pretty=format:"- %s (%h)" --date=short`,
+          { encoding: "utf8" }
+        );
+      } else {
+        // If no tags exist, get commits since the last version's date (if available)
+        // or get a limited set of recent commits
+        if (lastVersion) {
+          // Get commits from the last 30 days as a fallback
+          gitLog = execSync(
+            `git log --since="30 days ago" --pretty=format:"- %s (%h)" --date=short`,
+            { encoding: "utf8" }
+          );
+        } else {
+          // First version, get all commits
+          gitLog = execSync(
+            'git log --pretty=format:"- %s (%h)" --date=short',
+            { encoding: "utf8" }
+          );
+        }
+      }
+    } catch (err) {
+      gitLog = "- No commits found";
+    }
+
+    // Filter out empty lines and ensure we have content
+    const commits = gitLog.split("\n").filter((line) => line.trim());
+    if (commits.length === 0) {
+      commits.push("- No commits found");
+    }
+
+    // Create new changelog entry
+    const newEntry = `## [${currentVersion}] - ${date}\n\n${commits.join(
+      "\n"
+    )}\n\n`;
+
+    // Prepend new entry to existing changelog
+    const changelogContent = existingChangelog
+      ? newEntry + "---\n\n" + existingChangelog
+      : newEntry;
+
+    // Write changelog
+    fs.writeFileSync("CHANGELOG.md", changelogContent);
+
+    grunt.log.writeln(
+      `Changelog generated for version ${currentVersion} (${
+        commits.length
+      } commits${sinceTag ? ` since ${sinceTag}` : ""})`
+    );
+  });
+
+  grunt.registerTask("changelog", ["generateChangelog"]);
+
+  grunt.registerTask("version:patch", ["bump:patch", "generateChangelog"]);
+  grunt.registerTask("version:minor", ["bump:minor", "generateChangelog"]);
+  grunt.registerTask("version:major", ["bump:major", "generateChangelog"]);
+  grunt.registerTask("version:prerelease", [
+    "bump:prerelease",
+    "generateChangelog",
+  ]);
 };

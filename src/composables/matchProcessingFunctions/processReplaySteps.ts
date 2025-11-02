@@ -511,9 +511,29 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
 
         // Check who (if anyone) has the ball and increment the possession counter
-        if (hasBall) {
+        // Recalculate ball holder at end of turn to ensure accuracy
+        let endOfTurnBallHolder: PlayerId | undefined;
+        if (step.BoardState.Ball.IsHeld === "1") {
+          const ballX = step.BoardState.Ball.Cell?.X || "0";
+          const ballY = step.BoardState.Ball.Cell?.Y || "0";
+
+          for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if (
+                (player.Cell?.X || "0") === ballX &&
+                (player.Cell?.Y || "0") === ballY
+              ) {
+                endOfTurnBallHolder = player.Id as PlayerId;
+                break;
+              }
+            }
+            if (endOfTurnBallHolder) break;
+          }
+        }
+
+        if (endOfTurnBallHolder) {
           // Find the player from the matchData
-          const player = matchData.playerData[hasBall];
+          const player = matchData.playerData[endOfTurnBallHolder];
           if (player) {
             // Increment the players team possession counter
             const team = player.teamId === "1" ? "awayTeam" : "homeTeam";

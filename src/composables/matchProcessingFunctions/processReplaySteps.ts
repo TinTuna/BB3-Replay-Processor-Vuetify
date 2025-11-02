@@ -41,6 +41,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         casualties: 0,
         injuries: 0,
         KOs: 0,
+        kills: 0,
       },
       "1": {
         blocksAttempted: 0,
@@ -50,6 +51,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         casualties: 0,
         injuries: 0,
         KOs: 0,
+        kills: 0,
       },
     },
   };
@@ -564,6 +566,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     casualties: 0,
     injuries: 0,
     KOs: 0,
+    kills: 0,
   };
   matchData.teamStats["1"] = {
     blocksAttempted: 0,
@@ -573,6 +576,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     casualties: 0,
     injuries: 0,
     KOs: 0,
+    kills: 0,
   };
 
   // Sum up player stats for each team

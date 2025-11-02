@@ -160,15 +160,28 @@ export const useDataStore = defineStore("data", () => {
     return getSkillDataFromId(skillId);
   };
   const getTeamDataByDataId = (teamId: "0" | "1", teamDataId: string) => {
-    return (
-      teamData.value?.[
-        teamId
-      ]?.TeamStatistics?.AggregatedStatistics?.AggregatedStatistics?.find(
-        (stat) => {
-          return stat.StatId === teamDataId;
-        }
-      )?.Value || "0"
-    );
+    // Use the new aggregated stats from matchData
+    if (!matchData.value?.teamStats) return "0";
+    
+    const stats = matchData.value.teamStats[teamId];
+    
+    // Map stat IDs to the aggregated stats
+    switch (teamDataId) {
+      case "26": // Blocks Made
+        return stats.blocksAttempted.toString();
+      case "23": // Yards Running With Ball
+        return stats.yardsMovedWithBall.toString();
+      case "19": // Casualties Inflicted
+        return stats.casualties.toString();
+      case "22": // Injuries Inflicted  
+        return stats.injuries.toString();
+      case "25": // KOs Inflicted
+        return stats.KOs.toString();
+      case "21": // Kills Inflicted
+        return stats.kills.toString();
+      default:
+        return "0";
+    }
   };
   const getTeamLogo = (teamId: string) => {
     return getLogoFromGuid(
@@ -195,6 +208,7 @@ export const useDataStore = defineStore("data", () => {
       { StatId: "23", Value: stats.yardsMovedWithBall.toString() }, // Yards Running With Ball
       { StatId: "19", Value: stats.casualties.toString() }, // Casualties Inflicted
       { StatId: "22", Value: stats.injuries.toString() }, // Injuries Inflicted
+      { StatId: "21", Value: stats.kills.toString() }, // Kills Inflicted
       { StatId: "25", Value: stats.KOs.toString() }, // KOs Inflicted
       { StatId: "passes_attempted", Value: stats.passesAttempted.toString() }, // Total Passes Attempted
       { StatId: "passes_completed", Value: stats.passesCompleted.toString() }, // Total Passes Completed

@@ -69,6 +69,7 @@ export type MatchData = {
       casualties: number;
       injuries: number;
       KOs: number;
+      kills: number;
     };
     "1": {
       blocksAttempted: number;
@@ -78,6 +79,7 @@ export type MatchData = {
       casualties: number;
       injuries: number;
       KOs: number;
+      kills: number;
     };
   };
   playerData: {

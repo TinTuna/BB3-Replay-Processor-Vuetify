@@ -14,7 +14,7 @@ module.exports = function (grunt) {
           "src/layouts/default/Default.vue",
           "CHANGELOG.md",
         ],
-        createTag: false,
+        createTag: true,
         tagName: "v%VERSION%",
         tagMessage: "Version %VERSION%",
         push: false,
@@ -102,6 +102,15 @@ module.exports = function (grunt) {
       }
     }
 
+    // Extract commit hashes already in the changelog to avoid duplicates
+    const existingCommitHashes = new Set();
+    if (existingChangelog) {
+      const hashMatches = existingChangelog.matchAll(/\(([a-f0-9]{7,})\)/g);
+      for (const match of hashMatches) {
+        existingCommitHashes.add(match[1]);
+      }
+    }
+
     // Get commits since the tag (or all commits if no tag)
     try {
       if (sinceTag) {
@@ -130,8 +139,18 @@ module.exports = function (grunt) {
       gitLog = "- No commits found";
     }
 
-    // Filter out empty lines and ensure we have content
-    const commits = gitLog.split("\n").filter((line) => line.trim());
+    // Filter out empty lines and commits already in the changelog
+    const allCommits = gitLog.split("\n").filter((line) => line.trim());
+    const commits = allCommits.filter((line) => {
+      // Extract hash from line like "- commit message (abc123)"
+      const hashMatch = line.match(/\(([a-f0-9]{7,})\)/);
+      if (hashMatch) {
+        const hash = hashMatch[1];
+        return !existingCommitHashes.has(hash);
+      }
+      return true; // Keep lines without hashes (shouldn't happen, but be safe)
+    });
+
     if (commits.length === 0) {
       commits.push("- No commits found");
     }

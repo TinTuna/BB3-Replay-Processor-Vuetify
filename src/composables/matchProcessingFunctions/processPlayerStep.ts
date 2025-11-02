@@ -146,7 +146,8 @@ export const processPlayerStep = (opts: {
         if (stepMessageData.PlayerId === hasBall) {
           matchData.playerData[
             stepMessageData.PlayerId
-          ].yardsMovedWithBall += 1;
+          ].yardsMovedWithBall += 2;
+          // Two yards per square on the pitch
         }
 
         break;
@@ -193,6 +194,9 @@ export const processPlayerStep = (opts: {
 
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultBlockOutcome as ResultBlockOutcome;
+
+        // Increment blocks attempted counter
+        matchData.playerData[stepMessageData.PlayerId].blocksAttempted += 1;
 
         // Add the output type to the players data
         switch (resultMessageData.Outcome) {

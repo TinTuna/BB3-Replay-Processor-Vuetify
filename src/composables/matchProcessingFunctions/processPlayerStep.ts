@@ -133,21 +133,21 @@ export const processPlayerStep = (opts: {
     switch (result.Name) {
       case "ResultMoveOutcome": {
         // The player has moved from one cell to another
+        // Two yards per square on the pitch
 
         // add move data to the matchData
-        matchData.playerData[stepMessageData.PlayerId].yardsMoved += 1;
+        matchData.playerData[stepMessageData.PlayerId].yardsMoved += 2;
 
         // Add move data to the currentTurnAction
         currentTurnAction.actionsTaken.yardsMoved
-          ? (currentTurnAction.actionsTaken.yardsMoved += 1)
-          : (currentTurnAction.actionsTaken.yardsMoved = 1);
+          ? (currentTurnAction.actionsTaken.yardsMoved += 2)
+          : (currentTurnAction.actionsTaken.yardsMoved = 2);
 
         // If the player has the ball, we need to track the yards moved with the ball
         if (stepMessageData.PlayerId === hasBall) {
           matchData.playerData[
             stepMessageData.PlayerId
           ].yardsMovedWithBall += 2;
-          // Two yards per square on the pitch
         }
 
         break;
@@ -156,7 +156,7 @@ export const processPlayerStep = (opts: {
         // This is the roll of the block dice, this gives info on what dice were rolled and the outcome
         // it also lets us know what rerolls can be used (such as Pro) and whether the defender selects the outcome
         // TODO: Process block dice
-        // TODO: Track block dice
+        // Stats are handled by ResultBlockRoll
         break;
       }
       case "QuestionPushBack": {

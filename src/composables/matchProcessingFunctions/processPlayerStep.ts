@@ -12,7 +12,9 @@ import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
 import { ResultRoll } from "@/types/messageData/ResultRoll";
 import { ResultUseAction } from "@/types/messageData/ResultUseAction";
 import { ResultPlayerSentOff } from "@/types/messageData/ResultPlayerSentOff";
+import { QuestionBlockDice } from "@/types/messageData/QuestionBlockDice";
 import { addBasePlayerData } from "./addBasePlayerData";
+import { processDieRoll } from "../helperFns/processDieRoll";
 
 export const processPlayerStep = (opts: {
   stepResult: Step;
@@ -155,8 +157,27 @@ export const processPlayerStep = (opts: {
       case "QuestionBlockDice": {
         // This is the roll of the block dice, this gives info on what dice were rolled and the outcome
         // it also lets us know what rerolls can be used (such as Pro) and whether the defender selects the outcome
-        // TODO: Process block dice
-        // Stats are handled by ResultBlockRoll
+
+        const blockDiceData = xmlToJsonMemoized(result.MessageData)
+          .QuestionBlockDice as QuestionBlockDice;
+
+        // Process the block dice that were rolled
+        // check if Dice.Die is an array or a single object
+        if (Array.isArray(blockDiceData.Dice.Die)) {
+          blockDiceData.Dice.Die.forEach((die) => {
+            processDieRoll({
+              dieRoll: die,
+              playerId: stepMessageData.PlayerId,
+              matchData,
+            });
+          });
+        } else {
+          processDieRoll({
+            dieRoll: blockDiceData.Dice.Die,
+            playerId: stepMessageData.PlayerId,
+            matchData,
+          });
+        }
         break;
       }
       case "QuestionPushBack": {

@@ -7,9 +7,14 @@ const routes = [
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
-        path: '',
-        name: 'processor',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        path: '/',
+        name: 'replay-processor',
+        component: () => import(/* webpackChunkName: "replay-processor" */ '@/views/ReplayProcessor.vue'),
+      },
+      {
+        path: '/ids-finder',
+        name: 'ids-finder',
+        component: () => import(/* webpackChunkName: "ids-finder" */ '@/views/IdsFinder.vue'),
       },
       {
         path: '/git',

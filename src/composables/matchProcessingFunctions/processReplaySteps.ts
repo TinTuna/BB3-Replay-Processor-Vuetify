@@ -94,7 +94,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
-    // // THIS MIGHT CAUSE AN ISSUE THAT IVE FORGOTTEN ABOUT! 
+    // // THIS MIGHT CAUSE AN ISSUE THAT IVE FORGOTTEN ABOUT!
     // // Update the game phase
     // if (step.EventNewGamePhase) {
     //   gamePhase = step.EventNewGamePhase.Phase;
@@ -111,7 +111,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "0") {
       // // This is the pre-match Inducement phase
 
-      console.log(step)
+      console.log(step);
 
       // If the step has EventNewInducementsTurn, we need to set the current inducement turn data for the current team for use later
       if (step.EventNewInducementsTurn) {
@@ -164,20 +164,30 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           matchData.inducements[team].mercenaryPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
-          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+          matchData = addBasePlayerData(
+            matchData,
+            teamId,
+            step.EventBuyMercenary.MercenaryId
+          );
         }
         if (mercenaryPlayer.Type === "7") {
           // This is a Star player
           // Get the star player name
           mercenaryPlayer.Players.PlayerData.StarPlayer = true;
-          const starPlayerName = getStarPlayerName(mercenaryPlayer.Players.PlayerData.IdPlayerTypes);
+          const starPlayerName = getStarPlayerName(
+            mercenaryPlayer.Players.PlayerData.IdPlayerTypes
+          );
           if (starPlayerName) {
             mercenaryPlayer.Players.PlayerData.Name = starPlayerName;
           }
           matchData.inducements[team].starPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
-          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+          matchData = addBasePlayerData(
+            matchData,
+            teamId,
+            step.EventBuyMercenary.MercenaryId
+          );
         }
       }
     }
@@ -259,8 +269,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           //   step.EventActiveGamerChanged.NewActiveGamer || "0";
         }
       }
-
-      
     }
 
     if (gamePhase === "4") {
@@ -393,7 +401,8 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 step,
                 matchData,
                 currentTurn,
-                previousTurnAction: currentTurn.turnActions[currentTurn.turnActions.length - 1],
+                previousTurnAction:
+                  currentTurn.turnActions[currentTurn.turnActions.length - 1],
                 currentTurnAction,
                 nextTurnAction,
                 hasBall,
@@ -427,8 +436,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         });
       }
 
-      
-      if(step.EventTouchdown)  {
+      if (step.EventTouchdown) {
         // This is a touchdown event, we need to record the touchdown and the player that scored it
         currentTurnAction.actionsTaken.touchdownScored = true;
         currentTurn.touchdown = true;
@@ -438,10 +446,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventEndTurn) {
         // there is a caveat here where the 'end turn' could be due to a pre-match setup event
         // we will know this if the EventNewGamePhase is 5. Hopefully this works...
-        if(step.EventNewGamePhase?.Phase === "5") {
+        if (step.EventNewGamePhase?.Phase === "5") {
           continue;
         }
-
 
         // If the step has EventEndTurn, it's the end of a turn
         // This is the end of a turn
@@ -494,8 +501,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           turnActions: [],
         };
       }
-
-      
     }
 
     if (gamePhase === "6") {
@@ -508,11 +513,13 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventMatchEnd.MatchCompletionStatus === "1") {
         // The match was conceded
         // The GamersEndMatchStatus will tell us who conceded
-        step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach((gamerEndMatchStatus, i) => {
-          if (gamerEndMatchStatus.EndStatus) {
-            matchData.conceded = i.toString() as "0" | "1";
+        step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach(
+          (gamerEndMatchStatus, i) => {
+            if (gamerEndMatchStatus.EndStatus) {
+              matchData.conceded = i.toString() as "0" | "1";
+            }
           }
-        });
+        );
       }
     }
 
@@ -520,8 +527,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (step.EventNewGamePhase) {
       gamePhase = step.EventNewGamePhase.Phase;
     }
-
   }
-  
+
   return matchData;
 };

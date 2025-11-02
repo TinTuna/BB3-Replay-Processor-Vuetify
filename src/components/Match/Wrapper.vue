@@ -4,7 +4,7 @@
       <v-card>
         <v-tabs v-model="tab" bg-color="primary">
           <v-tab value="overview">Overview</v-tab>
-          <v-tab value="match">Match Events</v-tab>
+          <!-- <v-tab value="match">Match Events</v-tab> -->
           <v-tab value="teamstats">Team Stats</v-tab>
           <v-tab value="playerstats">Player Stats</v-tab>
           <v-tab value="dicestats">Dice Stats</v-tab>
@@ -31,9 +31,7 @@
             </v-window-item>
             <!-- Dice Stats -->
             <v-window-item value="dicestats">
-              <v-container>
-                Currently Unavailable
-              </v-container>
+              <v-container> Currently Unavailable </v-container>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -41,7 +39,6 @@
     </v-responsive>
   </v-container>
 </template>
-
 
 <script lang="ts" setup>
 import { ref } from "vue";
@@ -84,16 +81,13 @@ const replayStepsElements =
 const replaySteps = ref<ReplayStep[]>([]);
 
 for (let i = 0; i < replayStepsElements.length; i++) {
-  replaySteps.value.push(
-    elementToJson(replayStepsElements[i]) as ReplayStep
-  );
+  replaySteps.value.push(elementToJson(replayStepsElements[i]) as ReplayStep);
 }
 
-dataStore.matchData = processReplaySteps(replaySteps.value as ReplayStep[])
+dataStore.matchData = processReplaySteps(replaySteps.value as ReplayStep[]);
 
 // process team data into dataStore
 dataStore.setTeamData();
-
 </script>
-  
+
 <style scoped></style>

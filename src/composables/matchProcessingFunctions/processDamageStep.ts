@@ -16,6 +16,138 @@ import { QuestionApothecaryCasualtyUsage } from "@/types/messageData/QuestionApo
 import { PlayerId } from "@/types/IdTypes/PlayerId";
 import { processDieRoll } from "../helperFns/processDieRoll";
 
+/**
+ * Processes injury outcome based on status/outcome value
+ * Handles tracking of injury rolls for both victim and attacker
+ */
+const processInjuryOutcome = (opts: {
+  outcome: string;
+  victimId: PlayerId;
+  attackerId: PlayerId | undefined;
+  matchData: MatchData;
+  currentTurn: Turn;
+  currentTurnAction: TurnAction;
+  context?: {
+    step?: ReplayStep;
+    stepResult?: Step;
+    logPrefix?: string;
+  };
+}) => {
+  const {
+    outcome,
+    victimId,
+    attackerId,
+    matchData,
+    currentTurn,
+    currentTurnAction,
+    context,
+  } = opts;
+
+  switch (outcome) {
+    case "0": {
+      // Stunned
+      matchData.playerData[victimId].injuryRollsSustained.injuryStunned += 1;
+
+      // Check if this is a self inflicted injury
+      if (victimId === attackerId) {
+        currentTurnAction.actionsTaken.knockdownSustained = {
+          type: "Stunned",
+          player: attackerId,
+        };
+      } else {
+        // Track inflicted injury for attacker
+        if (attackerId && matchData.playerData[attackerId]) {
+          matchData.playerData[
+            attackerId
+          ].injuryRollsInflicted.injuryRolls += 1;
+          matchData.playerData[
+            attackerId
+          ].injuryRollsInflicted.injuryStunned += 1;
+        }
+
+        currentTurn.knockdown
+          ? (currentTurn.knockdown += 1)
+          : (currentTurn.knockdown = 1);
+        currentTurnAction.actionsTaken.knockdownInflicted = {
+          type: "Stunned",
+          player: victimId,
+        };
+      }
+      break;
+    }
+    case "1": {
+      // unknown outcome (case 1) (what is less than KO?)
+      const logPrefix = context?.logPrefix || "[DAMAGE STEP]";
+      console.log(`${logPrefix} Unknown injury outcome (case 1)`);
+      console.log(`${logPrefix} Outcome:`, outcome);
+      console.log(`${logPrefix} Victim:`, victimId);
+      console.log(`${logPrefix} Attacker:`, attackerId);
+      if (context?.step) {
+        console.log(`${logPrefix} Step:`, context.step);
+      }
+      if (context?.stepResult) {
+        console.log(`${logPrefix} Step Result:`, context.stepResult);
+      }
+      break;
+    }
+    case "2": {
+      // KO
+      matchData.playerData[victimId].injuryRollsSustained.injuryKO += 1;
+
+      // Track inflicted injury for attacker (if not self-inflicted)
+      if (
+        attackerId &&
+        attackerId !== victimId &&
+        matchData.playerData[attackerId]
+      ) {
+        matchData.playerData[attackerId].injuryRollsInflicted.injuryRolls += 1;
+        matchData.playerData[attackerId].injuryRollsInflicted.injuryKO += 1;
+      }
+      break;
+    }
+    case "3": {
+      // Badly Hurt (case 3)
+      matchData.playerData[victimId].injuryRollsSustained.injuryBadlyHurt += 1;
+
+      // Track inflicted injury for attacker (if not self-inflicted)
+      if (
+        attackerId &&
+        attackerId !== victimId &&
+        matchData.playerData[attackerId]
+      ) {
+        matchData.playerData[attackerId].injuryRollsInflicted.injuryRolls += 1;
+        matchData.playerData[
+          attackerId
+        ].injuryRollsInflicted.injuryBadlyHurt += 1;
+      }
+      break;
+    }
+    case "4": {
+      // Casualty (case 4)
+      matchData.playerData[
+        victimId
+      ].injuryRollsSustained.injurySeriousInjury += 1;
+
+      // Track inflicted injury for attacker (if not self-inflicted)
+      if (
+        attackerId &&
+        attackerId !== victimId &&
+        matchData.playerData[attackerId]
+      ) {
+        matchData.playerData[attackerId].injuryRollsInflicted.injuryRolls += 1;
+        matchData.playerData[
+          attackerId
+        ].injuryRollsInflicted.injurySeriousInjury += 1;
+      }
+      break;
+    }
+    default: {
+      // Unknown
+      break;
+    }
+  }
+};
+
 export const processDamageStep = (opts: {
   stepResult: Step;
   step: ReplayStep;
@@ -137,120 +269,19 @@ export const processDamageStep = (opts: {
         // Track sustained injury for victim
         matchData.playerData[victimId].injuryRollsSustained.injuryRolls += 1;
 
-        switch (resultMessageData.Outcome) {
-          case "0": {
-            // Stunned
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryStunned += 1;
-
-            // Check if this is a self inflicted injury
-            if (victimId === attackerId) {
-              currentTurnAction.actionsTaken.knockdownSustained = {
-                type: "Stunned",
-                player: attackerId,
-              };
-            } else {
-              // Track inflicted injury for attacker
-              if (attackerId && matchData.playerData[attackerId]) {
-                matchData.playerData[
-                  attackerId
-                ].injuryRollsInflicted.injuryRolls += 1;
-                matchData.playerData[
-                  attackerId
-                ].injuryRollsInflicted.injuryStunned += 1;
-              }
-
-              currentTurn.knockdown
-                ? (currentTurn.knockdown += 1)
-                : (currentTurn.knockdown = 1);
-              currentTurnAction.actionsTaken.knockdownInflicted = {
-                type: "Stunned",
-                player: victimId,
-              };
-            }
-            break;
-          }
-          case "1": {
-            // unknown outcome (case 1) (what is less than KO?)
-            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 1)");
-            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
-            console.log("[DAMAGE STEP] Victim:", victimId);
-            console.log("[DAMAGE STEP] Attacker:", attackerId);
-            console.log("[DAMAGE STEP] Step:", step);
-            console.log("[DAMAGE STEP] Step Result:", stepResult);
-            break;
-          }
-          case "2": {
-            // KO
-            matchData.playerData[victimId].injuryRollsSustained.injuryKO += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryKO += 1;
-            }
-            break;
-          }
-          case "3": {
-            // unknown outcome (case 3) (it must be a casualty of some sort because it results in a ResultPlayerRemoval)
-            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 3)");
-            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
-            console.log("[DAMAGE STEP] Victim:", victimId);
-            console.log("[DAMAGE STEP] Attacker:", attackerId);
-            console.log("[DAMAGE STEP] Step:", step);
-            console.log("[DAMAGE STEP] Step Result:", stepResult);
-
-            // do the same as case 4
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryCasualty += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryCasualty += 1;
-            }
-            break;
-          }
-          case "4": {
-            // Casualty (case 4)
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryCasualty += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryCasualty += 1;
-            }
-            break;
-          }
-        }
+        processInjuryOutcome({
+          outcome: resultMessageData.Outcome,
+          victimId,
+          attackerId,
+          matchData,
+          currentTurn,
+          currentTurnAction,
+          context: {
+            step,
+            stepResult,
+            logPrefix: "ResultInjuryRoll",
+          },
+        });
 
         break;
       }
@@ -322,6 +353,7 @@ export const processDamageStep = (opts: {
 
         // Add ResultPlayerRemoval data to the currentTurnAction
 
+        // TODO: I'm not sure these are the correct injury types. Needs discrete testing.
         let injuryType = "";
         switch (resultMessageData.Status) {
           case "0": {
@@ -417,125 +449,19 @@ export const processDamageStep = (opts: {
           matchData.teamStats[victimId.teamId].apothecaryUsed += 1;
         }
 
-        switch (resultMessageData.PlayerStatus) {
-          case "0": {
-            // Stunned
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryStunned += 1;
-
-            // Check if this is a self inflicted injury
-            if (victimId === attackerId) {
-              currentTurnAction.actionsTaken.knockdownSustained = {
-                type: "Stunned",
-                player: attackerId,
-              };
-            } else {
-              // Track inflicted injury for attacker
-              if (attackerId && matchData.playerData[attackerId]) {
-                matchData.playerData[
-                  attackerId
-                ].injuryRollsInflicted.injuryRolls += 1;
-                matchData.playerData[
-                  attackerId
-                ].injuryRollsInflicted.injuryStunned += 1;
-              }
-
-              currentTurn.knockdown
-                ? (currentTurn.knockdown += 1)
-                : (currentTurn.knockdown = 1);
-              currentTurnAction.actionsTaken.knockdownInflicted = {
-                type: "Stunned",
-                player: victimId,
-              };
-            }
-            break;
-          }
-          case "1": {
-            // unknown outcome (case 1) (what is less than KO?)
-            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 1)");
-            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
-            console.log("[DAMAGE STEP] Victim:", victimId);
-            console.log("[DAMAGE STEP] Attacker:", attackerId);
-            console.log("[DAMAGE STEP] Step:", step);
-            console.log("[DAMAGE STEP] Step Result:", stepResult);
-            break;
-          }
-          case "2": {
-            // KO
-            matchData.playerData[victimId].injuryRollsSustained.injuryKO += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryKO += 1;
-            }
-            break;
-          }
-          case "3": {
-            // unknown outcome (case 3) (it must be a casualty of some sort because it results in a ResultPlayerRemoval)
-            console.log("[DAMAGE STEP] Unknown ResultInjuryRoll (case 3)");
-            console.log("[DAMAGE STEP] Outcome:", resultMessageData.Outcome);
-            console.log("[DAMAGE STEP] Victim:", victimId);
-            console.log("[DAMAGE STEP] Attacker:", attackerId);
-            console.log("[DAMAGE STEP] Step:", step);
-            console.log("[DAMAGE STEP] Step Result:", stepResult);
-
-            // do the same as case 4
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryCasualty += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryCasualty += 1;
-            }
-            break;
-          }
-          case "4": {
-            // Casualty (case 4)
-            matchData.playerData[
-              victimId
-            ].injuryRollsSustained.injuryCasualty += 1;
-
-            // Track inflicted injury for attacker (if not self-inflicted)
-            if (
-              attackerId &&
-              attackerId !== victimId &&
-              matchData.playerData[attackerId]
-            ) {
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryRolls += 1;
-              matchData.playerData[
-                attackerId
-              ].injuryRollsInflicted.injuryCasualty += 1;
-            }
-            break;
-          }
-
-          default: {
-            // Unknown
-            break;
-          }
-        }
+        processInjuryOutcome({
+          outcome: resultMessageData.PlayerStatus,
+          victimId,
+          attackerId,
+          matchData,
+          currentTurn,
+          currentTurnAction,
+          context: {
+            step,
+            stepResult,
+            logPrefix: "ResultApothecary",
+          },
+        });
 
         // TODO: Track apothecary usage if needed
         // For now, we just log it to understand the structure

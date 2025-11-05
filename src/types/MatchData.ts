@@ -161,13 +161,31 @@ export type MatchData = {
         injuryRolls: number;
         injuryStunned: number;
         injuryKO: number;
-        injuryCasualty: number;
+        injuryBadlyHurt: number; // This is only possible for Stunty players
+        injurySeriousInjury: number;
+      };
+      casualtiesSustained: {
+        casualtyRolls: number;
+        casualtyBadlyHurt: number;
+        casualtySeriouslyHurt: number;
+        casualtySeriousInjury: number;
+        casualtyLastingInjury: number;
+        casualtyDeath: number;
       };
       injuryRollsInflicted: {
         injuryRolls: number;
         injuryStunned: number;
         injuryKO: number;
-        injuryCasualty: number;
+        injuryBadlyHurt: number; // This is only possible for Stunty players
+        injurySeriousInjury: number;
+      };
+      casualtiesInflicted: {
+        casualtyRolls: number;
+        casualtyBadlyHurt: number;
+        casualtySeriouslyHurt: number;
+        casualtySeriousInjury: number;
+        casualtyLastingInjury: number;
+        casualtyDeath: number;
       };
     };
   };

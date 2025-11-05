@@ -23,7 +23,7 @@
             </v-window-item>
             <!-- Team Stats -->
             <v-window-item value="teamstats">
-              <TeamStatsWrapper />
+              <TeamStatsWrapper @navigate-to-player-stats="handleNavigateToPlayerStats" />
             </v-window-item>
             <!-- Player Stats -->
             <v-window-item value="playerstats">
@@ -57,6 +57,10 @@ import { useDataStore } from "@/store/dataStore";
 const dataStore = useDataStore();
 
 const tab = ref<string>("overview");
+
+const handleNavigateToPlayerStats = () => {
+  tab.value = "playerstats";
+};
 
 const props = defineProps({
   processedReplay: { type: Document, required: true },

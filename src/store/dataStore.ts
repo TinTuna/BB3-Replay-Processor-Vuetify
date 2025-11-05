@@ -27,6 +27,10 @@ export const useDataStore = defineStore("data", () => {
 
   const matchData = ref<MatchData | null>(null);
 
+  // Navigation state for player stats drilldown
+  const selectedPlayerIdForNavigation = ref<string | null>(null);
+  const selectedTeamForNavigation = ref<"0" | "1" | null>(null);
+
   // setters
   const setTeamData = () => {
     // We have to process the teams and players separately because initially the players are missing Ids and later the teams are missing key data
@@ -251,5 +255,7 @@ export const useDataStore = defineStore("data", () => {
     getCompetitionLogo,
     getAllTeamStats,
     getPlayerStats,
+    selectedPlayerIdForNavigation,
+    selectedTeamForNavigation,
   };
 });

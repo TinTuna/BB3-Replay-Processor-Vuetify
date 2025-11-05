@@ -237,6 +237,21 @@ watch(
   { immediate: true }
 );
 
+// Watch for navigation state changes and select the player
+watch(
+  () => [dataStore.selectedPlayerIdForNavigation, dataStore.selectedTeamForNavigation],
+  ([playerId, selectedTeam]) => {
+    // Only select player if it's for this team
+    if (playerId && selectedTeam === team.value.toString() && listPlayers.value.length > 0) {
+      const player = listPlayers.value.find((p) => p.id === playerId);
+      if (player) {
+        selectedPlayer.value = player;
+      }
+    }
+  },
+  { immediate: true }
+);
+
 const playerMatchData = computed(() => {
   if (!selectedPlayer.value?.id) return null;
   return dataStore.matchData?.playerData?.[selectedPlayer.value.id];

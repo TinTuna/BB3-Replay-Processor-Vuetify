@@ -26,6 +26,9 @@ import { useDataStore } from "@/store/dataStore";
 import { PlayerResult } from "@/types/Results/PlayerResult";
 
 const dataStore = useDataStore();
+const emit = defineEmits<{
+  navigateToPlayerStats: [];
+}>();
 
 const props = defineProps({
   team: { type: String, required: true },
@@ -74,6 +77,7 @@ const teamRoster = computed(() => {
       pa = `${pa}+`;
     }
     return {
+      id: player.Id,
       number: player.Number,
       name: player.Name,
       position: getIdPlayerType(player.IdPlayerTypes),
@@ -102,9 +106,16 @@ const teamRoster = computed(() => {
   });
 });
 
-const handleClick = () => {
-  // TODO: Navigate to player stats page
-  // Implementation pending
+const handleClick = (_event: Event, row: { item: { id: string } }) => {
+  const playerId = row?.item?.id;
+  if (!playerId) return;
+
+  // Set navigation state in store
+  dataStore.selectedPlayerIdForNavigation = playerId;
+  dataStore.selectedTeamForNavigation = team.value.toString() as "0" | "1";
+
+  // Emit event to parent to navigate to player stats tab
+  emit("navigateToPlayerStats");
 };
 </script>
 

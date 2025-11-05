@@ -11,13 +11,13 @@
       }}</v-tab>
     </v-tabs>
 
-    <v-card-text>
+      <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="home">
-          <TeamStats team="0" />
+          <TeamStats team="0" @navigate-to-player-stats="handleNavigateToPlayerStats" />
         </v-window-item>
         <v-window-item value="away">
-          <TeamStats team="1" />
+          <TeamStats team="1" @navigate-to-player-stats="handleNavigateToPlayerStats" />
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -42,8 +42,15 @@ import { useDataStore } from "@/store/dataStore";
 import { getStatName } from "@/composables/stringFromIdFunctions/getStatName";
 
 const dataStore = useDataStore();
+const emit = defineEmits<{
+  navigateToPlayerStats: [];
+}>();
 
 const tab = ref<string>("home");
+
+const handleNavigateToPlayerStats = () => {
+  emit("navigateToPlayerStats");
+};
 
 const headers = [
   { title: "Stat", key: "stat", align: "start", width: "50%" },

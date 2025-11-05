@@ -19,7 +19,7 @@ export type StatIdType =
   | "18" // Touchdowns Scored
   | "19" // Inflicted Casualties
   | "20" //
-  | "21" // Inflicted Kills
+  | "21" // Inflicted Deaths
   | "22" // Inflicted Injuries
   | "23" // Yards Running With Ball
   | "24" //

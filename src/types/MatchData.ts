@@ -69,7 +69,7 @@ export type MatchData = {
       casualties: number;
       injuries: number;
       KOs: number;
-      kills: number;
+      deaths: number;
       apothecaryUsed: number;
     };
     "1": {
@@ -80,7 +80,7 @@ export type MatchData = {
       casualties: number;
       injuries: number;
       KOs: number;
-      kills: number;
+      deaths: number;
       apothecaryUsed: number;
     };
   };

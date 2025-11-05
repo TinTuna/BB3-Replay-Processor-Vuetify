@@ -48,19 +48,19 @@
             :away-stat="awayBlocksMade"
           />
           <GameBalance
+            title="KOs Inflicted"
+            :home-stat="homeKOsInflicted"
+            :away-stat="awayKOsInflicted"
+          />
+          <GameBalance
             title="Injuries Inflicted"
             :home-stat="homeInjuriesInflicted"
             :away-stat="awayInjuriesInflicted"
           />
           <GameBalance
-            title="Casualties Inflicted"
-            :home-stat="homeCasualtiesInflicted"
-            :away-stat="awayCasualtiesInflicted"
-          />
-          <GameBalance
-            title="Kills Inflicted"
-            :home-stat="homeKillsInflicted"
-            :away-stat="awayKillsInflicted"
+            title="Deaths Inflicted"
+            :home-stat="homeDeathsInflicted"
+            :away-stat="awayDeathsInflicted"
           />
           <GameBalance
             title="Yards Run With Ball"
@@ -111,10 +111,16 @@ const competitionLogo = computed(() => {
 });
 
 const homeTeamTouchdownsScored = computed(() => {
-  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[0].TeamResult.TouchdownsBeforeConcede || "0";
+  return (
+    dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults
+      .GamerResult[0].TeamResult.TouchdownsBeforeConcede || "0"
+  );
 });
 const awayTeamTouchdownsScored = computed(() => {
-  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[1].TeamResult.TouchdownsBeforeConcede || "0";
+  return (
+    dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults
+      .GamerResult[1].TeamResult.TouchdownsBeforeConcede || "0"
+  );
 });
 
 const homeTeamScore = computed(() => {
@@ -148,11 +154,11 @@ const awayBlocksMade = computed(() => {
   return dataStore.getTeamDataByDataId("1", "26");
 });
 
-const homeCasualtiesInflicted = computed(() => {
-  return dataStore.getTeamDataByDataId("0", "19");
+const homeKOsInflicted = computed(() => {
+  return dataStore.getTeamDataByDataId("0", "25");
 });
-const awayCasualtiesInflicted = computed(() => {
-  return dataStore.getTeamDataByDataId("1", "19");
+const awayKOsInflicted = computed(() => {
+  return dataStore.getTeamDataByDataId("1", "25");
 });
 
 const homeInjuriesInflicted = computed(() => {
@@ -162,10 +168,10 @@ const awayInjuriesInflicted = computed(() => {
   return dataStore.getTeamDataByDataId("1", "22");
 });
 
-const homeKillsInflicted = computed(() => {
+const homeDeathsInflicted = computed(() => {
   return dataStore.getTeamDataByDataId("0", "21");
 });
-const awayKillsInflicted = computed(() => {
+const awayDeathsInflicted = computed(() => {
   return dataStore.getTeamDataByDataId("1", "21");
 });
 

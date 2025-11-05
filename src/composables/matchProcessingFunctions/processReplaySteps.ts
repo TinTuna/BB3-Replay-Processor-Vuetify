@@ -41,7 +41,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         casualties: 0,
         injuries: 0,
         KOs: 0,
-        kills: 0,
+        deaths: 0,
       },
       "1": {
         blocksAttempted: 0,
@@ -51,7 +51,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         casualties: 0,
         injuries: 0,
         KOs: 0,
-        kills: 0,
+        deaths: 0,
       },
     },
   };
@@ -586,7 +586,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     casualties: 0,
     injuries: 0,
     KOs: 0,
-    kills: 0,
+    deaths: 0,
   };
   matchData.teamStats["1"] = {
     blocksAttempted: 0,
@@ -596,7 +596,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     casualties: 0,
     injuries: 0,
     KOs: 0,
-    kills: 0,
+    deaths: 0,
   };
 
   // Sum up player stats for each team
@@ -617,11 +617,15 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         playerStats.passesCompleted.short +
         playerStats.passesCompleted.long +
         playerStats.passesCompleted.longBomb;
-      matchData.teamStats[teamId].casualties +=
-        playerStats.injuryRollsSustained.injuryCasualty;
+      // matchData.teamStats[teamId].casualties +=
+      //   playerStats.injuryRollsSustained.injuryBadlyHurt +
+      //   playerStats.injuryRollsSustained.injurySeriousInjury;
       matchData.teamStats[teamId].injuries +=
-        playerStats.injuryRollsSustained.injuryStunned;
-      matchData.teamStats[teamId].KOs += playerStats.injuryRollsSustained.injuryKO;
+        playerStats.casualtiesInflicted.casualtyRolls;
+      matchData.teamStats[teamId].KOs +=
+        playerStats.injuryRollsInflicted.injuryKO;
+      matchData.teamStats[teamId].deaths +=
+        playerStats.casualtiesInflicted.casualtyDeath;
     }
   });
 

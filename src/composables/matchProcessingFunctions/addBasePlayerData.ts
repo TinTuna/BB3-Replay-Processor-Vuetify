@@ -90,7 +90,6 @@ export const addBasePlayerData = (
       injuryKO: 0,
       injuryBadlyHurt: 0,
       injurySeriousInjury: 0,
-      injuryDeath: 0,
     },
     casualtiesSustained: {
       casualtyRolls: 0,
@@ -106,7 +105,6 @@ export const addBasePlayerData = (
       injuryKO: 0,
       injuryBadlyHurt: 0,
       injurySeriousInjury: 0,
-      injuryDeath: 0,
     },
     casualtiesInflicted: {
       casualtyRolls: 0,

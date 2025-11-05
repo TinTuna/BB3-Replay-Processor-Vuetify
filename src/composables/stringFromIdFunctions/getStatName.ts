@@ -27,7 +27,7 @@ export const getStatName = (statId: StatIdType): StatInfo => {
     "18": { name: "Touchdowns Scored", category: "offense" },
     "19": { name: "Casualties Inflicted", category: "offense" },
     "20": { name: "Unknown Stat 20", category: "general" },
-    "21": { name: "Kills Inflicted", category: "offense" },
+    "21": { name: "Deaths Inflicted", category: "offense" },
     "22": { name: "Injuries Inflicted", category: "offense" },
     "23": { name: "Yards Running With Ball", category: "movement" },
     "24": { name: "Unknown Stat 24", category: "general" },

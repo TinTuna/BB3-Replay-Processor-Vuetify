@@ -166,9 +166,9 @@ export const useDataStore = defineStore("data", () => {
   const getTeamDataByDataId = (teamId: "0" | "1", teamDataId: string) => {
     // Use the new aggregated stats from matchData
     if (!matchData.value?.teamStats) return "0";
-    
+
     const stats = matchData.value.teamStats[teamId];
-    
+
     // Map stat IDs to the aggregated stats
     switch (teamDataId) {
       case "26": // Blocks Made
@@ -177,12 +177,12 @@ export const useDataStore = defineStore("data", () => {
         return stats.yardsMovedWithBall.toString();
       case "19": // Casualties Inflicted
         return stats.casualties.toString();
-      case "22": // Injuries Inflicted  
+      case "22": // Injuries Inflicted
         return stats.injuries.toString();
       case "25": // KOs Inflicted
         return stats.KOs.toString();
-      case "21": // Kills Inflicted
-        return stats.kills.toString();
+      case "21": // Deaths Inflicted
+        return stats.deaths.toString();
       default:
         return "0";
     }
@@ -212,7 +212,7 @@ export const useDataStore = defineStore("data", () => {
       { StatId: "23", Value: stats.yardsMovedWithBall.toString() }, // Yards Running With Ball
       { StatId: "19", Value: stats.casualties.toString() }, // Casualties Inflicted
       { StatId: "22", Value: stats.injuries.toString() }, // Injuries Inflicted
-      { StatId: "21", Value: stats.kills.toString() }, // Kills Inflicted
+      { StatId: "21", Value: stats.deaths.toString() }, // Deaths Inflicted
       { StatId: "25", Value: stats.KOs.toString() }, // KOs Inflicted
       { StatId: "passes_attempted", Value: stats.passesAttempted.toString() }, // Total Passes Attempted
       { StatId: "passes_completed", Value: stats.passesCompleted.toString() }, // Total Passes Completed

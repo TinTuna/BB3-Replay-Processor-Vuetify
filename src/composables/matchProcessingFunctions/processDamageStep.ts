@@ -353,46 +353,79 @@ export const processDamageStep = (opts: {
 
         // Add ResultPlayerRemoval data to the currentTurnAction
 
-        // TODO: I'm not sure these are the correct injury types. Needs discrete testing.
-        let injuryType = "";
-        switch (resultMessageData.Status) {
-          case "0": {
-            injuryType = "Stunned - Pushed Out of Bounds";
-            break;
+        // Get victim and attacker IDs
+        const victimId = resultMessageData.PlayerId as PlayerId;
+        const attackerId = currentTurnAction.playerId as PlayerId;
+
+        // Map status codes to injury types and casualty tracking fields
+        const statusMap: Record<
+          string,
+          {
+            injuryType: string;
+            casualtyField?: keyof MatchData["playerData"][string]["casualtiesInflicted"];
           }
-          case "1": {
-            injuryType = "Unknown ResultPlayerRemoval (case 1)";
-            console.log("[DAMAGE STEP] Unknown outcome (case 1)");
-            break;
-          }
-          case "2": {
-            injuryType = "Unknown ResultPlayerRemoval (case 2)";
-            console.log("[DAMAGE STEP] Unknown outcome (case 2)");
-            break;
-          }
-          case "3": {
-            injuryType = "KO";
-            break;
-          }
-          case "4": {
-            injuryType = "Serious Injury";
-            break;
-          }
-          case "5": {
-            injuryType = "Death";
-            break;
-          }
-          default: {
-            injuryType = resultMessageData.Status;
-            break;
+        > = {
+          "0": { injuryType: "Stunned - Pushed Out of Bounds" },
+          "1": {
+            injuryType: "Badly Hurt",
+            casualtyField: "casualtyBadlyHurt",
+          },
+          "2": {
+            injuryType: "Seriously Hurt",
+            casualtyField: "casualtySeriouslyHurt",
+          },
+          "3": {
+            injuryType: "Serious Injury",
+            casualtyField: "casualtySeriousInjury",
+          },
+          "4": {
+            injuryType: "Lasting Injury",
+            casualtyField: "casualtyLastingInjury",
+          },
+          "5": { injuryType: "Death", casualtyField: "casualtyDeath" },
+        };
+
+        const statusInfo =
+          statusMap[resultMessageData.Status] ||
+          ({ injuryType: resultMessageData.Status } as const);
+        const injuryType = statusInfo.injuryType;
+
+        // Track casualties inflicted for attacker (if not self-inflicted and status is a casualty)
+        if (
+          statusInfo.casualtyField &&
+          attackerId &&
+          attackerId !== victimId &&
+          matchData.playerData[attackerId]
+        ) {
+          const attackerCasualties =
+            matchData.playerData[attackerId].casualtiesInflicted;
+          attackerCasualties.casualtyRolls += 1;
+
+          // Update the specific casualty field based on status
+          switch (statusInfo.casualtyField) {
+            case "casualtyBadlyHurt":
+              attackerCasualties.casualtyBadlyHurt += 1;
+              break;
+            case "casualtySeriouslyHurt":
+              attackerCasualties.casualtySeriouslyHurt += 1;
+              break;
+            case "casualtySeriousInjury":
+              attackerCasualties.casualtySeriousInjury += 1;
+              break;
+            case "casualtyLastingInjury":
+              attackerCasualties.casualtyLastingInjury += 1;
+              break;
+            case "casualtyDeath":
+              attackerCasualties.casualtyDeath += 1;
+              break;
           }
         }
 
         // Check if this was a self inflicted injury
-        if (resultMessageData.PlayerId === currentTurnAction.playerId) {
+        if (victimId === attackerId) {
           currentTurnAction.actionsTaken.injurySustained = {
             type: injuryType,
-            player: resultMessageData.PlayerId,
+            player: victimId,
           };
           currentTurn.injurySustained
             ? (currentTurn.injurySustained += 1)
@@ -403,7 +436,7 @@ export const processDamageStep = (opts: {
         } else {
           currentTurnAction.actionsTaken.injuryInflicted = {
             type: injuryType,
-            player: resultMessageData.PlayerId,
+            player: victimId,
           };
           currentTurn.injury
             ? (currentTurn.injury += 1)
@@ -414,9 +447,7 @@ export const processDamageStep = (opts: {
         }
 
         // add roll data to the matchData
-        matchData.playerData[
-          resultMessageData.PlayerId
-        ].timesRemovedFromPlay += 1;
+        matchData.playerData[victimId].timesRemovedFromPlay += 1;
 
         break;
       }

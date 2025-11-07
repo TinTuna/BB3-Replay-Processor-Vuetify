@@ -1,7 +1,7 @@
 <template>
   <v-card
     :subtitle="playerType"
-    class="my-3 d-flex flex-column flex-grow-1"
+    class="d-flex flex-column flex-grow-1"
     @click.stop="drilldown"
   >
     <template v-slot:title>
@@ -53,10 +53,13 @@
 import { useDataStore } from "@/store/dataStore";
 import { Turn } from "@/types/Match/Turn";
 import { TurnAction } from "@/types/Match/TurnAction";
-import { Ref, computed } from "vue";
+import { Ref, computed, inject } from "vue";
 import { ref } from "vue";
 
 const dataStore = useDataStore();
+const openPitchVisualization = inject<
+  (turn: number, team: "0" | "1", playerId?: string) => void
+>("openPitchVisualization");
 
 const props = defineProps({
   logEntryProp: { type: Object, required: true },
@@ -87,7 +90,7 @@ type PlayerActionChip = {
   icon: string;
   value: string;
   tooltip: string;
-  secondaryIcon?: any;
+  secondaryIcon?: string;
   primaryIconColour?: string;
   secondaryIconColour?: string;
 };
@@ -311,7 +314,13 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
 });
 
 const drilldown = () => {
-  /// drilldown to player page
+  if (openPitchVisualization) {
+    openPitchVisualization(
+      logEntry.value.turn,
+      logEntry.value.team,
+      playerAction.value.playerId
+    );
+  }
 };
 </script>
 

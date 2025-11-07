@@ -64,7 +64,30 @@
                 v-if="logEntry.turnActions.length"
                 :log-entry-prop="logEntry"
               />
-              <v-card v-else variant="outlined" class="mt-4">
+              <PitchVisualization
+                :key="`pitch-${logEntry.turn}-${logEntry.team}`"
+                :turn="logEntry.turn"
+                :team="logEntry.team"
+                :player-id="
+                  openPlayerId === `${logEntry.turn}-${logEntry.team}`
+                    ? selectedPlayerId
+                    : undefined
+                "
+                :is-panel-open="
+                  matchPanels !== undefined &&
+                  matchPanels ===
+                    dataStore.matchData?.matchLog.findIndex(
+                      (entry) =>
+                        entry.turn === logEntry.turn &&
+                        entry.team === logEntry.team
+                    )
+                "
+              />
+              <v-card
+                v-if="!logEntry.turnActions.length"
+                variant="outlined"
+                class="mt-4"
+              >
                 <v-card-text class="text-center py-8">
                   <v-img
                     :src="waiting"
@@ -97,11 +120,36 @@ import { useDataStore } from "@/store/dataStore";
 import Turn from "./Turn.vue";
 import MatchTimeline, { Event } from "./MatchTimeline.vue";
 import TurnEventBadges from "./TurnEventBadges.vue";
-import { ref, computed } from "vue";
+import PitchVisualization from "./PitchVisualization.vue";
+import { ref, computed, provide } from "vue";
 
 const dataStore = useDataStore();
 
 const matchPanels = ref<number>();
+
+const selectedPlayerId = ref<string | undefined>(undefined);
+const openPlayerId = ref<string | undefined>(undefined);
+
+const openPitchVisualization = (
+  turn: number,
+  team: "0" | "1",
+  playerId?: string
+) => {
+  // Find the panel index for this turn
+  const panelIndex = dataStore.matchData?.matchLog.findIndex(
+    (entry) => entry.turn === turn && entry.team === team
+  );
+  if (panelIndex !== undefined && panelIndex !== -1) {
+    matchPanels.value = panelIndex;
+    if (playerId) {
+      selectedPlayerId.value = playerId;
+      openPlayerId.value = `${turn}-${team}`;
+    }
+  }
+};
+
+// Provide function for child components
+provide("openPitchVisualization", openPitchVisualization);
 
 const handleDrilldown = (event: Event) => {
   if (event.drilldown?.turn) {

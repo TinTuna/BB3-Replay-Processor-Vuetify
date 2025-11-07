@@ -16,10 +16,16 @@ import { Inducement } from "@/types/Inducements/Inducement";
 import { Player } from "@/types/Teams/Player";
 import { addBasePlayerData } from "./addBasePlayerData";
 import { getStarPlayerName } from "../stringFromIdFunctions/getStarPlayerName";
+import { useDataStore } from "@/store/dataStore";
+import { XPos } from "@/types/Pitch/xPos";
+import { YPos } from "@/types/Pitch/yPos";
 
 export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   // This eliminates runtime array checks throughout processing
   normalizeReplaySteps(replaySteps);
+
+  // Get dataStore instance for pitch state tracking
+  const dataStore = useDataStore();
 
   let matchData: MatchData = {
     matchLog: [] as Turn[],
@@ -542,11 +548,75 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
 
         // Setup a new turn for the next team
+        const nextTeam = currentTurn.team === "0" ? "1" : "0";
+        const nextTurnNumber = Math.ceil(turnNumber / 2);
+
         currentTurn = {
-          team: currentTurn.team === "0" ? "1" : "0",
-          turn: Math.ceil(turnNumber / 2),
+          team: nextTeam,
+          turn: nextTurnNumber,
           turnActions: [],
         };
+
+        // Capture pitch state at the start of the new turn
+        // Extract player positions from BoardState
+        const playerPositions: { [playerId: string]: { x: XPos; y: YPos } } =
+          {};
+
+        step.BoardState.ListTeams.TeamState.forEach((team) => {
+          team.ListPitchPlayers.PlayerState.forEach((player) => {
+            if (player.Cell?.X && player.Cell?.Y) {
+              playerPositions[player.Id] = {
+                x: player.Cell.X as XPos,
+                y: player.Cell.Y as YPos,
+              };
+            }
+          });
+        });
+
+        // Extract ball position from BoardState
+        let ballPosition: {
+          x: XPos;
+          y: YPos;
+          isHeld: boolean;
+          isAirborne: boolean;
+          heldBy?: string;
+        } | null = null;
+
+        if (step.BoardState.Ball) {
+          const ball = step.BoardState.Ball;
+          if (ball.Cell?.X && ball.Cell?.Y) {
+            ballPosition = {
+              x: ball.Cell.X as XPos,
+              y: ball.Cell.Y as YPos,
+              isHeld: ball.IsHeld === "1",
+              isAirborne: ball.IsAirborne === "1",
+            };
+
+            // If ball is held, find which player is holding it
+            if (ballPosition.isHeld) {
+              for (const team of step.BoardState.ListTeams.TeamState) {
+                for (const player of team.ListPitchPlayers.PlayerState) {
+                  if (
+                    player.Cell?.X === ball.Cell.X &&
+                    player.Cell?.Y === ball.Cell.Y
+                  ) {
+                    ballPosition.heldBy = player.Id;
+                    break;
+                  }
+                }
+                if (ballPosition.heldBy) break;
+              }
+            }
+          }
+        }
+
+        // Store the pitch state for the new turn
+        dataStore.setPitchState(
+          nextTurnNumber,
+          nextTeam,
+          playerPositions,
+          ballPosition
+        );
       }
     }
 

@@ -13,6 +13,8 @@ import { PlayerIdType } from "@/types/IdTypes/PlayerIdTypes";
 import { SkillId } from "@/types/IdTypes/SkillId";
 import { MatchData } from "@/types/MatchData";
 import { Player } from "@/types/Teams/Player";
+import { XPos as PitchXPos } from "@/types/Pitch/xPos";
+import { YPos } from "@/types/Pitch/yPos";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -30,6 +32,27 @@ export const useDataStore = defineStore("data", () => {
   // Navigation state for player stats drilldown
   const selectedPlayerIdForNavigation = ref<string | null>(null);
   const selectedTeamForNavigation = ref<"0" | "1" | null>(null);
+
+  // Pitch state tracking - stores player and ball positions at the start of each turn
+  type PlayerPosition = {
+    x: PitchXPos;
+    y: YPos;
+  };
+
+  type PitchState = {
+    turn: number;
+    team: "0" | "1";
+    playerPositions: { [playerId: string]: PlayerPosition };
+    ballPosition: {
+      x: PitchXPos;
+      y: YPos;
+      isHeld: boolean;
+      isAirborne: boolean;
+      heldBy?: string; // playerId if ball is held
+    } | null;
+  };
+
+  const pitchState = ref<{ [key: string]: PitchState }>({});
 
   // setters
   const setTeamData = () => {
@@ -236,6 +259,50 @@ export const useDataStore = defineStore("data", () => {
     );
   };
 
+  // Pitch state getters and setters
+  const setPitchState = (
+    turn: number,
+    team: "0" | "1",
+    playerPositions: { [playerId: string]: PlayerPosition },
+    ballPosition: {
+      x: PitchXPos;
+      y: YPos;
+      isHeld: boolean;
+      isAirborne: boolean;
+      heldBy?: string;
+    } | null
+  ) => {
+    const key = `${turn}-${team}`;
+    pitchState.value[key] = {
+      turn,
+      team,
+      playerPositions,
+      ballPosition,
+    };
+  };
+
+  const getPitchState = (turn: number, team: "0" | "1"): PitchState | null => {
+    const key = `${turn}-${team}`;
+    return pitchState.value[key] || null;
+  };
+
+  const getPlayerPositionAtTurn = (
+    playerId: string,
+    turn: number,
+    team: "0" | "1"
+  ): PlayerPosition | null => {
+    const state = getPitchState(turn, team);
+    return state?.playerPositions[playerId] || null;
+  };
+
+  const getBallPositionAtTurn = (
+    turn: number,
+    team: "0" | "1"
+  ): PitchState["ballPosition"] => {
+    const state = getPitchState(turn, team);
+    return state?.ballPosition || null;
+  };
+
   return {
     notificationGameJoined,
     rosters,
@@ -257,5 +324,11 @@ export const useDataStore = defineStore("data", () => {
     getPlayerStats,
     selectedPlayerIdForNavigation,
     selectedTeamForNavigation,
+    // Pitch state
+    pitchState,
+    setPitchState,
+    getPitchState,
+    getPlayerPositionAtTurn,
+    getBallPositionAtTurn,
   };
 });

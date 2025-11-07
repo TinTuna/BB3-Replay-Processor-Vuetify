@@ -199,6 +199,7 @@ export const IdPlayerTypes = {
   "1142": "Star Player",
   "1143": "Star Player",
   "1445": "Star Player",
+  "1446": "Star Player",
   "1450": "Star Player",
   "1453": "Star Player",
 } as const;

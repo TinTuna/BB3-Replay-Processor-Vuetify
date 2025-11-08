@@ -13,8 +13,12 @@ import { ResultRoll } from "@/types/messageData/ResultRoll";
 import { ResultUseAction } from "@/types/messageData/ResultUseAction";
 import { ResultPlayerSentOff } from "@/types/messageData/ResultPlayerSentOff";
 import { QuestionBlockDice } from "@/types/messageData/QuestionBlockDice";
+import { ResultPushBack } from "@/types/messageData/ResultPushBack";
+import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
+import { PushPath } from "@/types/Match/TurnAction";
 import { addBasePlayerData } from "./addBasePlayerData";
 import { processDieRoll } from "../helperFns/processDieRoll";
+import { extractPitchState } from "./processReplaySteps";
 
 export const processPlayerStep = (opts: {
   stepResult: Step;
@@ -53,9 +57,12 @@ export const processPlayerStep = (opts: {
     );
   }
 
+  // Store the step name before it gets shadowed in the forEach loop
+  const stepName = stepResult.Step.Name;
+
   // Create a new turnActionEvent for this event
   const turnActionEvent = {
-    eventName: stepResult.Step.Name,
+    eventName: stepName,
     eventType: stepMessageData.StepType,
     eventResults: [] as StepResult[],
   };
@@ -87,7 +94,7 @@ export const processPlayerStep = (opts: {
       break;
     case "4":
       // This is a catch step
-      // this will all be handlesin the ResultRoll section as we need to process the roll result before we know what happened
+      // this will all be handled in the ResultRoll section as we need to process the roll result before we know what happened
       break;
     case "5":
       // Attempted handoff
@@ -152,6 +159,26 @@ export const processPlayerStep = (opts: {
           ].yardsMovedWithBall += 2;
         }
 
+        // Track the movement path for visualization
+        // Initialize movementPath if it doesn't exist
+        if (!currentTurnAction.movementPath) {
+          currentTurnAction.movementPath = [];
+        }
+
+        // If this is the first movement, add the starting position (CellFrom)
+        if (currentTurnAction.movementPath.length === 0) {
+          currentTurnAction.movementPath.push({
+            X: stepMessageData.CellFrom.X,
+            Y: stepMessageData.CellFrom.Y,
+          });
+        }
+
+        // Add the destination cell (CellTo) to the movement path
+        currentTurnAction.movementPath.push({
+          X: stepMessageData.CellTo.X,
+          Y: stepMessageData.CellTo.Y,
+        });
+
         break;
       }
       case "QuestionBlockDice": {
@@ -205,8 +232,27 @@ export const processPlayerStep = (opts: {
       }
       case "ResultPushBack": {
         // This tells us which player was pushed, and to which cell
-        // TODO: Process pushback
-        // TODO: Track push statistics (handle cascading pushes properly)
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultPushBack as ResultPushBack;
+
+        // Initialize pushPaths array if it doesn't exist
+        if (!currentTurnAction.pushPaths) {
+          currentTurnAction.pushPaths = [];
+        }
+
+        // Add the push path to track where the opponent was pushed
+        currentTurnAction.pushPaths.push({
+          from: {
+            X: resultMessageData.CellFrom.X,
+            Y: resultMessageData.CellFrom.Y,
+          },
+          to: {
+            X: resultMessageData.CellTo.X,
+            Y: resultMessageData.CellTo.Y,
+          },
+          pushedPlayerId: resultMessageData.PushedPlayerId,
+        });
+
         break;
       }
       case "ResultBlockOutcome": {
@@ -215,6 +261,35 @@ export const processPlayerStep = (opts: {
 
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultBlockOutcome as ResultBlockOutcome;
+
+        // Process pushbacks if they exist
+        if (resultMessageData.Pushbacks?.ResultPushBack) {
+          // Initialize pushPaths array if it doesn't exist
+          if (!currentTurnAction.pushPaths) {
+            currentTurnAction.pushPaths = [];
+          }
+
+          // Handle both single pushback and array of pushbacks
+          const pushbacks = Array.isArray(
+            resultMessageData.Pushbacks.ResultPushBack
+          )
+            ? resultMessageData.Pushbacks.ResultPushBack
+            : [resultMessageData.Pushbacks.ResultPushBack];
+
+          pushbacks.forEach((pushback) => {
+            currentTurnAction.pushPaths!.push({
+              from: {
+                X: pushback.CellFrom.X,
+                Y: pushback.CellFrom.Y,
+              },
+              to: {
+                X: pushback.CellTo.X,
+                Y: pushback.CellTo.Y,
+              },
+              pushedPlayerId: pushback.PushedPlayerId,
+            });
+          });
+        }
 
         // Increment blocks attempted counter
         matchData.playerData[stepMessageData.PlayerId].blocksAttempted += 1;
@@ -313,28 +388,50 @@ export const processPlayerStep = (opts: {
 
         // We can check if this ResultRoll was a Catch
         if (stepMessageData.StepType === "4") {
+          let catchingPlayerId: PlayerId | undefined;
+
+          // Determine if this is a catch from a pass or handoff
           if (
             currentTurnAction.actionsTaken.passAttempted &&
             currentTurnAction.actionsTaken.passAttempted.receiverId ===
               stepMessageData.PlayerId
           ) {
-            // This was a catch
-            nextTurnAction.playerId =
+            catchingPlayerId =
               currentTurnAction.actionsTaken.passAttempted.receiverId;
-            nextTurnAction.actionsTaken.catchAttempted = {};
-            nextTurnAction.actionsTaken.catchAttempted.catchSuccess =
-              resultMessageData.Outcome === "1";
           } else if (
             currentTurnAction.actionsTaken.handoffAttempted &&
             currentTurnAction.actionsTaken.handoffAttempted.receiverId ===
               stepMessageData.PlayerId
           ) {
-            // This was a handoff
-            nextTurnAction.playerId =
+            catchingPlayerId =
               currentTurnAction.actionsTaken.handoffAttempted.receiverId;
-            nextTurnAction.actionsTaken.catchAttempted = {};
-            nextTurnAction.actionsTaken.catchAttempted.catchSuccess =
-              resultMessageData.Outcome === "1";
+          }
+
+          // If we identified a catch, create a separate turn action for the catching player
+          if (catchingPlayerId) {
+            // Create a new turn action specifically for the catching player
+            // This ensures we don't incorrectly modify nextTurnAction which may be for a different player
+            const catchTurnAction: TurnAction = {
+              playerId: catchingPlayerId,
+              turnActionEvents: [
+                {
+                  eventName: stepName,
+                  eventType: stepMessageData.StepType,
+                  eventResults: [stepResult],
+                },
+              ],
+              actionsTaken: {
+                catchAttempted: {
+                  catchSuccess: resultMessageData.Outcome === "1",
+                },
+              },
+              // Capture the pitch state at the moment of the catch
+              pitchState: extractPitchState(step),
+            };
+
+            // Store the catch action on currentTurnAction so it can be added after currentTurnAction
+            // This ensures the catch action appears in the correct sequence (after the pass/handoff action)
+            currentTurnAction.pendingCatchAction = catchTurnAction;
           } else {
             // this happens sometimes but I'm not sure what it is yet
           }
@@ -395,8 +492,13 @@ export const processPlayerStep = (opts: {
       }
       case "ResultTeamRerollUsage": {
         // This tells us a reroll was used and by which _player_ (not by which team)
-        // TODO: Process reroll usage
-        // TODO: Track reroll usage
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultTeamRerollUsage as ResultTeamRerollUsage;
+        
+        // Track reroll usage for this action
+        if (resultMessageData.Used === 1) {
+          currentTurnAction.actionsTaken.rerollUsed = true;
+        }
         break;
       }
       case "ResultUseAction": {

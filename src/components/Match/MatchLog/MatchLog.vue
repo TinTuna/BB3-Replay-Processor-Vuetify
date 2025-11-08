@@ -73,6 +73,11 @@
                     ? selectedPlayerId
                     : undefined
                 "
+                :selected-action="
+                  openPlayerId === `${logEntry.turn}-${logEntry.team}`
+                    ? selectedAction
+                    : undefined
+                "
                 :is-panel-open="
                   matchPanels !== undefined &&
                   matchPanels ===
@@ -121,6 +126,7 @@ import Turn from "./Turn.vue";
 import MatchTimeline, { Event } from "./MatchTimeline.vue";
 import TurnEventBadges from "./TurnEventBadges.vue";
 import PitchVisualization from "./PitchVisualization.vue";
+import { TurnAction } from "@/types/Match/TurnAction";
 import { ref, computed, provide } from "vue";
 
 const dataStore = useDataStore();
@@ -129,11 +135,13 @@ const matchPanels = ref<number>();
 
 const selectedPlayerId = ref<string | undefined>(undefined);
 const openPlayerId = ref<string | undefined>(undefined);
+const selectedAction = ref<TurnAction | undefined>(undefined);
 
 const openPitchVisualization = (
   turn: number,
   team: "0" | "1",
-  playerId?: string
+  playerId?: string,
+  action?: TurnAction
 ) => {
   // Find the panel index for this turn
   const panelIndex = dataStore.matchData?.matchLog.findIndex(
@@ -145,6 +153,7 @@ const openPitchVisualization = (
       selectedPlayerId.value = playerId;
       openPlayerId.value = `${turn}-${team}`;
     }
+    selectedAction.value = action;
   }
 };
 

@@ -4,13 +4,86 @@
       <v-row>
         <v-col cols="12">
           <div class="pitch-container">
+            <!-- SVG overlay for movement path lines and push paths -->
+            <svg
+              v-if="
+                (selectedMovementPath && selectedMovementPath.length > 1) ||
+                (selectedPushPaths && selectedPushPaths.length > 0)
+              "
+              class="movement-path-overlay"
+              viewBox="0 0 26 15"
+              preserveAspectRatio="none"
+            >
+              <!-- Arrow marker definition for movement -->
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="0.5"
+                  markerHeight="0.5"
+                  refX="0.2"
+                  refY="0.25"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
+                >
+                  <polygon
+                    points="0 0, 0.4 0.25, 0 0.5"
+                    :style="{
+                      fill: getMovementPathStyle().stroke || '#ffd700',
+                    }"
+                  />
+                </marker>
+                <!-- Arrow marker definition for pushes (red/orange) -->
+                <marker
+                  id="push-arrowhead"
+                  markerWidth="0.5"
+                  markerHeight="0.5"
+                  refX="0.2"
+                  refY="0.25"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
+                >
+                  <polygon
+                    points="0 0, 0.4 0.25, 0 0.5"
+                    style="fill: #ff4444"
+                  />
+                </marker>
+              </defs>
+              <!-- Movement path -->
+              <polyline
+                v-if="selectedMovementPath && selectedMovementPath.length > 1"
+                :points="getMovementPathPoints()"
+                class="movement-path-line"
+                :style="getMovementPathStyle()"
+                fill="none"
+                marker-end="url(#arrowhead)"
+              />
+              <!-- Push paths -->
+              <g v-if="selectedPushPaths && selectedPushPaths.length > 0">
+                <line
+                  v-for="(pushPath, index) in selectedPushPaths"
+                  :key="`push-${index}`"
+                  :x1="parseInt(pushPath.from.X) + 0.5"
+                  :y1="parseInt(pushPath.from.Y) + 0.5"
+                  :x2="parseInt(pushPath.to.X) + 0.5"
+                  :y2="parseInt(pushPath.to.Y) + 0.5"
+                  class="push-path-line"
+                  stroke="#ff4444"
+                  stroke-width="0.2"
+                  marker-end="url(#push-arrowhead)"
+                />
+              </g>
+            </svg>
             <div class="pitch-grid">
               <div v-for="y in 15" :key="`row-${y}`" class="pitch-row">
                 <div
                   v-for="x in 26"
                   :key="`cell-${x}-${y}`"
                   class="pitch-cell"
-                  :class="getCellClass(x - 1, y - 1)"
+                  :class="[
+                    getCellClass(x - 1, y - 1),
+                    { 'in-movement-path': isInMovementPath(x - 1, y - 1) },
+                    { 'in-push-path': isInPushPath(x - 1, y - 1) },
+                  ]"
                 >
                   <div
                     v-for="player in getPlayersAtPosition(x - 1, y - 1)"
@@ -72,12 +145,14 @@
 import { useDataStore } from "@/store/dataStore";
 import { computed, ref, watch } from "vue";
 import { Turn } from "@/types/Match/Turn";
+import { TurnAction } from "@/types/Match/TurnAction";
 import ballImageSrc from "@/assets/ball.webp";
 
 const props = defineProps<{
   turn: number;
   team: "0" | "1";
   playerId?: string;
+  selectedAction?: TurnAction;
   isPanelOpen?: boolean;
 }>();
 
@@ -130,6 +205,77 @@ const awayTeamColours = computed(() => {
 
 const ballImage = ballImageSrc;
 
+// Get movement path for selected player
+const selectedMovementPath = computed(() => {
+  if (!selectedPlayerId.value || !turnData.value) {
+    return null;
+  }
+
+  const turnActions = turnData.value.turnActions || [];
+  const playerAction = turnActions.find(
+    (action) => action.playerId === selectedPlayerId.value
+  );
+
+  return playerAction?.movementPath || null;
+});
+
+// Get push paths from selected action
+const selectedPushPaths = computed(() => {
+  if (!props.selectedAction) {
+    return null;
+  }
+
+  return props.selectedAction.pushPaths || null;
+});
+
+const isInMovementPath = (x: number, y: number): boolean => {
+  if (!selectedMovementPath.value) return false;
+
+  return selectedMovementPath.value.some(
+    (cell) => parseInt(cell.X) === x && parseInt(cell.Y) === y
+  );
+};
+
+const isInPushPath = (x: number, y: number): boolean => {
+  if (!selectedPushPaths.value) return false;
+
+  return selectedPushPaths.value.some(
+    (pushPath) =>
+      (parseInt(pushPath.from.X) === x && parseInt(pushPath.from.Y) === y) ||
+      (parseInt(pushPath.to.X) === x && parseInt(pushPath.to.Y) === y)
+  );
+};
+
+const getMovementPathPoints = (): string => {
+  if (!selectedMovementPath.value) return "";
+
+  // Convert cell coordinates to SVG coordinates (centered in each cell)
+  return selectedMovementPath.value
+    .map((cell) => {
+      const x = parseInt(cell.X) + 0.5;
+      const y = parseInt(cell.Y) + 0.5;
+      return `${x},${y}`;
+    })
+    .join(" ");
+};
+
+const getMovementPathStyle = () => {
+  if (!selectedPlayerId.value) return {};
+
+  const selectedPlayer = displayPlayers.value.find(
+    (p) => p.id === selectedPlayerId.value
+  );
+  if (!selectedPlayer) return {};
+
+  const colours =
+    selectedPlayer.team === "0" ? homeTeamColours.value : awayTeamColours.value;
+
+  return {
+    stroke: colours.primary || "#ffd700",
+    strokeWidth: "0.2",
+  };
+};
+
 const getCellClass = (x: number, y: number): string => {
   const classes: string[] = [];
 
@@ -178,10 +324,20 @@ const loadPitchState = () => {
     return;
   }
 
-  const pitchState = dataStore.getPitchState(
-    turnData.value.turn,
-    turnData.value.team
-  );
+  // Use the selected action's pitch state if available, otherwise fall back to turn's pitch state
+  let pitchState = null;
+  if (props.selectedAction?.pitchState) {
+    // Convert ActionPitchState to the format expected by the component
+    pitchState = {
+      playerPositions: props.selectedAction.pitchState.playerPositions,
+      ballPosition: props.selectedAction.pitchState.ballPosition,
+    };
+  } else {
+    pitchState = dataStore.getPitchState(
+      turnData.value.turn,
+      turnData.value.team
+    );
+  }
 
   if (!pitchState) {
     displayPlayers.value = [];
@@ -308,7 +464,7 @@ const loadPitchState = () => {
 };
 
 watch(
-  () => [props.turn, props.team, props.isPanelOpen],
+  () => [props.turn, props.team, props.isPanelOpen, props.selectedAction],
   () => {
     // Only load pitch state when panel is open
     if (props.isPanelOpen !== false) {
@@ -350,6 +506,29 @@ watch(
   position: relative;
 }
 
+.movement-path-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.movement-path-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+.push-path-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px rgba(255, 68, 68, 0.8));
+  opacity: 0.9;
+}
+
 .pitch-grid {
   display: grid;
   grid-template-columns: repeat(26, 1fr);
@@ -368,9 +547,26 @@ watch(
   min-height: 20px;
   min-width: 20px;
   background: transparent;
+  transition: background-color 0.2s;
 
   &.end-zone {
     background: rgba(26, 61, 14, 0.5);
+  }
+
+  // &.wide-zone {
+  //   background: rgba(0, 0, 0, 0.5);
+  // }
+
+  &.in-movement-path {
+    background: rgba(255, 215, 0, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.6);
+    box-shadow: inset 0 0 5px rgba(255, 215, 0, 0.4);
+  }
+
+  &.in-push-path {
+    background: rgba(255, 68, 68, 0.2);
+    border: 1px solid rgba(255, 68, 68, 0.5);
+    box-shadow: inset 0 0 5px rgba(255, 68, 68, 0.3);
   }
 }
 
@@ -415,10 +611,10 @@ watch(
   transform: translate(-50%, -50%);
   z-index: 15;
   pointer-events: none;
+  z-index: 400;
 
   &.ball-on-player {
     left: 50%;
-    z-index: 40;
   }
 
   &.ball-airborne {

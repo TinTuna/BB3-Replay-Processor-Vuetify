@@ -13,6 +13,7 @@ import { ResultRoll } from "@/types/messageData/ResultRoll";
 import { ResultApothecary } from "@/types/messageData/ResultApothecary";
 import { ResultGainSpp } from "@/types/messageData/ResultGainSpp";
 import { QuestionApothecaryCasualtyUsage } from "@/types/messageData/QuestionApothecaryCasualtyUsage";
+import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
 import { PlayerId } from "@/types/IdTypes/PlayerId";
 import { processDieRoll } from "../helperFns/processDieRoll";
 
@@ -453,8 +454,13 @@ export const processDamageStep = (opts: {
       }
       case "ResultTeamRerollUsage": {
         // This tells us a reroll was used and by which _player_ (not by which team)
-        // TODO: Process reroll usage
-        // TODO: Track reroll usage
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultTeamRerollUsage as ResultTeamRerollUsage;
+
+        // Track reroll usage for this action (can be used for injury rolls)
+        if (resultMessageData.Used === 1) {
+          currentTurnAction.actionsTaken.rerollUsed = true;
+        }
         break;
       }
       case "ResultApothecary": {

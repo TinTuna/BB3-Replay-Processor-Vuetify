@@ -58,7 +58,7 @@ import { ref } from "vue";
 
 const dataStore = useDataStore();
 const openPitchVisualization = inject<
-  (turn: number, team: "0" | "1", playerId?: string) => void
+  (turn: number, team: "0" | "1", playerId?: string, action?: TurnAction) => void
 >("openPitchVisualization");
 
 const props = defineProps({
@@ -305,6 +305,14 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
         primaryIconColour: "error",
       };
     }
+    if (value[0] === "rerollUsed") {
+      return {
+        icon: "mdi-dice-multiple",
+        value: "",
+        tooltip: `Reroll Used`,
+        primaryIconColour: "warning",
+      };
+    }
     return {
       icon: "mdi-alert",
       value: "",
@@ -318,7 +326,8 @@ const drilldown = () => {
     openPitchVisualization(
       logEntry.value.turn,
       logEntry.value.team,
-      playerAction.value.playerId
+      playerAction.value.playerId,
+      playerAction.value
     );
   }
 };

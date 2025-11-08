@@ -57,11 +57,29 @@ export const useDataStore = defineStore("data", () => {
   // setters
   const setTeamData = () => {
     // We have to process the teams and players separately because initially the players are missing Ids and later the teams are missing key data
+    // // Turns out the Roster is missing Mercenary data, which makes sense because there is another step in the replay that adds the mercenary data
+    // // BUT that step is not getting added to the replay files it seems, so we need to check for it manually :(
+    // // The Mercs are getting added in processReplaySteps.ts:132
     notificationGameJoined.value?.GameInfos.GamersInfos.GamerInfos.forEach(
       (roster, i) => {
         teamData.value[`${i}`] = roster.Roster;
       }
     );
+
+    // If playerData already has some values in, then potentially addExtraPlayerData was called earlier, so we need to replicate the data in teamData
+    if (Object.keys(playerData.value).length > 0) {
+      Object.keys(playerData.value).forEach((playerId) => {
+        // replicate the data in teamData if it
+        teamData.value[
+          playerData.value[playerId].TeamId
+        ].Players.PlayerData.push(playerData.value[playerId]);
+
+        // replicate the data in rosters
+        rosters.value?.TeamRoster[
+          parseInt(playerData.value[playerId].TeamId)
+        ].Players.PlayerData.push(playerData.value[playerId]);
+      });
+    }
 
     // base64 decode the colours in the team data
     teamData.value["0"].Customization.PrimaryColor = atob(
@@ -303,6 +321,10 @@ export const useDataStore = defineStore("data", () => {
     return state?.ballPosition || null;
   };
 
+  const addExtraPlayerData = (player: Player) => {
+    playerData.value[player.Id] = player;
+  };
+
   return {
     notificationGameJoined,
     rosters,
@@ -324,6 +346,7 @@ export const useDataStore = defineStore("data", () => {
     getPlayerStats,
     selectedPlayerIdForNavigation,
     selectedTeamForNavigation,
+    addExtraPlayerData,
     // Pitch state
     pitchState,
     setPitchState,

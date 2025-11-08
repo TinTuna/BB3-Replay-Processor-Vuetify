@@ -1,33 +1,36 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
-    path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    path: "/",
+    component: () => import("@/layouts/default/Default.vue"),
     children: [
-      // {
-      //   path: '',
-      //   name: 'processor',
-      //   component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
-      // },
       {
-        path: '/',
-        name: 'replay-processor',
-        component: () => import(/* webpackChunkName: "replay-processor" */ '@/views/ReplayProcessor.vue'),
+        path: "/",
+        name: "replay-processor",
+        component: () =>
+          import(/* webpackChunkName: "replay-processor" */ "@/views/Home.vue"),
       },
       {
-        path: '/git',
-        name: 'git',
-        component: () => import(/* webpackChunkName: "git" */ '@/views/Git.vue'),
-      }
+        path: "/ids-finder",
+        name: "ids-finder",
+        component: () =>
+          import(/* webpackChunkName: "ids-finder" */ "@/views/IdsFinder.vue"),
+      },
+      {
+        path: "/git",
+        name: "git",
+        component: () =>
+          import(/* webpackChunkName: "git" */ "@/views/Git.vue"),
+      },
     ],
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-})
+});
 
-export default router
+export default router;

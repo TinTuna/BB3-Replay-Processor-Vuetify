@@ -23,7 +23,7 @@
             </v-window-item>
             <!-- Team Stats -->
             <v-window-item value="teamstats">
-              <TeamStatsWrapper />
+              <TeamStatsWrapper @navigate-to-player-stats="handleNavigateToPlayerStats" />
             </v-window-item>
             <!-- Player Stats -->
             <v-window-item value="playerstats">
@@ -31,9 +31,7 @@
             </v-window-item>
             <!-- Dice Stats -->
             <v-window-item value="dicestats">
-              <v-container>
-                Currently Unavailable
-              </v-container>
+              <v-container> Currently Unavailable </v-container>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -41,7 +39,6 @@
     </v-responsive>
   </v-container>
 </template>
-
 
 <script lang="ts" setup>
 import { ref } from "vue";
@@ -60,6 +57,10 @@ import { useDataStore } from "@/store/dataStore";
 const dataStore = useDataStore();
 
 const tab = ref<string>("overview");
+
+const handleNavigateToPlayerStats = () => {
+  tab.value = "playerstats";
+};
 
 const props = defineProps({
   processedReplay: { type: Document, required: true },
@@ -84,16 +85,13 @@ const replayStepsElements =
 const replaySteps = ref<ReplayStep[]>([]);
 
 for (let i = 0; i < replayStepsElements.length; i++) {
-  replaySteps.value.push(
-    elementToJson(replayStepsElements[i]) as ReplayStep
-  );
+  replaySteps.value.push(elementToJson(replayStepsElements[i]) as ReplayStep);
 }
 
-dataStore.matchData = processReplaySteps(replaySteps.value as ReplayStep[])
+dataStore.matchData = processReplaySteps(replaySteps.value as ReplayStep[]);
 
 // process team data into dataStore
 dataStore.setTeamData();
-
 </script>
-  
+
 <style scoped></style>

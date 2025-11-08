@@ -60,6 +60,30 @@ export type MatchData = {
       starPlayers?: Player[];
     };
   };
+  teamStats: {
+    "0": {
+      blocksAttempted: number;
+      yardsMovedWithBall: number;
+      passesAttempted: number;
+      passesCompleted: number;
+      casualties: number;
+      injuries: number;
+      KOs: number;
+      deaths: number;
+      apothecaryUsed: number;
+    };
+    "1": {
+      blocksAttempted: number;
+      yardsMovedWithBall: number;
+      passesAttempted: number;
+      passesCompleted: number;
+      casualties: number;
+      injuries: number;
+      KOs: number;
+      deaths: number;
+      apothecaryUsed: number;
+    };
+  };
   playerData: {
     [key: string]: {
       playerId: PlayerId;
@@ -114,16 +138,54 @@ export type MatchData = {
         five: number;
         six: number;
       };
+      dTwelveRolls: {
+        one: number;
+        two: number;
+        three: number;
+        four: number;
+        five: number;
+        six: number;
+        seven: number;
+        eight: number;
+        nine: number;
+        ten: number;
+        eleven: number;
+        twelve: number;
+      };
       armourRolls: {
         armourRolls: number;
         armourRollsPassed: number;
         armourRollsFailed: number;
       };
-      injuryRolls: {
+      injuryRollsSustained: {
         injuryRolls: number;
         injuryStunned: number;
         injuryKO: number;
-        injuryCasualty: number;
+        injuryBadlyHurt: number; // This is only possible for Stunty players
+        injurySeriousInjury: number;
+      };
+      casualtiesSustained: {
+        casualtyRolls: number;
+        casualtyBadlyHurt: number;
+        casualtySeriouslyHurt: number;
+        casualtySeriousInjury: number;
+        casualtyLastingInjury: number;
+        casualtyDeath: number;
+      };
+      injuryRollsInflicted: {
+        injuryRolls: number;
+        injuryStunned: number;
+        injuryKO: number;
+        injuryBadlyHurt: number; // This is only possible for Stunty players
+        injurySeriousInjury: number;
+      };
+      casualtiesInflicted: {
+        casualtyRolls: number;
+        casualtyBadlyHurt: number;
+        casualtySeriouslyHurt: number;
+        casualtySeriousInjury: number;
+        casualtyLastingInjury: number;
+        casualtyDeath: number;
       };
     };
   };

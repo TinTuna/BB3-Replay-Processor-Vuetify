@@ -22,13 +22,24 @@
     
     
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import PlayerStats from "@/components/Match/PlayerStats/PlayerStats.vue";
 import { useDataStore } from "@/store/dataStore";
 
 const dataStore = useDataStore();
 
 const tab = ref<string>("home");
+
+// Watch for navigation state changes and switch to appropriate team tab
+watch(
+  () => dataStore.selectedTeamForNavigation,
+  (newTeam) => {
+    if (newTeam !== null) {
+      tab.value = newTeam === "0" ? "home" : "away";
+    }
+  },
+  { immediate: true }
+);
 
 </script>
       

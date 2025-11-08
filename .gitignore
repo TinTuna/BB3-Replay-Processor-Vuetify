@@ -20,3 +20,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# claude / cursor files
+.cursor/
+.claude/settings.local.json

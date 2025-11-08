@@ -1,7 +1,13 @@
 <template>
-  <v-card border rounded elevation="2" class="stripe" color="blue-grey-lighten-5">
-    <div class="logo">
-      <v-img :src="teamLogo.logo"/>
+  <v-card
+    border
+    rounded
+    elevation="2"
+    class="stripe"
+    color="blue-grey-lighten-5"
+  >
+    <div class="logo ma-2">
+      <v-img :src="teamLogo.logo" />
     </div>
 
     <v-card-title>
@@ -19,23 +25,36 @@
         {{ teamRace }}
       </h4>
       <h4 class="ma-1">
-        {{ dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team].Name }}
+        {{
+          dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[
+            team
+          ].Name
+        }}
       </h4>
     </v-card-subtitle>
 
-
     <v-spacer class="my-5" thickness="2" />
     <v-sheet>
-      <v-data-table density="comfortable" :items="teamRoster" :headers="[
-        { title: 'Number', key: 'number', align: 'center' },
-        { title: 'Name', key: 'name', align: 'center' },
-        { title: 'Position', key: 'position', align: 'center' },
-        { title: 'MVP', key: 'mvp', align: 'center' },
-      ]" items-per-page="16" style="background-color: #ECEFF1;">
+      <v-data-table
+        density="comfortable"
+        :items="teamRoster"
+        :headers="[
+          { title: 'Number', key: 'number', align: 'center' },
+          { title: 'Name', key: 'name', align: 'center' },
+          { title: 'Position', key: 'position', align: 'center' },
+          { title: 'MVP', key: 'mvp', align: 'center' },
+        ]"
+        items-per-page="16"
+        style="background-color: #eceff1"
+      >
         <template v-slot:[`item.position`]="{ item }">
           <span>
-            <v-icon v-if="item.starPlayer" color="yellow-darken-3">mdi-star-circle</v-icon>
-            <v-icon v-if="item.journeyman" color="primary">mdi-file-document-edit-outline</v-icon>
+            <v-icon v-if="item.starPlayer" color="yellow-darken-3"
+              >mdi-star-circle</v-icon
+            >
+            <v-icon v-if="item.journeyman" color="primary"
+              >mdi-file-document-edit-outline</v-icon
+            >
             {{ item.position }}
           </span>
         </template>
@@ -44,7 +63,6 @@
     </v-sheet>
   </v-card>
 </template>
-
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
@@ -56,7 +74,7 @@ import { PlayerResult } from "@/types/Results/PlayerResult";
 
 const props = defineProps({
   team: { type: String, required: true },
-  concede: { type: Boolean, required: false, default: false }
+  concede: { type: Boolean, required: false, default: false },
 });
 
 const dataStore = useDataStore();
@@ -65,7 +83,9 @@ const team = ref(parseInt(props.team));
 const roster = ref<Roster>(dataStore.rosters?.TeamRoster[team.value] as Roster);
 
 const teamName = computed(() => {
-  return dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[team.value].Roster.Name;
+  return dataStore.notificationGameJoined?.GameInfos.GamersInfos.GamerInfos[
+    team.value
+  ].Roster.Name;
 });
 
 const teamColours = computed(() => {
@@ -77,7 +97,9 @@ const teamLogo = computed(() => {
 });
 
 const mvp = computed(() => {
-  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[team.value].TeamResult.PlayerResults.PlayerResult.filter(
+  return dataStore.endGame?.RulesEventGameFinished.MatchResult.GamerResults.GamerResult[
+    team.value
+  ].TeamResult.PlayerResults.PlayerResult.filter(
     (player: PlayerResult) => player.Mvp
   )[0];
 });
@@ -93,9 +115,12 @@ const teamRoster = computed(() => {
       number: player.Number,
       name: player.Name,
       position: getIdPlayerType(player.IdPlayerTypes),
-      mvp: mvp.value?.PlayerData.Id && mvp.value?.PlayerData.Id === player.Id ? "MVP" : "",
+      mvp:
+        mvp.value?.PlayerData.Id && mvp.value?.PlayerData.Id === player.Id
+          ? "MVP"
+          : "",
       starPlayer: player.StarPlayer,
-      journeyman: player.Journeyman
+      journeyman: player.Journeyman,
     };
   });
 });
@@ -113,9 +138,27 @@ const teamColoursTertiary = computed(() => {
 
 <style scoped lang="scss">
 .stripe {
-  background-image: linear-gradient(135deg, #ffffff00 6%, v-bind(teamColoursPrimary) 6%, v-bind(teamColoursPrimary) 11%, #ffffff00 11%),
-    linear-gradient(135deg, #ffffff00 5%, v-bind(teamColoursSecondary) 5%, v-bind(teamColoursSecondary) 6%, #ffffff00 6%),
-    linear-gradient(135deg, #ffffff00 11%, v-bind(teamColoursTertiary) 11%, v-bind(teamColoursTertiary) 12%, #ffffff00 12%);
+  background-image: linear-gradient(
+      135deg,
+      #ffffff00 6%,
+      v-bind(teamColoursPrimary) 6%,
+      v-bind(teamColoursPrimary) 11%,
+      #ffffff00 11%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff00 5%,
+      v-bind(teamColoursSecondary) 5%,
+      v-bind(teamColoursSecondary) 6%,
+      #ffffff00 6%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff00 11%,
+      v-bind(teamColoursTertiary) 11%,
+      v-bind(teamColoursTertiary) 12%,
+      #ffffff00 12%
+    );
   background-size: 100%, 100%, 100%;
   background-repeat: no-repeat, no-repeat, no-repeat;
   /* To avoid multiple instances */
@@ -124,10 +167,9 @@ const teamColoursTertiary = computed(() => {
 .logo {
   position: absolute;
   top: 0;
-  left: 20px;
   height: 125px;
   width: 125px;
   background-color: #ffffff80;
-  border-radius: 50%
+  border-radius: 50%;
 }
 </style>

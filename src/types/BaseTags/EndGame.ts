@@ -15,6 +15,7 @@ export type EndGame = {
       };
       Session: string;
       Statistics: {
+        // These seem not to be provided anymore :(
         AggregatedStatistics: AggregatedStatistic[];
         DiceStatistics: DiceStatistic[];
       };

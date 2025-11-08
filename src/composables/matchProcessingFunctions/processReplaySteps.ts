@@ -1,6 +1,7 @@
 import { ReplayStep } from "@/types/BaseTags/ReplayStep";
 import { MatchData } from "@/types/MatchData";
-import { xmlToJson } from "../helperFns/xmlToJson";
+import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
+import { normalizeReplaySteps } from "../helperFns/normalizeReplaySteps";
 import { PlayerStep } from "@/types/messageData/PlayerStep";
 import { PlayerId } from "@/types/IdTypes/PlayerId";
 import { Turn } from "@/types/Match/Turn";
@@ -15,36 +16,86 @@ import { Inducement } from "@/types/Inducements/Inducement";
 import { Player } from "@/types/Teams/Player";
 import { addBasePlayerData } from "./addBasePlayerData";
 import { getStarPlayerName } from "../stringFromIdFunctions/getStarPlayerName";
-// import { ResultTeamRerollUsage } from "@/types/messageData/ResultTeamRerollUsage";
-// import { ResultRoll } from "@/types/messageData/ResultRoll";
+import { useDataStore } from "@/store/dataStore";
+import { XPos } from "@/types/Pitch/xPos";
+import { YPos } from "@/types/Pitch/yPos";
+import { ActionPitchState } from "@/types/Match/TurnAction";
 
-export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
-  // before anything else, we need to make sure all StepResult and StringMessage are arrays
-  // this also needs to take into account that EventExecuteSequence can be an array of sequences
-  replaySteps.forEach((step) => {
-    if (step.EventExecuteSequence) {
-      if (!Array.isArray(step.EventExecuteSequence)) {
-        step.EventExecuteSequence = [step.EventExecuteSequence];
+// Helper function to extract pitch state from BoardState
+// lastKnownLocation is used to preserve positions of players not in current board state
+export const extractPitchState = (
+  step: ReplayStep,
+  lastKnownLocation?: { [playerId: string]: { x: XPos; y: YPos } }
+): ActionPitchState => {
+  // Extract player positions from BoardState
+  const playerPositions: { [playerId: string]: { x: XPos; y: YPos } } = {};
+
+  // Start with last known locations if provided (preserves players not in current state)
+  if (lastKnownLocation) {
+    Object.assign(playerPositions, lastKnownLocation);
+  }
+
+  // Update with current positions from BoardState
+  step.BoardState.ListTeams.TeamState.forEach((team) => {
+    team.ListPitchPlayers.PlayerState.forEach((player) => {
+      if (player.Cell?.X && player.Cell?.Y) {
+        playerPositions[player.Id] = {
+          x: player.Cell.X as XPos,
+          y: player.Cell.Y as YPos,
+        };
+      }
+    });
+  });
+
+  // Extract ball position from BoardState
+  let ballPosition: {
+    x: XPos;
+    y: YPos;
+    isHeld: boolean;
+    isAirborne: boolean;
+    heldBy?: string;
+  } | null = null;
+
+  if (step.BoardState.Ball) {
+    const ball = step.BoardState.Ball;
+    if (ball.Cell?.X && ball.Cell?.Y) {
+      ballPosition = {
+        x: ball.Cell.X as XPos,
+        y: ball.Cell.Y as YPos,
+        isHeld: ball.IsHeld === "1",
+        isAirborne: ball.IsAirborne === "1",
+      };
+
+      // If ball is held, find which player is holding it
+      if (ballPosition.isHeld) {
+        for (const team of step.BoardState.ListTeams.TeamState) {
+          for (const player of team.ListPitchPlayers.PlayerState) {
+            if (
+              player.Cell?.X === ball.Cell.X &&
+              player.Cell?.Y === ball.Cell.Y
+            ) {
+              ballPosition.heldBy = player.Id;
+              break;
+            }
+          }
+          if (ballPosition.heldBy) break;
+        }
       }
     }
-  });
+  }
 
-  replaySteps.forEach((step) => {
-    if (step.EventExecuteSequence) {
-      step.EventExecuteSequence.forEach((sequence) => {
-        if (sequence.Sequence.StepResult) {
-          if (!Array.isArray(sequence.Sequence.StepResult)) {
-            sequence.Sequence.StepResult = [sequence.Sequence.StepResult];
-          }
-          sequence.Sequence.StepResult.forEach((result) => {
-            if (!Array.isArray(result.Results.StringMessage)) {
-              result.Results.StringMessage = [result.Results.StringMessage];
-            }
-          });
-        }
-      });
-    }
-  });
+  return {
+    playerPositions,
+    ballPosition,
+  };
+};
+
+export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
+  // This eliminates runtime array checks throughout processing
+  normalizeReplaySteps(replaySteps);
+
+  // Get dataStore instance for pitch state tracking
+  const dataStore = useDataStore();
 
   let matchData: MatchData = {
     matchLog: [] as Turn[],
@@ -57,16 +108,42 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       homeTeam: 0,
       awayTeam: 0,
     },
+    teamStats: {
+      "0": {
+        blocksAttempted: 0,
+        yardsMovedWithBall: 0,
+        passesAttempted: 0,
+        passesCompleted: 0,
+        casualties: 0,
+        injuries: 0,
+        KOs: 0,
+        deaths: 0,
+      },
+      "1": {
+        blocksAttempted: 0,
+        yardsMovedWithBall: 0,
+        passesAttempted: 0,
+        passesCompleted: 0,
+        casualties: 0,
+        injuries: 0,
+        KOs: 0,
+        deaths: 0,
+      },
+    },
   };
 
   // in the match data, generate each player and their actions
-  replaySteps[0].BoardState.ListTeams.TeamState.forEach((team) => {
+  replaySteps[0].BoardState.ListTeams.TeamState.forEach((team, teamIndex) => {
+    const teamId = teamIndex.toString();
     team.ListPitchPlayers.PlayerState.forEach((player) => {
-      matchData = addBasePlayerData(
-        matchData,
-        replaySteps[0].BoardState.ListTeams.TeamState.indexOf(team).toString(),
-        player.Id as PlayerId
-      );
+      matchData = addBasePlayerData(matchData, teamId, player.Id as PlayerId);
+      // Because EventBuyMercenary is not getting added to the replay files, we need to add the mercenary data manually here
+      // We can tell a player is a Merc because they have will have a value in player.data.Contract
+      if (player?.Data?.Contract) {
+        player.Data.TeamId = teamId;
+        player.Data.Journeyman = true;
+        dataStore.addExtraPlayerData(player.Data as Player);
+      }
     });
   });
 
@@ -92,9 +169,15 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   let inducementTurnData: EventNewInducementsTurn | undefined;
   let eventInducementsData: any | undefined;
 
+  let currentBallHolder: PlayerId | undefined;
+
+  // Track last known location of all players across all steps
+  // This preserves positions of players who are removed/injured during a turn
+  const lastKnownLocation: { [playerId: string]: { x: XPos; y: YPos } } = {};
+
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
-    // // THIS MIGHT CAUSE AN ISSUE THAT IVE FORGOTTEN ABOUT! 
+    // // REMOVING THIS MIGHT CAUSE AN ISSUE THAT IVE FORGOTTEN ABOUT!
     // // Update the game phase
     // if (step.EventNewGamePhase) {
     //   gamePhase = step.EventNewGamePhase.Phase;
@@ -162,20 +245,30 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           matchData.inducements[team].mercenaryPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
-          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+          matchData = addBasePlayerData(
+            matchData,
+            teamId,
+            step.EventBuyMercenary.MercenaryId
+          );
         }
         if (mercenaryPlayer.Type === "7") {
           // This is a Star player
           // Get the star player name
           mercenaryPlayer.Players.PlayerData.StarPlayer = true;
-          const starPlayerName = getStarPlayerName(mercenaryPlayer.Players.PlayerData.IdPlayerTypes);
+          const starPlayerName = getStarPlayerName(
+            mercenaryPlayer.Players.PlayerData.IdPlayerTypes
+          );
           if (starPlayerName) {
             mercenaryPlayer.Players.PlayerData.Name = starPlayerName;
           }
           matchData.inducements[team].starPlayers?.push(
             mercenaryPlayer.Players.PlayerData as Player
           );
-          matchData = addBasePlayerData(matchData, teamId, step.EventBuyMercenary.MercenaryId);
+          matchData = addBasePlayerData(
+            matchData,
+            teamId,
+            step.EventBuyMercenary.MercenaryId
+          );
         }
       }
     }
@@ -257,8 +350,6 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
           //   step.EventActiveGamerChanged.NewActiveGamer || "0";
         }
       }
-
-      
     }
 
     if (gamePhase === "4") {
@@ -301,7 +392,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
 
           sequence.Sequence.StepResult.forEach((result) => {
             if (result.Step.Name === "Step") {
-              const stepMessageData = xmlToJson(result.Step.MessageData)
+              const stepMessageData = xmlToJsonMemoized(result.Step.MessageData)
                 .Step as Step;
 
               if (!stepMessageData) {
@@ -334,20 +425,80 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "5") {
       // Game phase 5 general match play, it is the most common and complex phase
 
-      // Work out who, if anyone, has the ball
-      let hasBall: PlayerId | undefined;
-      if (step.BoardState.Ball.IsHeld === "1") {
-        step.BoardState.ListTeams.TeamState.forEach((team) => {
-          team.ListPitchPlayers.PlayerState.forEach((player) => {
-            if (
-              (player.Cell?.X || "0") ===
-                (step.BoardState.Ball.Cell?.X || "0") &&
-              (player.Cell?.Y || "0") === (step.BoardState.Ball.Cell?.Y || "0")
-            ) {
-              hasBall = player.Id as PlayerId;
-            }
-          });
+      // Update lastKnownLocation with current player positions from BoardState
+      // This ensures we always have the latest positions, even if players are removed
+      step.BoardState.ListTeams.TeamState.forEach((team) => {
+        team.ListPitchPlayers.PlayerState.forEach((player) => {
+          if (player.Cell?.X && player.Cell?.Y) {
+            lastKnownLocation[player.Id] = {
+              x: player.Cell.X as XPos,
+              y: player.Cell.Y as YPos,
+            };
+          }
         });
+      });
+
+      // Only recalculate if the ball state has changed
+      if (step.BoardState.Ball.IsHeld === "1") {
+        // Ball is held - find who has it (only if not already tracked)
+        const ballX = step.BoardState.Ball.Cell?.X || "0";
+        const ballY = step.BoardState.Ball.Cell?.Y || "0";
+
+        // Quick check: verify current holder still has the ball
+        let needsRecalc = true;
+        if (currentBallHolder) {
+          // Find the current holder's position
+          outerLoop: for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if (player.Id === currentBallHolder) {
+                if (
+                  (player.Cell?.X || "0") === ballX &&
+                  (player.Cell?.Y || "0") === ballY
+                ) {
+                  needsRecalc = false;
+                }
+                break outerLoop;
+              }
+            }
+          }
+        }
+
+        // Only recalculate if needed
+        if (needsRecalc) {
+          currentBallHolder = undefined;
+          for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if (
+                (player.Cell?.X || "0") === ballX &&
+                (player.Cell?.Y || "0") === ballY
+              ) {
+                currentBallHolder = player.Id as PlayerId;
+                break;
+              }
+            }
+            if (currentBallHolder) break;
+          }
+        }
+      } else {
+        // Ball is not held
+        currentBallHolder = undefined;
+      }
+
+      const hasBall = currentBallHolder;
+
+      // Capture initial pitch state for the current turn if it doesn't exist yet
+      // This ensures Turn 1 has pitch state data
+      if (!dataStore.getPitchState(currentTurn.turn, currentTurn.team)) {
+        const pitchState = extractPitchState(step, lastKnownLocation);
+        // Update lastKnownLocation with current positions
+        Object.assign(lastKnownLocation, pitchState.playerPositions);
+        // Store the initial pitch state for the current turn
+        dataStore.setPitchState(
+          currentTurn.turn,
+          currentTurn.team,
+          pitchState.playerPositions,
+          pitchState.ballPosition
+        );
       }
 
       // If EventExecuteSequence then it's a player or board action
@@ -366,15 +517,36 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
               stepResult.Results.StringMessage.forEach((result) => {
                 if (result.Name === "ResultUseAction") {
                   // This is a new player action and we need to create a new turnAction
-                  const stepMessageData = xmlToJson(stepResult.Step.MessageData)
-                    .PlayerStep as PlayerStep;
+                  const stepMessageData = xmlToJsonMemoized(
+                    stepResult.Step.MessageData
+                  ).PlayerStep as PlayerStep;
 
                   if (currentTurnAction) {
                     // if one exists already, log it
                     currentTurn.turnActions.push(currentTurnAction);
+                    // If there's a pending catch action, add it right after the current action
+                    if (currentTurnAction.pendingCatchAction) {
+                      currentTurn.turnActions.push(
+                        currentTurnAction.pendingCatchAction
+                      );
+                    }
                   }
                   currentTurnAction = nextTurnAction;
                   currentTurnAction.playerId = stepMessageData.PlayerId;
+
+                  // Capture the pitch state at the start of this action
+                  currentTurnAction.pitchState = extractPitchState(
+                    step,
+                    lastKnownLocation
+                  );
+                  // Update lastKnownLocation with current positions
+                  if (currentTurnAction.pitchState) {
+                    Object.assign(
+                      lastKnownLocation,
+                      currentTurnAction.pitchState.playerPositions
+                    );
+                  }
+
                   nextTurnAction = {
                     turnActionEvents: [],
                     actionsTaken: {},
@@ -391,10 +563,12 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 step,
                 matchData,
                 currentTurn,
-                previousTurnAction: currentTurn.turnActions[currentTurn.turnActions.length - 1],
+                previousTurnAction:
+                  currentTurn.turnActions[currentTurn.turnActions.length - 1],
                 currentTurnAction,
                 nextTurnAction,
                 hasBall,
+                lastKnownLocation,
               });
             }
 
@@ -425,8 +599,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         });
       }
 
-      
-      if(step.EventTouchdown)  {
+      if (step.EventTouchdown) {
         // This is a touchdown event, we need to record the touchdown and the player that scored it
         currentTurnAction.actionsTaken.touchdownScored = true;
         currentTurn.touchdown = true;
@@ -436,10 +609,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventEndTurn) {
         // there is a caveat here where the 'end turn' could be due to a pre-match setup event
         // we will know this if the EventNewGamePhase is 5. Hopefully this works...
-        if(step.EventNewGamePhase?.Phase === "5") {
+        if (step.EventNewGamePhase?.Phase === "5") {
           continue;
         }
-
 
         // If the step has EventEndTurn, it's the end of a turn
         // This is the end of a turn
@@ -447,6 +619,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         // add the current turn action to the current turn
         if (currentTurnAction?.playerId) {
           currentTurn.turnActions.push(currentTurnAction);
+          // If there's a pending catch action, add it right after the current action
+          if (currentTurnAction.pendingCatchAction) {
+            currentTurn.turnActions.push(currentTurnAction.pendingCatchAction);
+          }
           currentTurnAction = {
             turnActionEvents: [],
             actionsTaken: {},
@@ -475,9 +651,29 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
 
         // Check who (if anyone) has the ball and increment the possession counter
-        if (hasBall) {
+        // Recalculate ball holder at end of turn to ensure accuracy
+        let endOfTurnBallHolder: PlayerId | undefined;
+        if (step.BoardState.Ball.IsHeld === "1") {
+          const ballX = step.BoardState.Ball.Cell?.X || "0";
+          const ballY = step.BoardState.Ball.Cell?.Y || "0";
+
+          for (const team of step.BoardState.ListTeams.TeamState) {
+            for (const player of team.ListPitchPlayers.PlayerState) {
+              if (
+                (player.Cell?.X || "0") === ballX &&
+                (player.Cell?.Y || "0") === ballY
+              ) {
+                endOfTurnBallHolder = player.Id as PlayerId;
+                break;
+              }
+            }
+            if (endOfTurnBallHolder) break;
+          }
+        }
+
+        if (endOfTurnBallHolder) {
           // Find the player from the matchData
-          const player = matchData.playerData[hasBall];
+          const player = matchData.playerData[endOfTurnBallHolder];
           if (player) {
             // Increment the players team possession counter
             const team = player.teamId === "1" ? "awayTeam" : "homeTeam";
@@ -486,18 +682,31 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         }
 
         // Setup a new turn for the next team
+        const nextTeam = currentTurn.team === "0" ? "1" : "0";
+        const nextTurnNumber = Math.ceil(turnNumber / 2);
+
         currentTurn = {
-          team: currentTurn.team === "0" ? "1" : "0",
-          turn: Math.ceil(turnNumber / 2),
+          team: nextTeam,
+          turn: nextTurnNumber,
           turnActions: [],
         };
+
+        // Capture pitch state at the start of the new turn
+        const pitchState = extractPitchState(step, lastKnownLocation);
+        // Update lastKnownLocation with current positions
+        Object.assign(lastKnownLocation, pitchState.playerPositions);
+        // Store the pitch state for the new turn
+        dataStore.setPitchState(
+          nextTurnNumber,
+          nextTeam,
+          pitchState.playerPositions,
+          pitchState.ballPosition
+        );
       }
     }
 
     if (gamePhase === "6") {
       // This is the post-match phase
-
-      
     }
 
     if (step.EventMatchEnd) {
@@ -506,11 +715,13 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       if (step.EventMatchEnd.MatchCompletionStatus === "1") {
         // The match was conceded
         // The GamersEndMatchStatus will tell us who conceded
-        step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach((gamerEndMatchStatus, i) => {
-          if (gamerEndMatchStatus.EndStatus) {
-            matchData.conceded = i.toString() as "0" | "1"
+        step.EventMatchEnd.GamersEndMatchStatus.GamerEndMatchStatus.forEach(
+          (gamerEndMatchStatus, i) => {
+            if (gamerEndMatchStatus.EndStatus) {
+              matchData.conceded = i.toString() as "0" | "1";
+            }
           }
-        })
+        );
       }
     }
 
@@ -518,8 +729,60 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (step.EventNewGamePhase) {
       gamePhase = step.EventNewGamePhase.Phase;
     }
-
   }
-  
+
+  // Aggregate team statistics from player data
+  // Reset stats before summing (in case we're re-processing)
+  matchData.teamStats["0"] = {
+    blocksAttempted: 0,
+    yardsMovedWithBall: 0,
+    passesAttempted: 0,
+    passesCompleted: 0,
+    casualties: 0,
+    injuries: 0,
+    KOs: 0,
+    deaths: 0,
+  };
+  matchData.teamStats["1"] = {
+    blocksAttempted: 0,
+    yardsMovedWithBall: 0,
+    passesAttempted: 0,
+    passesCompleted: 0,
+    casualties: 0,
+    injuries: 0,
+    KOs: 0,
+    deaths: 0,
+  };
+
+  // Sum up player stats for each team
+  Object.values(matchData.playerData).forEach((playerStats) => {
+    const teamId = playerStats.teamId as "0" | "1";
+    if (teamId === "0" || teamId === "1") {
+      matchData.teamStats[teamId].blocksAttempted +=
+        playerStats.blocksAttempted;
+      matchData.teamStats[teamId].yardsMovedWithBall +=
+        playerStats.yardsMovedWithBall;
+      matchData.teamStats[teamId].passesAttempted +=
+        playerStats.passesAttempted.handoff +
+        playerStats.passesAttempted.short +
+        playerStats.passesAttempted.long +
+        playerStats.passesAttempted.longBomb;
+      matchData.teamStats[teamId].passesCompleted +=
+        playerStats.passesCompleted.handoff +
+        playerStats.passesCompleted.short +
+        playerStats.passesCompleted.long +
+        playerStats.passesCompleted.longBomb;
+      // matchData.teamStats[teamId].casualties +=
+      //   playerStats.injuryRollsSustained.injuryBadlyHurt +
+      //   playerStats.injuryRollsSustained.injurySeriousInjury;
+      matchData.teamStats[teamId].injuries +=
+        playerStats.casualtiesInflicted.casualtyRolls;
+      matchData.teamStats[teamId].KOs +=
+        playerStats.injuryRollsInflicted.injuryKO;
+      matchData.teamStats[teamId].deaths +=
+        playerStats.casualtiesInflicted.casualtyDeath;
+    }
+  });
+
   return matchData;
 };

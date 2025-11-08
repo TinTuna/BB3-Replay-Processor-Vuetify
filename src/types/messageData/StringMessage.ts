@@ -17,7 +17,10 @@ export type StringMessage = {
     | "ResultPlayerRemoval"
     | "ResultTeamRerollUsage"
     | "QuestionBribeUsage"
-    | "ResultPlayerSentOff";
+    | "ResultPlayerSentOff"
+    | "ResultApothecary"
+    | "ResultGainSpp"
+    | "QuestionApothecaryCasualtyUsage";
 
   MessageData: string; // This is stringified XML
 };

@@ -19,6 +19,8 @@ import { PushPath } from "@/types/Match/TurnAction";
 import { addBasePlayerData } from "./addBasePlayerData";
 import { processDieRoll } from "../helperFns/processDieRoll";
 import { extractPitchState } from "./processReplaySteps";
+import { XPos } from "@/types/Pitch/xPos";
+import { YPos } from "@/types/Pitch/yPos";
 
 export const processPlayerStep = (opts: {
   stepResult: Step;
@@ -29,6 +31,7 @@ export const processPlayerStep = (opts: {
   currentTurnAction: TurnAction;
   nextTurnAction: TurnAction;
   hasBall: PlayerId | undefined;
+  lastKnownLocation?: { [playerId: string]: { x: XPos; y: YPos } };
 }) => {
   const {
     stepResult,
@@ -39,6 +42,7 @@ export const processPlayerStep = (opts: {
     currentTurnAction,
     nextTurnAction,
     hasBall,
+    lastKnownLocation,
   } = opts;
   const stepMessageData = xmlToJsonMemoized(stepResult.Step.MessageData)
     .PlayerStep as PlayerStep;
@@ -344,6 +348,14 @@ export const processPlayerStep = (opts: {
               },
               pushedPlayerId: pushback.PushedPlayerId,
             });
+
+            // Update lastKnownLocation with the pushed player's new position
+            if (lastKnownLocation && pushback.PushedPlayerId) {
+              lastKnownLocation[pushback.PushedPlayerId] = {
+                x: pushback.CellTo.X as XPos,
+                y: pushback.CellTo.Y as YPos,
+              };
+            }
           });
         }
 
@@ -464,7 +476,7 @@ export const processPlayerStep = (opts: {
                 },
               },
               // Capture the pitch state at the moment of the catch
-              pitchState: extractPitchState(step),
+              pitchState: extractPitchState(step, lastKnownLocation),
             };
 
             // Store the catch action on currentTurnAction so it can be added after currentTurnAction

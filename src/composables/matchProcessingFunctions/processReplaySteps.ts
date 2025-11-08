@@ -22,10 +22,20 @@ import { YPos } from "@/types/Pitch/yPos";
 import { ActionPitchState } from "@/types/Match/TurnAction";
 
 // Helper function to extract pitch state from BoardState
-export const extractPitchState = (step: ReplayStep): ActionPitchState => {
+// lastKnownLocation is used to preserve positions of players not in current board state
+export const extractPitchState = (
+  step: ReplayStep,
+  lastKnownLocation?: { [playerId: string]: { x: XPos; y: YPos } }
+): ActionPitchState => {
   // Extract player positions from BoardState
   const playerPositions: { [playerId: string]: { x: XPos; y: YPos } } = {};
 
+  // Start with last known locations if provided (preserves players not in current state)
+  if (lastKnownLocation) {
+    Object.assign(playerPositions, lastKnownLocation);
+  }
+
+  // Update with current positions from BoardState
   step.BoardState.ListTeams.TeamState.forEach((team) => {
     team.ListPitchPlayers.PlayerState.forEach((player) => {
       if (player.Cell?.X && player.Cell?.Y) {
@@ -160,6 +170,10 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   let eventInducementsData: any | undefined;
 
   let currentBallHolder: PlayerId | undefined;
+
+  // Track last known location of all players across all steps
+  // This preserves positions of players who are removed/injured during a turn
+  const lastKnownLocation: { [playerId: string]: { x: XPos; y: YPos } } = {};
 
   // Itterate over the replay steps and process them
   for (const step of replaySteps) {
@@ -411,6 +425,19 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     if (gamePhase === "5") {
       // Game phase 5 general match play, it is the most common and complex phase
 
+      // Update lastKnownLocation with current player positions from BoardState
+      // This ensures we always have the latest positions, even if players are removed
+      step.BoardState.ListTeams.TeamState.forEach((team) => {
+        team.ListPitchPlayers.PlayerState.forEach((player) => {
+          if (player.Cell?.X && player.Cell?.Y) {
+            lastKnownLocation[player.Id] = {
+              x: player.Cell.X as XPos,
+              y: player.Cell.Y as YPos,
+            };
+          }
+        });
+      });
+
       // Only recalculate if the ball state has changed
       if (step.BoardState.Ball.IsHeld === "1") {
         // Ball is held - find who has it (only if not already tracked)
@@ -462,7 +489,9 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       // Capture initial pitch state for the current turn if it doesn't exist yet
       // This ensures Turn 1 has pitch state data
       if (!dataStore.getPitchState(currentTurn.turn, currentTurn.team)) {
-        const pitchState = extractPitchState(step);
+        const pitchState = extractPitchState(step, lastKnownLocation);
+        // Update lastKnownLocation with current positions
+        Object.assign(lastKnownLocation, pitchState.playerPositions);
         // Store the initial pitch state for the current turn
         dataStore.setPitchState(
           currentTurn.turn,
@@ -506,7 +535,17 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                   currentTurnAction.playerId = stepMessageData.PlayerId;
 
                   // Capture the pitch state at the start of this action
-                  currentTurnAction.pitchState = extractPitchState(step);
+                  currentTurnAction.pitchState = extractPitchState(
+                    step,
+                    lastKnownLocation
+                  );
+                  // Update lastKnownLocation with current positions
+                  if (currentTurnAction.pitchState) {
+                    Object.assign(
+                      lastKnownLocation,
+                      currentTurnAction.pitchState.playerPositions
+                    );
+                  }
 
                   nextTurnAction = {
                     turnActionEvents: [],
@@ -529,6 +568,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
                 currentTurnAction,
                 nextTurnAction,
                 hasBall,
+                lastKnownLocation,
               });
             }
 
@@ -652,64 +692,15 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         };
 
         // Capture pitch state at the start of the new turn
-        // Extract player positions from BoardState
-        const playerPositions: { [playerId: string]: { x: XPos; y: YPos } } =
-          {};
-
-        step.BoardState.ListTeams.TeamState.forEach((team) => {
-          team.ListPitchPlayers.PlayerState.forEach((player) => {
-            if (player.Cell?.X && player.Cell?.Y) {
-              playerPositions[player.Id] = {
-                x: player.Cell.X as XPos,
-                y: player.Cell.Y as YPos,
-              };
-            }
-          });
-        });
-
-        // Extract ball position from BoardState
-        let ballPosition: {
-          x: XPos;
-          y: YPos;
-          isHeld: boolean;
-          isAirborne: boolean;
-          heldBy?: string;
-        } | null = null;
-
-        if (step.BoardState.Ball) {
-          const ball = step.BoardState.Ball;
-          if (ball.Cell?.X && ball.Cell?.Y) {
-            ballPosition = {
-              x: ball.Cell.X as XPos,
-              y: ball.Cell.Y as YPos,
-              isHeld: ball.IsHeld === "1",
-              isAirborne: ball.IsAirborne === "1",
-            };
-
-            // If ball is held, find which player is holding it
-            if (ballPosition.isHeld) {
-              for (const team of step.BoardState.ListTeams.TeamState) {
-                for (const player of team.ListPitchPlayers.PlayerState) {
-                  if (
-                    player.Cell?.X === ball.Cell.X &&
-                    player.Cell?.Y === ball.Cell.Y
-                  ) {
-                    ballPosition.heldBy = player.Id;
-                    break;
-                  }
-                }
-                if (ballPosition.heldBy) break;
-              }
-            }
-          }
-        }
-
+        const pitchState = extractPitchState(step, lastKnownLocation);
+        // Update lastKnownLocation with current positions
+        Object.assign(lastKnownLocation, pitchState.playerPositions);
         // Store the pitch state for the new turn
         dataStore.setPitchState(
           nextTurnNumber,
           nextTeam,
-          playerPositions,
-          ballPosition
+          pitchState.playerPositions,
+          pitchState.ballPosition
         );
       }
     }

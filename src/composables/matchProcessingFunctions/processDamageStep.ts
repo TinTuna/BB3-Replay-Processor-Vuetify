@@ -279,7 +279,6 @@ export const processDamageStep = (opts: {
           currentTurnAction,
           context: {
             step,
-            stepResult,
             logPrefix: "ResultInjuryRoll",
           },
         });
@@ -483,7 +482,10 @@ export const processDamageStep = (opts: {
           // Apothecary was not used
         } else if (resultMessageData.ApothecaryUsed === "1") {
           // Apothecary was used
-          matchData.teamStats[victimId.teamId].apothecaryUsed += 1;
+          const victimTeamId = matchData.playerData[victimId]?.teamId as "0" | "1";
+          if (victimTeamId === "0" || victimTeamId === "1") {
+            matchData.teamStats[victimTeamId].apothecaryUsed += 1;
+          }
         }
 
         processInjuryOutcome({
@@ -495,7 +497,6 @@ export const processDamageStep = (opts: {
           currentTurnAction,
           context: {
             step,
-            stepResult,
             logPrefix: "ResultApothecary",
           },
         });

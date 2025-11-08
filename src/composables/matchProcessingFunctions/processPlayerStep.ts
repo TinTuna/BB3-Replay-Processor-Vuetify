@@ -8,6 +8,7 @@ import { Turn } from "@/types/Match/Turn";
 import { StepResult } from "@/types/Match/StepResult";
 import { TurnAction } from "@/types/Match/TurnAction";
 import { ResultBlockOutcome } from "@/types/messageData/ResultBlockOutcome";
+import { ResultBlockRoll } from "@/types/messageData/ResultBlockRoll";
 import { ResultPlayerRemoval } from "@/types/messageData/ResultPlayerRemoval";
 import { ResultRoll } from "@/types/messageData/ResultRoll";
 import { ResultUseAction } from "@/types/messageData/ResultUseAction";

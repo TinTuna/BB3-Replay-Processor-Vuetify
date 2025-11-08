@@ -74,7 +74,12 @@ const processedReplay = ref<Document>(
   new DOMParser().parseFromString("", "text/xml")
 );
 
-const { processFile, isLoading: loading, error } = useBbrFileProcessor();
+const {
+  processFile,
+  isLoading: loading,
+  error,
+  clearError,
+} = useBbrFileProcessor();
 const { downloadProcessedXml } = useXmlDownloader();
 
 const processReplayFile = async () => {

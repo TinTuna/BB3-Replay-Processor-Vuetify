@@ -118,6 +118,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         injuries: 0,
         KOs: 0,
         deaths: 0,
+        apothecaryUsed: 0,
       },
       "1": {
         blocksAttempted: 0,
@@ -128,6 +129,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         injuries: 0,
         KOs: 0,
         deaths: 0,
+        apothecaryUsed: 0,
       },
     },
   };
@@ -742,6 +744,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     injuries: 0,
     KOs: 0,
     deaths: 0,
+    apothecaryUsed: 0,
   };
   matchData.teamStats["1"] = {
     blocksAttempted: 0,
@@ -752,6 +755,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
     injuries: 0,
     KOs: 0,
     deaths: 0,
+    apothecaryUsed: 0,
   };
 
   // Sum up player stats for each team

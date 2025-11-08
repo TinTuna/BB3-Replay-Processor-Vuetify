@@ -124,10 +124,10 @@ module.exports = function (grunt) {
     try {
       if (sinceTag && !tagMatchesCurrentVersion) {
         // Check if there are any commits between the tag and HEAD
-        const testLog = execSync(
-          `git log ${sinceTag}..HEAD --oneline 2>&1`,
-          { encoding: "utf8", stdio: "pipe" }
-        ).trim();
+        const testLog = execSync(`git log ${sinceTag}..HEAD --oneline 2>&1`, {
+          encoding: "utf8",
+          stdio: "pipe",
+        }).trim();
         if (!testLog || testLog.startsWith("fatal:")) {
           // No commits between tag and HEAD, fall through to alternative strategy
           sinceTag = null;
@@ -138,7 +138,7 @@ module.exports = function (grunt) {
           );
         }
       }
-      
+
       // If no tag, tag matches current version, or tag range is empty, use alternative strategy
       if (!sinceTag || tagMatchesCurrentVersion || gitLog === "") {
         // Get recent commits and filter out ones already in changelog
@@ -198,11 +198,60 @@ module.exports = function (grunt) {
 
   grunt.registerTask("changelog", ["generateChangelog"]);
 
-  grunt.registerTask("version:patch", ["bump:patch", "generateChangelog"]);
-  grunt.registerTask("version:minor", ["bump:minor", "generateChangelog"]);
-  grunt.registerTask("version:major", ["bump:major", "generateChangelog"]);
+  // Task to update package-lock.json
+  grunt.registerTask("updatePackageLock", function () {
+    grunt.log.writeln("Updating package-lock.json...");
+    try {
+      execSync("npm i", { encoding: "utf8", stdio: "inherit" });
+      grunt.log.writeln("package-lock.json updated successfully.");
+    } catch (err) {
+      grunt.log.error("Failed to update package-lock.json: " + err.message);
+      throw err;
+    }
+  });
+
+  // Task to push tag to remote
+  grunt.registerTask("pushTag", function () {
+    // Get the current version from package.json
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+    const currentVersion = packageJson.version;
+    const tagName = `v${currentVersion}`;
+
+    grunt.log.writeln(`Pushing tag ${tagName} to origin...`);
+    try {
+      execSync(`git push origin ${tagName}`, {
+        encoding: "utf8",
+        stdio: "inherit",
+      });
+      grunt.log.writeln(`Tag ${tagName} pushed successfully.`);
+    } catch (err) {
+      grunt.log.error(`Failed to push tag ${tagName}: ` + err.message);
+      throw err;
+    }
+  });
+
+  grunt.registerTask("version:patch", [
+    "bump:patch",
+    "updatePackageLock",
+    "generateChangelog",
+    "pushTag",
+  ]);
+  grunt.registerTask("version:minor", [
+    "bump:minor",
+    "updatePackageLock",
+    "generateChangelog",
+    "pushTag",
+  ]);
+  grunt.registerTask("version:major", [
+    "bump:major",
+    "updatePackageLock",
+    "generateChangelog",
+    "pushTag",
+  ]);
   grunt.registerTask("version:prerelease", [
     "bump:prerelease",
+    "updatePackageLock",
     "generateChangelog",
+    "pushTag",
   ]);
 };

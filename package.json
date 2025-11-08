@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "BB3-Replay-Processor-Vuetify",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",

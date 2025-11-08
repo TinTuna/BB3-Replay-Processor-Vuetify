@@ -111,16 +111,37 @@ module.exports = function (grunt) {
       }
     }
 
+    // Check if the found tag matches the current version (which would mean no new commits)
+    let tagMatchesCurrentVersion = false;
+    if (sinceTag) {
+      const tagVersion = sinceTag.replace(/^v/, ""); // Remove 'v' prefix if present
+      if (tagVersion === currentVersion) {
+        tagMatchesCurrentVersion = true;
+      }
+    }
+
     // Get commits since the tag (or all commits if no tag)
     try {
-      if (sinceTag) {
-        gitLog = execSync(
-          `git log ${sinceTag}..HEAD --pretty=format:"- %s (%h)" --date=short`,
-          { encoding: "utf8" }
-        );
-      } else {
-        // If no tags exist, get commits since the last version's date (if available)
-        // or get a limited set of recent commits
+      if (sinceTag && !tagMatchesCurrentVersion) {
+        // Check if there are any commits between the tag and HEAD
+        const testLog = execSync(
+          `git log ${sinceTag}..HEAD --oneline 2>&1`,
+          { encoding: "utf8", stdio: "pipe" }
+        ).trim();
+        if (!testLog || testLog.startsWith("fatal:")) {
+          // No commits between tag and HEAD, fall through to alternative strategy
+          sinceTag = null;
+        } else {
+          gitLog = execSync(
+            `git log ${sinceTag}..HEAD --pretty=format:"- %s (%h)" --date=short`,
+            { encoding: "utf8" }
+          );
+        }
+      }
+      
+      // If no tag, tag matches current version, or tag range is empty, use alternative strategy
+      if (!sinceTag || tagMatchesCurrentVersion || gitLog === "") {
+        // Get recent commits and filter out ones already in changelog
         if (lastVersion) {
           // Get commits from the last 30 days as a fallback
           gitLog = execSync(

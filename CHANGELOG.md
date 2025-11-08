@@ -1,3 +1,33 @@
+## [0.0.25] - 2025-11-08
+
+- feat: better pitch state handling for when players are missing in the Board State (6327d91)
+- feat: updated how Block dice are handles and improved Match Log feedback feat: Reset all datastore values on load new file (694f8f8)
+- feat: visual updates to match visualisation feat: fixes and updates to Rosters, and Mercenaries are added to them (3d0cfef)
+- feat: per turn pitch visualisation (844d6bb)
+- feat: update match visualisation a little (beebb98)
+- chore: add new star player ID (bd7b273)
+- feat: updated injury type tracking refactor: renamed 'kills' to 'deaths' in all places (1cb2d48)
+- chore: add more star player names (174785b)
+- feat: drilldown on clicking player names in Team screen (f033344)
+- feat: improve tracking of injury types (809808d)
+- feat: tweaks, improvements and new functionality for step processing (68a8588)
+- feat: expand QuestionBlockDice to allow for block dice processing and tracking (209edb2)
+- feat: expand ability to process dice types (d9f4cb0)
+- fix: fix yardage per square, now counts each square as two yards (c21d8e2)
+- fix: slight improvement to the calculation of posession stats (ccb4f01)
+- fix: block stats not being calculated correctly (8abe0b1)
+- feat: update overview page to use processed game stats (d385dc5)
+- feat: improve game stats feedback based on what we've processed (3b9ebde)
+- refactor: consolidate step processing code and add TODOs (5ddfb7b)
+- feat: optimisations to the match processing output (f17bbae)
+- fix: update main page score to show the correct values (ca0924e)
+- feat: temp remove the match screen to focus on the other parts of the app (f0c1e2a)
+- chore: resolve a bunch of typescript errors (965ce25)
+- chore: update gruntfile to create git tags per version (6279dbc)
+- chore: update gruntfile to integrate changelog (70210b0)
+
+---
+
 ## [0.0.24] - 2025-11-02
 
 - chore: update grunt file processing (cc749e1)

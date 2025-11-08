@@ -58,7 +58,12 @@ import { ref } from "vue";
 
 const dataStore = useDataStore();
 const openPitchVisualization = inject<
-  (turn: number, team: "0" | "1", playerId?: string, action?: TurnAction) => void
+  (
+    turn: number,
+    team: "0" | "1",
+    playerId?: string,
+    action?: TurnAction
+  ) => void
 >("openPitchVisualization");
 
 const props = defineProps({
@@ -96,229 +101,339 @@ type PlayerActionChip = {
 };
 
 const playerActions: Ref<PlayerActionChip[]> = computed(() => {
-  return Object.entries(playerAction.value.actionsTaken || {}).map((value) => {
-    if (value[0] === "yardsMoved") {
-      return {
-        icon: "mdi-run",
-        primaryIconColour: "primary",
-        value: value[1].toString(),
-        tooltip: `${value[1]} Yard${(value[1] as number) > 1 ? "s" : ""} moved`,
-      };
-    }
-    if (value[0] === "blockAttempted") {
-      let tooltip = `Block - `;
-      let secondaryIcon = "";
-      let secondaryIconColour = "";
-      switch (
-        value[1] as Partial<TurnAction["actionsTaken"]["blockAttempted"]>
-      ) {
-        case "attackerDown":
-          secondaryIcon = "mdi-skull";
-          tooltip += `- Attacker down`;
-          secondaryIconColour = "error";
-          break;
-        case "bothDown":
-          secondaryIcon = "mdi-chevron-double-down";
-          tooltip += `Both down`;
-          secondaryIconColour = "warning";
-          break;
-        case "push":
-          secondaryIcon = "mdi-arrow-top-right-thick";
-          tooltip += `Push`;
-          secondaryIconColour = "info";
-          break;
-        case "defenderStumbles":
-          secondaryIcon = "mdi-shield-alert";
-          tooltip += `Defender stumbles`;
-          secondaryIconColour = "success";
-          break;
-        case "defenderDown":
-          secondaryIcon = "mdi-shield";
-          tooltip += `Defender down`;
-          secondaryIconColour = "success";
-          break;
+  return Object.entries(playerAction.value.actionsTaken || {})
+    .map((value) => {
+      if (value[0] === "yardsMoved") {
+        return {
+          icon: "mdi-run",
+          primaryIconColour: "primary",
+          value: value[1].toString(),
+          tooltip: `${value[1]} Yard${
+            (value[1] as number) > 1 ? "s" : ""
+          } moved`,
+        };
+      }
+      if (value[0] === "blockAttempted") {
+        const blockAttempted = value[1] as Partial<
+          TurnAction["actionsTaken"]["blockAttempted"]
+        >;
+        const blockOutcome = playerAction.value.actionsTaken?.blockOutcome;
+
+        let tooltip = `Block - `;
+        let secondaryIcon = "";
+        let secondaryIconColour = "";
+
+        // Show dice choice
+        let diceChoice = "";
+        switch (blockAttempted) {
+          case "attackerDown":
+            diceChoice = "Attacker Down";
+            break;
+          case "bothDown":
+            diceChoice = "Both Down";
+            break;
+          case "push":
+            diceChoice = "Push";
+            break;
+          case "defenderStumbles":
+            diceChoice = "Defender Stumbles";
+            break;
+          case "defenderDown":
+            diceChoice = "Defender Down";
+            break;
+        }
+
+        // Show outcome (prefer blockOutcome if available, otherwise use blockAttempted)
+        if (blockOutcome) {
+          switch (blockOutcome) {
+            case "attackerDown":
+              secondaryIcon = "mdi-skull";
+              tooltip += `Dice: ${diceChoice}, Outcome: Attacker down`;
+              secondaryIconColour = "error";
+              break;
+            case "bothDown":
+              secondaryIcon = "mdi-chevron-double-down";
+              tooltip += `Dice: ${diceChoice}, Outcome: Both down`;
+              secondaryIconColour = "warning";
+              break;
+            case "push":
+              secondaryIcon = "mdi-arrow-top-right-thick";
+              tooltip += `Dice: ${diceChoice}, Outcome: Push`;
+              secondaryIconColour = "info";
+              break;
+            case "defenderDownPushBack":
+              secondaryIcon = "mdi-arrow-down-right-bold";
+              tooltip += `Dice: ${diceChoice}, Outcome: Defender down with push`;
+              secondaryIconColour = "success";
+              break;
+            case "defenderDownNoPush":
+              secondaryIcon = "mdi-arrow-down-thick";
+              tooltip += `Dice: ${diceChoice}, Outcome: Defender down`;
+              secondaryIconColour = "success";
+              break;
+          }
+        } else {
+          // Fallback to blockAttempted if blockOutcome is not available
+          switch (blockAttempted) {
+            case "attackerDown":
+              secondaryIcon = "mdi-skull";
+              tooltip += `Dice: ${diceChoice}, Outcome: Attacker down`;
+              secondaryIconColour = "error";
+              break;
+            case "bothDown":
+              secondaryIcon = "mdi-chevron-double-down";
+              tooltip += `Dice: ${diceChoice}, Outcome: Both down`;
+              secondaryIconColour = "warning";
+              break;
+            case "push":
+              secondaryIcon = "mdi-arrow-top-right-thick";
+              tooltip += `Dice: ${diceChoice}, Outcome: Push`;
+              secondaryIconColour = "info";
+              break;
+            case "defenderStumbles":
+              secondaryIcon = "mdi-shield-alert";
+              tooltip += `Dice: ${diceChoice}, Outcome: Defender stumbles`;
+              secondaryIconColour = "success";
+              break;
+            case "defenderDown":
+              secondaryIcon = "mdi-shield";
+              tooltip += `Dice: ${diceChoice}, Outcome: Defender down`;
+              secondaryIconColour = "success";
+              break;
+          }
+        }
+
+        return {
+          icon: "mdi-dice-multiple",
+          primaryIconColour: "primary",
+          value: "",
+          tooltip: tooltip,
+          secondaryIcon: secondaryIcon,
+          secondaryIconColour: secondaryIconColour,
+        };
+      }
+      if (value[0] === "blockOutcome") {
+        // Skip blockOutcome if blockAttempted is also present (handled above)
+        if (playerAction.value.actionsTaken?.blockAttempted) {
+          return null;
+        }
+        // Only show blockOutcome if blockAttempted is not present
+        let tooltip = `Block - `;
+        let secondaryIcon = "";
+        let secondaryIconColour = "";
+        switch (
+          value[1] as Partial<TurnAction["actionsTaken"]["blockOutcome"]>
+        ) {
+          case "attackerDown":
+            secondaryIcon = "mdi-skull";
+            tooltip += `Outcome: Attacker down`;
+            secondaryIconColour = "error";
+            break;
+          case "bothDown":
+            secondaryIcon = "mdi-chevron-double-down";
+            tooltip += `Outcome: Both down`;
+            secondaryIconColour = "warning";
+            break;
+          case "push":
+            secondaryIcon = "mdi-arrow-top-right-thick";
+            tooltip += `Outcome: Push`;
+            secondaryIconColour = "info";
+            break;
+          case "defenderDownPushBack":
+            secondaryIcon = "mdi-shield-arrow-right";
+            tooltip += `Outcome: Defender down with push`;
+            secondaryIconColour = "success";
+            break;
+          case "defenderDownNoPush":
+            secondaryIcon = "mdi-shield";
+            tooltip += `Outcome: Defender down`;
+            secondaryIconColour = "success";
+            break;
+        }
+        return {
+          icon: "mdi-dice-multiple",
+          primaryIconColour: "primary",
+          value: "",
+          tooltip: tooltip,
+          secondaryIcon: secondaryIcon,
+          secondaryIconColour: secondaryIconColour,
+        };
+      }
+      if (value[0] === "injuryInflicted") {
+        const injuryObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["injuryInflicted"]
+        >;
+        return {
+          icon: "mdi-sword",
+          value: "",
+          tooltip: `Injury Inflicted to ${dataStore.getPlayerName(
+            injuryObject?.player || ""
+          )} - ${injuryObject?.type}`,
+          primaryIconColour: "error",
+        };
+      }
+      if (value[0] === "injurySustained") {
+        const injuryObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["injurySustained"]
+        >;
+        return {
+          icon: "mdi-hospital-box",
+          value: "",
+          tooltip: `Injury Sustained - ${injuryObject?.type}`,
+          primaryIconColour: "error",
+        };
+      }
+      if (value[0] === "knockdownInflicted") {
+        const knockdownObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["knockdownInflicted"]
+        >;
+        return {
+          icon: "mdi-creation",
+          value: "",
+          tooltip: `Knockdown Inflicted to ${dataStore.getPlayerName(
+            knockdownObject?.player || ""
+          )} - ${knockdownObject?.type}`,
+          primaryIconColour: "yellow-darken-4",
+        };
+      }
+      if (value[0] === "touchdownScored") {
+        return {
+          icon: "mdi-football",
+          value: "",
+          tooltip: `Touchdown`,
+          primaryIconColour: "brown-darken-1",
+        };
+      }
+      if (value[0] === "passAttempted") {
+        const passObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["passAttempted"]
+        >;
+        if (!passObject)
+          return {
+            icon: "mdi-alert",
+            value: "",
+            tooltip: `Unknown action: ${value[0]}`,
+          };
+        return {
+          icon: "mdi-target",
+          value: "",
+          tooltip: `Pass Attempted to ${dataStore.getPlayerName(
+            passObject.receiverId || ""
+          )}  - ${passObject.passSuccess ? "Succeeded" : "Failed"}`,
+          primaryIconColour: `${passObject.passSuccess ? "success" : "error"}`,
+        };
+      }
+      if (value[0] === "handoffAttempted") {
+        const handoffObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["handoffAttempted"]
+        >;
+        if (!handoffObject)
+          return {
+            icon: "mdi-alert",
+            value: "",
+            tooltip: `Unknown action: ${value[0]}`,
+          };
+        return {
+          icon: "mdi-hand-clap",
+          value: "",
+          tooltip: `Handoff Attempted to ${dataStore.getPlayerName(
+            handoffObject.receiverId || ""
+          )}`,
+          primaryIconColour: "success",
+        };
+      }
+      if (value[0] === "catchAttempted") {
+        const catchObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["catchAttempted"]
+        >;
+        if (!catchObject)
+          return {
+            icon: "mdi-alert",
+            value: "",
+            tooltip: `Unknown action: ${value[0]}`,
+          };
+        return {
+          icon: "mdi-handball",
+          value: "",
+          tooltip: `Catch Attempted - ${
+            catchObject.catchSuccess ? "Succeeded" : "Failed"
+          }`,
+          primaryIconColour: `${
+            catchObject.catchSuccess ? "success" : "error"
+          }`,
+        };
+      }
+      if (value[0] === "pickupAttempted") {
+        const pickupObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["pickupAttempted"]
+        >;
+        if (!pickupObject)
+          return {
+            icon: "mdi-alert",
+            value: "",
+            tooltip: `Unknown action: ${value[0]}`,
+          };
+        return {
+          icon: "mdi-hand-front-right",
+          value: "",
+          tooltip: `Pickup Attempted - ${
+            pickupObject.pickupSuccess ? "Succeeded" : "Failed"
+          }`,
+          primaryIconColour: `${
+            pickupObject.pickupSuccess ? "success" : "error"
+          }`,
+        };
+      }
+      if (value[0] === "standUp") {
+        return {
+          icon: "mdi-chevron-up-circle",
+          value: "",
+          tooltip: `Stand Up`,
+          primaryIconColour: "blue",
+        };
+      }
+      if (value[0] === "foulAttempted") {
+        const foulObject = value[1] as Partial<
+          TurnAction["actionsTaken"]["foulAttempted"]
+        >;
+        if (!foulObject)
+          return {
+            icon: "mdi-alert",
+            value: "",
+            tooltip: `Unknown action: ${value[0]}`,
+          };
+        return {
+          icon: "mdi-shoe-cleat",
+          value: "",
+          tooltip: `Foul Attempted on ${dataStore.getPlayerName(
+            foulObject.fouledPlayer || ""
+          )}`,
+          primaryIconColour: `error`,
+        };
+      }
+      if (value[0] === "sentOff") {
+        return {
+          icon: "mdi-cards",
+          value: "",
+          tooltip: `Sent Off`,
+          primaryIconColour: "error",
+        };
+      }
+      if (value[0] === "rerollUsed") {
+        return {
+          icon: "mdi-dice-multiple",
+          value: "",
+          tooltip: `Reroll Used`,
+          primaryIconColour: "warning",
+        };
       }
       return {
-        icon: "mdi-dice-multiple",
-        primaryIconColour: "primary",
+        icon: "mdi-alert",
         value: "",
-        tooltip: tooltip,
-        secondaryIcon: secondaryIcon,
-        secondaryIconColour: secondaryIconColour,
+        tooltip: `Unknown action: ${value[0]}`,
       };
-    }
-    if (value[0] === "injuryInflicted") {
-      const injuryObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["injuryInflicted"]
-      >;
-      return {
-        icon: "mdi-sword",
-        value: "",
-        tooltip: `Injury Inflicted to ${dataStore.getPlayerName(
-          injuryObject?.player || ""
-        )} - ${injuryObject?.type}`,
-        primaryIconColour: "error",
-      };
-    }
-    if (value[0] === "injurySustained") {
-      const injuryObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["injurySustained"]
-      >;
-      return {
-        icon: "mdi-hospital-box",
-        value: "",
-        tooltip: `Injury Sustained - ${injuryObject?.type}`,
-        primaryIconColour: "error",
-      };
-    }
-    if (value[0] === "knockdownInflicted") {
-      const knockdownObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["knockdownInflicted"]
-      >;
-      return {
-        icon: "mdi-creation",
-        value: "",
-        tooltip: `Knockdown Inflicted to ${dataStore.getPlayerName(
-          knockdownObject?.player || ""
-        )} - ${knockdownObject?.type}`,
-        primaryIconColour: "yellow-darken-4",
-      };
-    }
-    if (value[0] === "touchdownScored") {
-      return {
-        icon: "mdi-football",
-        value: "",
-        tooltip: `Touchdown`,
-        primaryIconColour: "brown-darken-1",
-      };
-    }
-    if (value[0] === "passAttempted") {
-      const passObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["passAttempted"]
-      >;
-      if (!passObject)
-        return {
-          icon: "mdi-alert",
-          value: "",
-          tooltip: `Unknown action: ${value[0]}`,
-        };
-      return {
-        icon: "mdi-target",
-        value: "",
-        tooltip: `Pass Attempted to ${dataStore.getPlayerName(
-          passObject.receiverId || ""
-        )}  - ${passObject.passSuccess ? "Succeeded" : "Failed"}`,
-        primaryIconColour: `${passObject.passSuccess ? "success" : "error"}`,
-      };
-    }
-    if (value[0] === "handoffAttempted") {
-      const handoffObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["handoffAttempted"]
-      >;
-      if (!handoffObject)
-        return {
-          icon: "mdi-alert",
-          value: "",
-          tooltip: `Unknown action: ${value[0]}`,
-        };
-      return {
-        icon: "mdi-hand-clap",
-        value: "",
-        tooltip: `Handoff Attempted to ${dataStore.getPlayerName(
-          handoffObject.receiverId || ""
-        )}`,
-        primaryIconColour: "success",
-      };
-    }
-    if (value[0] === "catchAttempted") {
-      const catchObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["catchAttempted"]
-      >;
-      if (!catchObject)
-        return {
-          icon: "mdi-alert",
-          value: "",
-          tooltip: `Unknown action: ${value[0]}`,
-        };
-      return {
-        icon: "mdi-handball",
-        value: "",
-        tooltip: `Catch Attempted - ${
-          catchObject.catchSuccess ? "Succeeded" : "Failed"
-        }`,
-        primaryIconColour: `${catchObject.catchSuccess ? "success" : "error"}`,
-      };
-    }
-    if (value[0] === "pickupAttempted") {
-      const pickupObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["pickupAttempted"]
-      >;
-      if (!pickupObject)
-        return {
-          icon: "mdi-alert",
-          value: "",
-          tooltip: `Unknown action: ${value[0]}`,
-        };
-      return {
-        icon: "mdi-hand-front-right",
-        value: "",
-        tooltip: `Pickup Attempted - ${
-          pickupObject.pickupSuccess ? "Succeeded" : "Failed"
-        }`,
-        primaryIconColour: `${
-          pickupObject.pickupSuccess ? "success" : "error"
-        }`,
-      };
-    }
-    if (value[0] === "standUp") {
-      return {
-        icon: "mdi-chevron-up-circle",
-        value: "",
-        tooltip: `Stand Up`,
-        primaryIconColour: "blue",
-      };
-    }
-    if (value[0] === "foulAttempted") {
-      const foulObject = value[1] as Partial<
-        TurnAction["actionsTaken"]["foulAttempted"]
-      >;
-      if (!foulObject)
-        return {
-          icon: "mdi-alert",
-          value: "",
-          tooltip: `Unknown action: ${value[0]}`,
-        };
-      return {
-        icon: "mdi-shoe-cleat",
-        value: "",
-        tooltip: `Foul Attempted on ${dataStore.getPlayerName(
-          foulObject.fouledPlayer || ""
-        )}`,
-        primaryIconColour: `error`,
-      };
-    }
-    if (value[0] === "sentOff") {
-      return {
-        icon: "mdi-cards",
-        value: "",
-        tooltip: `Sent Off`,
-        primaryIconColour: "error",
-      };
-    }
-    if (value[0] === "rerollUsed") {
-      return {
-        icon: "mdi-dice-multiple",
-        value: "",
-        tooltip: `Reroll Used`,
-        primaryIconColour: "warning",
-      };
-    }
-    return {
-      icon: "mdi-alert",
-      value: "",
-      tooltip: `Unknown action: ${value[0]}`,
-    };
-  });
+    })
+    .filter((action): action is PlayerActionChip => action !== null);
 });
 
 const drilldown = () => {

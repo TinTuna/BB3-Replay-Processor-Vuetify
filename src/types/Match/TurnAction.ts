@@ -42,6 +42,12 @@ export type TurnAction = {
       | "push"
       | "defenderStumbles"
       | "defenderDown";
+    blockOutcome?:
+      | "attackerDown"
+      | "bothDown"
+      | "push"
+      | "defenderDownPushBack"
+      | "defenderDownNoPush";
     injuryInflicted?: {
       type?: string;
       player?: PlayerId;

@@ -69,15 +69,21 @@ export const useDataStore = defineStore("data", () => {
     // If playerData already has some values in, then potentially addExtraPlayerData was called earlier, so we need to replicate the data in teamData
     if (Object.keys(playerData.value).length > 0) {
       Object.keys(playerData.value).forEach((playerId) => {
-        // replicate the data in teamData if it
-        teamData.value[
-          playerData.value[playerId].TeamId
-        ].Players.PlayerData.push(playerData.value[playerId]);
+        // replicate the data in teamData, if it exists
+        if (teamData.value[playerData.value[playerId].TeamId]) {
+          teamData.value[
+            playerData.value[playerId].TeamId
+          ].Players.PlayerData.push(playerData.value[playerId]);
+        }
 
-        // replicate the data in rosters
-        rosters.value?.TeamRoster[
-          parseInt(playerData.value[playerId].TeamId)
-        ].Players.PlayerData.push(playerData.value[playerId]);
+        // replicate the data in rosters, if it exists
+        if (
+          rosters.value?.TeamRoster[parseInt(playerData.value[playerId].TeamId)]
+        ) {
+          rosters.value?.TeamRoster[
+            parseInt(playerData.value[playerId].TeamId)
+          ].Players.PlayerData.push(playerData.value[playerId]);
+        }
       });
     }
 
@@ -322,7 +328,21 @@ export const useDataStore = defineStore("data", () => {
   };
 
   const addExtraPlayerData = (player: Player) => {
+    if (playerData.value[player.Id]) return;
     playerData.value[player.Id] = player;
+  };
+
+  const resetAllData = () => {
+    notificationGameJoined.value = undefined;
+    rosters.value = undefined;
+    endGame.value = undefined;
+    teamData.value = {};
+    playerData.value = {};
+    competitionData.value = {};
+    pitchState.value = {};
+    matchData.value = null;
+    selectedPlayerIdForNavigation.value = null;
+    selectedTeamForNavigation.value = null;
   };
 
   return {
@@ -347,6 +367,7 @@ export const useDataStore = defineStore("data", () => {
     selectedPlayerIdForNavigation,
     selectedTeamForNavigation,
     addExtraPlayerData,
+    resetAllData,
     // Pitch state
     pitchState,
     setPitchState,

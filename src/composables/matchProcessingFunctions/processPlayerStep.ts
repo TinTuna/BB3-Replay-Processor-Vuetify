@@ -226,8 +226,64 @@ export const processPlayerStep = (opts: {
       }
       case "ResultBlockRoll": {
         // This tells us which block dice was selected in a block roll
-        // TODO: Process block roll
-        // Stats are handled by ResultBlockOutcome
+
+        const resultMessageData = xmlToJsonMemoized(result.MessageData)
+          .ResultBlockRoll as ResultBlockRoll;
+
+        // Increment blocks attempted counter
+        matchData.playerData[stepMessageData.PlayerId].blocksAttempted += 1;
+
+        // The resultMessageData.ResultBlockRoll.Die.Value is the value of the die rolled
+        switch (resultMessageData.Die.Value) {
+          case "0":
+            // Attacker Down
+            matchData.playerData[
+              stepMessageData.PlayerId
+            ].blockDiceTaken.attackerDown += 1;
+            // Add block data to the currentTurnAction
+            currentTurnAction.actionsTaken.blockAttempted = "attackerDown";
+            break;
+          case "1":
+            // Both Down
+            matchData.playerData[
+              stepMessageData.PlayerId
+            ].blockDiceTaken.bothDown += 1;
+            // Add block data to the currentTurnAction
+            currentTurnAction.actionsTaken.blockAttempted = "bothDown";
+            break;
+          case "2":
+            // Push
+            matchData.playerData[
+              stepMessageData.PlayerId
+            ].blockDiceTaken.push += 1;
+            // Add block data to the currentTurnAction
+            currentTurnAction.actionsTaken.blockAttempted = "push";
+            break;
+          case "3":
+            // Defender Stumbles
+            matchData.playerData[
+              stepMessageData.PlayerId
+            ].blockDiceTaken.defenderStumbles += 1;
+            // Add block data to the currentTurnAction
+            currentTurnAction.actionsTaken.blockAttempted = "defenderStumbles";
+            break;
+          case "4":
+            // Defender Down
+            matchData.playerData[
+              stepMessageData.PlayerId
+            ].blockDiceTaken.defenderDown += 1;
+            // Add block data to the currentTurnAction
+            currentTurnAction.actionsTaken.blockAttempted = "defenderDown";
+            break;
+          default:
+            // No result
+            console.log(
+              "Unknown resultMessageData.Die.Value",
+              resultMessageData.Die.Value
+            );
+            break;
+        }
+
         break;
       }
       case "ResultPushBack": {
@@ -291,61 +347,43 @@ export const processPlayerStep = (opts: {
           });
         }
 
-        // Increment blocks attempted counter
-        matchData.playerData[stepMessageData.PlayerId].blocksAttempted += 1;
-
-        // Add the output type to the players data
+        // The resultMessageData.Outcome is the overall resulting action of the block roll
         switch (resultMessageData.Outcome) {
-          case "1":
+          case "0":
             // Attacker Down
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.attackerDown += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "attackerDown";
+            currentTurnAction.actionsTaken.blockOutcome = "attackerDown";
             break;
-          case "2":
+          case "1":
             // Both Down
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.bothDown += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "bothDown";
+            currentTurnAction.actionsTaken.blockOutcome = "bothDown";
             break;
-          case "3":
-            // Push
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.push += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "push";
-            break;
+          // case "2":
+          //   // ?
+          //   console.log("Unknown resultMessageData.Outcome", resultMessageData.Outcome);
+          //   break;
+          // case "3":
+          //   // ?
+          //   console.log("Unknown resultMessageData.Outcome", resultMessageData.Outcome);
+          //   break;
           case "4":
             // Push
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.push += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "push";
+            currentTurnAction.actionsTaken.blockOutcome = "push";
             break;
           case "5":
-            // Defender Stumbles
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.defenderStumbles += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "defenderStumbles";
+            // Defender Down
+            currentTurnAction.actionsTaken.blockOutcome = "defenderDownNoPush";
             break;
           case "6":
             // Defender Down
-            matchData.playerData[
-              stepMessageData.PlayerId
-            ].blockDiceTaken.defenderDown += 1;
-            // Add block data to the currentTurnAction
-            currentTurnAction.actionsTaken.blockAttempted = "defenderDown";
+            currentTurnAction.actionsTaken.blockOutcome =
+              "defenderDownPushBack";
             break;
           default:
-            // No result
+            // Unknown outcome
+            console.log(
+              "Unknown resultMessageData.Outcome",
+              resultMessageData.Outcome
+            );
             break;
         }
 
@@ -494,7 +532,7 @@ export const processPlayerStep = (opts: {
         // This tells us a reroll was used and by which _player_ (not by which team)
         const resultMessageData = xmlToJsonMemoized(result.MessageData)
           .ResultTeamRerollUsage as ResultTeamRerollUsage;
-        
+
         // Track reroll usage for this action
         if (resultMessageData.Used === 1) {
           currentTurnAction.actionsTaken.rerollUsed = true;

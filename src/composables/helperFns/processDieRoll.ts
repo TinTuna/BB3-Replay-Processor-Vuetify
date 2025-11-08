@@ -67,37 +67,33 @@ const processBlockDieRoll = (
   matchData: MatchData
 ) => {
   switch (dieRoll.Value) {
-    case "1": {
+    case "0": {
       // Attacker Down
       matchData.playerData[playerId].blockDiceRolled.attackerDown += 1;
       break;
     }
-    case "2": {
+    case "1": {
       // Both Down
       matchData.playerData[playerId].blockDiceRolled.bothDown += 1;
       break;
     }
-    case "3": {
+    case "2": {
       // Push
       matchData.playerData[playerId].blockDiceRolled.push += 1;
       break;
     }
-    case "4": {
-      // Push (another type)
-      matchData.playerData[playerId].blockDiceRolled.push += 1;
-      break;
-    }
-    case "5": {
+    case "3": {
       // Defender Stumbles
       matchData.playerData[playerId].blockDiceRolled.defenderStumbles += 1;
       break;
     }
-    case "6": {
-      // Defender Down
+    case "4": {
+      // Defender Down (Pow)
       matchData.playerData[playerId].blockDiceRolled.defenderDown += 1;
       break;
     }
     default: {
+      console.log("unknown case in processBlockDieRoll", dieRoll.Value);
       break;
     }
   }

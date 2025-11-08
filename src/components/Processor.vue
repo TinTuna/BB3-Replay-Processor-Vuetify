@@ -64,6 +64,9 @@ import { ref } from "vue";
 import Wrapper from "@/components/Match/Wrapper.vue";
 import { useBbrFileProcessor } from "@/composables/helperFns/processBbrFile";
 import { useXmlDownloader } from "@/composables/helperFns/downloadProcessedXml";
+import { useDataStore } from "@/store/dataStore";
+
+const dataStore = useDataStore();
 
 const bbrFile = ref<File>();
 const loaded = ref(false);
@@ -112,17 +115,12 @@ const downloadProcessedReplayFile = () => {
   downloadProcessedXml(processedReplay.value);
 };
 
-const clearError = () => {
-  error.value = null;
-};
-
 const reset = () => {
   bbrFile.value = undefined;
   loaded.value = false;
   processedReplay.value = new DOMParser().parseFromString("", "text/xml");
-  clearError();
+  dataStore.resetAllData();
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

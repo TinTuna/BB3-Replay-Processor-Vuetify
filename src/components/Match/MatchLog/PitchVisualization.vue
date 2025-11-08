@@ -4,6 +4,102 @@
       <v-row>
         <v-col cols="12">
           <div class="pitch-container">
+            <!-- SVG overlay for pitch markings (always visible) -->
+            <svg
+              class="pitch-markings-overlay"
+              viewBox="0 0 26 15"
+              preserveAspectRatio="none"
+            >
+              <!-- Solid white edge line -->
+              <line
+                x1="0"
+                y1="0"
+                x2="26"
+                y2="0"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <line
+                x1="0"
+                y1="15"
+                x2="26"
+                y2="15"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="15"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <line
+                x1="26"
+                y1="0"
+                x2="26"
+                y2="15"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <!-- Solid white center line (line of scrimmage) -->
+              <line
+                x1="13"
+                y1="0"
+                x2="13"
+                y2="15"
+                stroke="white"
+                stroke-width="0.1"
+                stroke-linecap="round"
+              />
+              <!-- Solid white endzone line -->
+              <line
+                x1="1"
+                y1="0"
+                x2="1"
+                y2="15"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <line
+                x1="25"
+                y1="0"
+                x2="25"
+                y2="15"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-linecap="round"
+              />
+              <!-- Dashed white lines 4 cells from each edge -->
+              <line
+                x1="1"
+                y1="4"
+                x2="25"
+                y2="4"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-dasharray="0.25"
+                stroke-dashoffset="0.125"
+                stroke-linecap="round"
+              />
+              <line
+                x1="1"
+                y1="11"
+                x2="25"
+                y2="11"
+                stroke="white"
+                stroke-width="0.05"
+                stroke-dasharray="0.25"
+                stroke-dashoffset="0.125"
+                stroke-linecap="round"
+              />
+            </svg>
             <!-- SVG overlay for movement path lines and push paths -->
             <svg
               v-if="
@@ -499,11 +595,21 @@ watch(
   width: 100%;
   overflow: auto;
   border: 2px solid #333;
-  background-image: url("@/assets/pitch.webp");
+  background-color: green;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+}
+
+.pitch-markings-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .movement-path-overlay {

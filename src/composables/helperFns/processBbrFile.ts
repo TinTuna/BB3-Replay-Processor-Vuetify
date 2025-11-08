@@ -7,6 +7,7 @@ export interface BbrFileProcessor {
   processFile: (file: File) => Promise<Document>;
   isLoading: Ref<boolean>;
   error: Ref<string | null>;
+  clearError: () => void;
 }
 
 export const useBbrFileProcessor = (): BbrFileProcessor => {
@@ -42,9 +43,14 @@ export const useBbrFileProcessor = (): BbrFileProcessor => {
     }
   };
 
+  const clearError = () => {
+    error.value = null;
+  };
+
   return {
     processFile,
     isLoading: readonly(isLoading),
     error: readonly(error),
+    clearError,
   };
 };

@@ -100,9 +100,9 @@ type PlayerActionChip = {
   secondaryIconColour?: string;
 };
 
-const playerActions: Ref<PlayerActionChip[]> = computed(() => {
+const playerActions = computed(() => {
   return Object.entries(playerAction.value.actionsTaken || {})
-    .map((value) => {
+    .map((value): PlayerActionChip | null => {
       if (value[0] === "yardsMoved") {
         return {
           icon: "mdi-run",
@@ -433,7 +433,7 @@ const playerActions: Ref<PlayerActionChip[]> = computed(() => {
         tooltip: `Unknown action: ${value[0]}`,
       };
     })
-    .filter((action): action is PlayerActionChip => action !== null);
+    .filter((action): action is PlayerActionChip => action !== null) as PlayerActionChip[];
 });
 
 const drilldown = () => {

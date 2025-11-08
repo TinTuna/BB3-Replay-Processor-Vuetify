@@ -4,6 +4,15 @@
       <v-row>
         <v-col cols="12">
           <div class="pitch-container">
+            <!-- Team logo backgrounds -->
+            <div
+              class="team-logo-background team-logo-home"
+              :style="{ backgroundImage: `url(${homeTeamLogo.logo})` }"
+            ></div>
+            <div
+              class="team-logo-background team-logo-away"
+              :style="{ backgroundImage: `url(${awayTeamLogo.logo})` }"
+            ></div>
             <!-- SVG overlay for pitch markings (always visible) -->
             <svg
               class="pitch-markings-overlay"
@@ -179,6 +188,7 @@
                     getCellClass(x - 1, y - 1),
                     { 'in-movement-path': isInMovementPath(x - 1, y - 1) },
                     { 'in-push-path': isInPushPath(x - 1, y - 1) },
+                    { 'checkerboard-square': (x + y) % 2 === 0 },
                   ]"
                 >
                   <div
@@ -297,6 +307,14 @@ const homeTeamColours = computed(() => {
 
 const awayTeamColours = computed(() => {
   return dataStore.getTeamColours("1");
+});
+
+const homeTeamLogo = computed(() => {
+  return dataStore.getTeamLogo("0");
+});
+
+const awayTeamLogo = computed(() => {
+  return dataStore.getTeamLogo("1");
 });
 
 const ballImage = ballImageSrc;
@@ -602,6 +620,27 @@ watch(
   position: relative;
 }
 
+.team-logo-background {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background-size: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.team-logo-home {
+  left: 0;
+}
+
+.team-logo-away {
+  right: 0;
+}
+
 .pitch-markings-overlay {
   position: absolute;
   top: 0;
@@ -654,6 +693,12 @@ watch(
   min-width: 20px;
   background: transparent;
   transition: background-color 0.2s;
+
+  // Checkerboard pattern: cells where (x + y) is even get the background
+  // This creates true offset squares like a checkerboard
+  &.checkerboard-square {
+    background: rgba(255, 255, 255, 0.03);
+  }
 
   &.end-zone {
     background: rgba(26, 61, 14, 0.5);

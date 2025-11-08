@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height">
+  <v-container class="fill-height w-75">
     <v-responsive class="d-flex text-center fill-height">
       <v-container class="pa-2" style="margin-top: 7vh">
         <v-card v-if="!loading && !loaded">

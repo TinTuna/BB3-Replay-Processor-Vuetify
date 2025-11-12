@@ -10,8 +10,9 @@
           elevated
           href="https://github.com/TinTuna/BB3-Replay-Processor-Vuetify/"
           target="_blank"
-          >Git Repository</v-btn
         >
+          Git Repository
+        </v-btn>
       </div>
     </v-responsive>
   </v-container>

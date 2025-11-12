@@ -141,23 +141,45 @@ export type Event = {
 
 const events = computed(() => {
   // loop over the match events and return the key events
+  let previousPeriod: string | null = null;
   let inputHalftime = false;
+  let inputOvertime = false;
   let currHomeScore = 0;
   let currAwayScore = 0;
   return (
     dataStore.matchData?.matchLog
       .map((event) => {
-        if (!inputHalftime && event.turn > 8) {
-          inputHalftime = true;
-          return {
-            color: "green-lighten-1",
-            icon: "mdi-whistle",
-            title: "Halftime",
-            opp: `${currHomeScore}:${currAwayScore}`,
-            oppColour: "green",
-            oppFont: "text-h6",
-          } as Event;
+        // Check for period transitions
+        if (previousPeriod !== event.period) {
+          previousPeriod = event.period;
+          
+          // Show halftime marker when transitioning to Second Half
+          if (event.period === "Second Half" && !inputHalftime) {
+            inputHalftime = true;
+            return {
+              color: "green-lighten-1",
+              icon: "mdi-whistle",
+              title: "Halftime",
+              opp: `${currHomeScore}:${currAwayScore}`,
+              oppColour: "green",
+              oppFont: "text-h6",
+            } as Event;
+          }
+          
+          // Show overtime marker when transitioning to Overtime
+          if (event.period === "Overtime" && !inputOvertime) {
+            inputOvertime = true;
+            return {
+              color: "orange-lighten-1",
+              icon: "mdi-clock-outline",
+              title: "Overtime",
+              opp: `${currHomeScore}:${currAwayScore}`,
+              oppColour: "orange",
+              oppFont: "text-h6",
+            } as Event;
+          }
         }
+        
         if (event.touchdown) {
           if (event.team === "0") {
             currHomeScore++;
@@ -172,7 +194,7 @@ const events = computed(() => {
             icon: "mdi-football",
             iconColor: "brown",
             size: "large",
-            tooltip: `Turn: ${event.turn}`,
+            tooltip: `${event.period} - Turn: ${event.turn}`,
             title: `Touchdown`,
             text: `${dataStore
               .getTeamName(event.team)
@@ -197,7 +219,7 @@ const events = computed(() => {
             icon: "mdi-sword",
             iconColor: "red",
             size: "x-small",
-            tooltip: `Turn: ${event.turn}`,
+            tooltip: `${event.period} - Turn: ${event.turn}`,
             title: `Injury`,
             text: `${dataStore
               .getTeamName(event.team)

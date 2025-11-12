@@ -4,7 +4,7 @@ import { xmlToJsonMemoized } from "../helperFns/xmlToJsonMemoized";
 import { normalizeReplaySteps } from "../helperFns/normalizeReplaySteps";
 import { PlayerStep } from "@/types/messageData/PlayerStep";
 import { PlayerId } from "@/types/IdTypes/PlayerId";
-import { Turn } from "@/types/Match/Turn";
+import { Turn, GamePeriod } from "@/types/Match/Turn";
 import { TurnAction } from "@/types/Match/TurnAction";
 import { GamePhase } from "@/types/Pitch/GamePhase";
 import { Step } from "@/types/Match/Step";
@@ -152,10 +152,15 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
   let gamePhase: GamePhase = "0";
 
   let turnNumber = 1;
+  
+  // Track periods based on Phase 5 (General play) occurrences
+  let phase5Count = 0;
+  let currentPeriod: GamePeriod = "First Half";
 
   let currentTurn: Turn = {
     team: "0",
     turn: 1,
+    period: "First Half",
     turnActions: [],
   };
   let currentTurnAction: TurnAction = {
@@ -690,6 +695,7 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
         currentTurn = {
           team: nextTeam,
           turn: nextTurnNumber,
+          period: currentPeriod,
           turnActions: [],
         };
 
@@ -727,9 +733,26 @@ export const processReplaySteps = (replaySteps: ReplayStep[]): MatchData => {
       }
     }
 
-    // Update the game phase
+    // Update the game phase and track periods
     if (step.EventNewGamePhase) {
       gamePhase = step.EventNewGamePhase.Phase;
+      
+      // Track periods based on Phase 5 (General play) occurrences
+      if (step.EventNewGamePhase.Phase === "5") {
+        phase5Count += 1;
+        if (phase5Count === 1) {
+          currentPeriod = "First Half";
+        } else if (phase5Count === 2) {
+          currentPeriod = "Second Half";
+        } else if (phase5Count >= 3) {
+          currentPeriod = "Overtime";
+        }
+        
+        // Update the current turn's period if it exists
+        if (currentTurn) {
+          currentTurn.period = currentPeriod;
+        }
+      }
     }
   }
 

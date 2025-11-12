@@ -24,7 +24,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
     // If we have a logo for this guid, set the name and logo
     logo.name = logoList[guid].name;
     logo.logo = new URL(
-      `../../assets/logos/${logoList[guid].logoFileId}.png`,
+      `../../assets/logos/256/${logoList[guid].logoFileId}.webp`,
       import.meta.url
     ).href;
     logo.logoFileId = logoList[guid].logoFileId;
@@ -35,7 +35,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Human
         logo.name = "Imperial Eagle";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Human_01.png`,
+          `../../assets/logos/256/Logo_Human_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Human_01";
@@ -44,7 +44,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Dwarf
         logo.name = "Guardian of the Mines";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Dwarf_08.png`,
+          `../../assets/logos/256/Logo_Dwarf_08.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Dwarf_08";
@@ -53,7 +53,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Skaven
         logo.name = "Blood Bowl Clan";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Skaven_01.png`,
+          `../../assets/logos/256/Logo_Skaven_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Skaven_01";
@@ -62,7 +62,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Orc
         logo.name = "Gork & Mork";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Orc_01.png`,
+          `../../assets/logos/256/Logo_Orc_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Orc_01";
@@ -71,7 +71,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Lizardmen
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_01.png`,
+          `../../assets/logos/256/Logo_Neutral_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -80,7 +80,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Wood Elf
         logo.name = "Elven Warrior Mask";
         logo.logo = new URL(
-          `../../assets/logos/Logo_ElvenUnion_02.png`,
+          `../../assets/logos/256/Logo_ElvenUnion_02.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_ElvenUnion_02";
@@ -89,7 +89,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Chaos Chosen
         logo.name = "Wheel of Fortune";
         logo.logo = new URL(
-          `../../assets/logos/Logo_ChaosChosen_07.png`,
+          `../../assets/logos/256/Logo_ChaosChosen_07.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_ChaosChosen_07";
@@ -98,7 +98,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Dark Elf
         logo.name = "Torn Life";
         logo.logo = new URL(
-          `../../assets/logos/Logo_DarkElf_09.png`,
+          `../../assets/logos/256/Logo_DarkElf_09.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_DarkElf_09";
@@ -107,7 +107,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Shambling Undead
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_01.png`,
+          `../../assets/logos/256/Logo_Neutral_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -116,7 +116,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Elven Union
         logo.name = "Elven Warrior Mask";
         logo.logo = new URL(
-          `../../assets/logos/Logo_ElvenUnion_02.png`,
+          `../../assets/logos/256/Logo_ElvenUnion_02.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_ElvenUnion_02";
@@ -125,7 +125,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Nurgle
         logo.name = "Sign of Nurgle";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Nurgle_01.png`,
+          `../../assets/logos/256/Logo_Nurgle_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Nurgle_01";
@@ -134,7 +134,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Underworld Denizens
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_01.png`,
+          `../../assets/logos/256/Logo_Neutral_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -143,7 +143,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Imperial Nobility
         logo.name = "Triumphant Eagle";
         logo.logo = new URL(
-          `../../assets/logos/Logo_ImperialNobility_01.png`,
+          `../../assets/logos/256/Logo_ImperialNobility_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_ImperialNobility_01";
@@ -152,7 +152,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Black Orc
         logo.name = "Spiky Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_BlackOrc_01.png`,
+          `../../assets/logos/256/Logo_BlackOrc_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_BlackOrc_01";
@@ -161,7 +161,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Chaos Renegades
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_01.png`,
+          `../../assets/logos/256/Logo_Neutral_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -170,7 +170,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Old World Alliance
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Neutral_01.png`,
+          `../../assets/logos/256/Logo_Neutral_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -179,7 +179,7 @@ export const getLogoFromGuid = (teamRace: IdRace, guid: LogoGuids): Logo => {
         // Default to the neutral logo
         logo.name = "The Honoured Ball";
         logo.logo = new URL(
-          `../../assets/logos/Logo_Human_01.png`,
+          `../../assets/logos/256/Logo_Human_01.webp`,
           import.meta.url
         ).href;
         logo.logoFileId = "Logo_Neutral_01";
@@ -867,6 +867,10 @@ const logoList: { [key in LogoGuids]: LogoData } = {
     name: "Celestial hammer",
     logoFileId: "Logo_Dwarf_05",
   },
+  "89f66419-1b2c-5bc1-91a7-53dbd1ec7c2b": {
+    name: "?",
+    logoFileId: "Logo_Goblin_13",
+  },
 };
 
 export type LogoGuids =
@@ -1039,3 +1043,4 @@ export type LogoGuids =
   | "8a98cf73-defe-58fd-ae68-4bf918d55bad"
   | "63f3f9bb-250b-5820-abfe-365c98742b26"
   | "69b1e5c4-ade8-5cd7-83f2-586d542dd618"
+  | "89f66419-1b2c-5bc1-91a7-53dbd1ec7c2b";

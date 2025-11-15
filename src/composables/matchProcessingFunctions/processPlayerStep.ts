@@ -75,18 +75,19 @@ export const processPlayerStep = (opts: {
   // Log what type of step we are processing if necessary
   switch (stepMessageData.StepType) {
     case "0":
+      // TODO: This is not true, we need to find anotehr way to see if the player is standing up
       // If this player is moving to cell -1 -1, they are standing up
       if (
         stepMessageData.CellTo.X === "-1" &&
         stepMessageData.CellTo.Y === "-1"
       ) {
-        currentTurnAction.actionsTaken.standUp = true;
+        // currentTurnAction.actionsTaken.standUp = true;
       }
       if (
         stepMessageData.CellTo.X === stepMessageData.CellFrom.X &&
         stepMessageData.CellTo.Y === stepMessageData.CellFrom.Y
       ) {
-        currentTurnAction.actionsTaken.standUp = true;
+        // currentTurnAction.actionsTaken.standUp = true;
       }
       break;
     case "1":
